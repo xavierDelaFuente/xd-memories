@@ -1,0 +1,12 @@
+{
+  "name": "@xd-memories/worker",
+  "private": true,
+  "type": "module",
+  "version": "0.0.0",
+  "scripts": {
+    "start": "tsx src/main.ts",
+    "test": "vitest run --passWithNoTests",
+    "type-check": "tsc -b --noEmit",
+    "build": "tsc -b"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "name": "xd-memories",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "pnpm -r build",
+    "test": "pnpm -r test",
+    "type-check": "pnpm -r type-check",
+    "lint": "biome check .",
+    "format": "biome format --write .",
+    "check": "pnpm lint && pnpm type-check && pnpm test",
+    "e2e": "pnpm --filter @xd-memories/web e2e"
+  }
+}

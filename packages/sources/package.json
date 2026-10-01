@@ -1,0 +1,14 @@
+{
+  "name": "@xd-memories/sources",
+  "private": true,
+  "type": "module",
+  "version": "0.0.0",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "build": "tsc -b",
+    "test": "vitest run --passWithNoTests",
+    "type-check": "tsc -b --noEmit",
+    "record-fixtures": "tsx scripts/record.ts"
+  }
+}

@@ -1,0 +1,10 @@
+# Supabase Free pauses idle projects. One cheap query a week keeps it awake.
+name: keepalive
+on:
+  schedule: [{ cron: "0 6 * * 1" }]
+  workflow_dispatch:
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - run: psql "${{ secrets.DATABASE_URL }}" -c "select 1"

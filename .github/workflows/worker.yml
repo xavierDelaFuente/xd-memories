@@ -1,0 +1,22 @@
+# Runs the job queue on demand. Triggered by apps/web when a user asks for a sync.
+# See .mentor/ALTERNATIVES.md — job execution on a €0 budget.
+name: worker
+on:
+  workflow_dispatch:
+    inputs:
+      jobId: { description: "jobs.id to drain (optional)", required: false }
+concurrency: { group: worker, cancel-in-progress: false }
+jobs:
+  drain:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: lts/*, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @xd-memories/worker start
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      TMDB_API_TOKEN: ${{ secrets.TMDB_API_TOKEN }}
+      MUSICBRAINZ_USER_AGENT: ${{ secrets.MUSICBRAINZ_USER_AGENT }}
