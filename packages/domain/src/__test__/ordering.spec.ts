@@ -7,16 +7,13 @@ import {
   progress,
   type Series,
 } from '../ordering';
+import { unwrap } from './helpers';
 
 const publication = { name: 'publication', workIds: ['w1', 'w2', 'w3'] };
 const chronological = { name: 'chronological', workIds: ['w2', 'w1', 'w3'] };
 
 const seriesWith = (...orderings: Ordering[]): Series =>
-  orderings.reduce((series, ordering) => {
-    const added = addOrdering(series, ordering);
-    if (!added.ok) throw new Error(`could not add ${ordering.name}`);
-    return added.value;
-  }, createSeries('s1'));
+  orderings.reduce((series, ordering) => unwrap(addOrdering(series, ordering)), createSeries('s1'));
 
 describe('progress', () => {
   it('with nothing done, position is 0 and next is the first work', () => {

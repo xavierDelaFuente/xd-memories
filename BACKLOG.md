@@ -17,3 +17,6 @@ Each task names its first failing test. `U` = unit, `I` = integration, `E` = E2E
 - 1.4 `ExternalRef` (`U`): two refs with the same source+id resolve to one `WorkId`
 - 1.5 `Ordering` (`U`): user position in a series = highest done position; next = position + 1
 - 1.6 `Ordering` (`U`): a series can hold several named orderings without conflict
+- 1.7 `Work` (`U`): a blank title is a typed error; media type is one of movie · series · book · album
+- 1.8 `Creator` (`U`): a blank name is a typed error
+- 1.9 `Credit` (`U`): the same creator credited twice on a work with the same role is one credit; different roles are two
