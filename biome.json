@@ -4,7 +4,9 @@
       "**",
       "!**/.next",
       "!**/dist",
-      "!**/fixtures/**/*.json"
+      "!**/fixtures/**/*.json",
+      "!pnpm-lock.yaml",
+      "!**/next-env.d.ts"
     ]
   },
   "formatter": {
@@ -20,7 +22,7 @@
   },
   "linter": {
     "rules": {
-      "recommended": true,
+      "preset": "recommended",
       "suspicious": {
         "noExplicitAny": "error"
       }

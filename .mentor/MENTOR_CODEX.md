@@ -8,7 +8,7 @@
 
 ## PART 1 — SESSION PROTOCOL
 
-*This part is instructions for the mentor, not for the developer. Follow it literally.*
+_This part is instructions for the mentor, not for the developer. Follow it literally._
 
 ### Session Opening
 
@@ -66,7 +66,7 @@ falls outside it — a backend, a data pipeline, a model, a tool you have not us
 improvise silently and do not stretch an unrelated rule to fit. Say:
 
 > "The CODEX has no rule for X. Here is what I would do and why. If you agree, it becomes an
-> ALTERNATIVES entry as a *gap filled*, not an override."
+> ALTERNATIVES entry as a _gap filled_, not an override."
 
 A gap filled is tracked the same as an override: it goes in ALTERNATIVES first. Once it has
 proven itself in practice it moves into Part 2 and the entry is deleted. The system only learns
@@ -93,13 +93,13 @@ When asked to close, output three blocks and nothing else:
 
 ### Non-negotiable
 
-| Rule | Meaning |
-|---|---|
-| TDD | Red → Green → Refactor. Test written and failing before implementation exists. |
-| TypeScript strict | `strict: true`, plus `noUnusedLocals`, `noUnusedParameters`, `noImplicitReturns`. No `any` without a comment explaining why. |
-| CI before code | Branch protection and status checks configured before the first feature commit. |
-| Accessible by default | Semantic HTML, keyboard reachable, focus visible, labelled. Not a later pass. |
-| Atomic commits | One logical change. Conventional Commits. Every commit leaves the suite green. |
+| Rule                  | Meaning                                                                                                                      |
+| --------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| TDD                   | Red → Green → Refactor. Test written and failing before implementation exists.                                               |
+| TypeScript strict     | `strict: true`, plus `noUnusedLocals`, `noUnusedParameters`, `noImplicitReturns`. No `any` without a comment explaining why. |
+| CI before code        | Branch protection and status checks configured before the first feature commit.                                              |
+| Accessible by default | Semantic HTML, keyboard reachable, focus visible, labelled. Not a later pass.                                                |
+| Atomic commits        | One logical change. Conventional Commits. Every commit leaves the suite green.                                               |
 
 ### Testing
 
@@ -114,8 +114,8 @@ When asked to close, output three blocks and nothing else:
   five minutes. An E2E test that duplicates something a unit test already proves is deleted, not
   kept "for safety" — it costs minutes on every push and fails for reasons unrelated to the code.
 - **Nothing in the test suite touches the network.** Every external shape (HTTP API, CDN payload,
-  model response) is a committed fixture recorded from the real thing. See *External data*.
-- **Split a spec file by scope once it outgrows a single readable file.** Rule of thumb, not a mechanical trigger: ~200+ lines *and* several genuinely distinct behavioral scopes (e.g. a primitive's sorting vs. filtering vs. selection), not just "it has two `describe` blocks." One file per scope, named `Component-Scope.spec.tsx` (e.g. `UnstyledTable-Sorting.spec.tsx`), sibling to the base `Component.spec.tsx`. Setup genuinely duplicated across the split files (shared fixture data, not one-off local test data) moves to a sibling `fixtures.ts`/`fixtures.tsx` — scope-specific fixtures stay local to their own file. Don't split a small file just to have more files; the split earns its keep only when it makes something easier to find.
+  model response) is a committed fixture recorded from the real thing. See _External data_.
+- **Split a spec file by scope once it outgrows a single readable file.** Rule of thumb, not a mechanical trigger: ~200+ lines _and_ several genuinely distinct behavioral scopes (e.g. a primitive's sorting vs. filtering vs. selection), not just "it has two `describe` blocks." One file per scope, named `Component-Scope.spec.tsx` (e.g. `UnstyledTable-Sorting.spec.tsx`), sibling to the base `Component.spec.tsx`. Setup genuinely duplicated across the split files (shared fixture data, not one-off local test data) moves to a sibling `fixtures.ts`/`fixtures.tsx` — scope-specific fixtures stay local to their own file. Don't split a small file just to have more files; the split earns its keep only when it makes something easier to find.
 
 ### Composition
 
@@ -135,7 +135,7 @@ Decide monorepo vs single package on these three:
 
 **Two or more yes → monorepo. Otherwise single package.** Monorepo is overhead; earn it.
 
-That tree answers *publishing*. It does not answer *deploying*. A single product that ships as
+That tree answers _publishing_. It does not answer _deploying_. A single product that ships as
 several processes — a web client, an HTTP API, a background worker — is one product with
 several deployable units, and the tree above will wrongly say "single package".
 
@@ -167,11 +167,11 @@ Jobs run in parallel. A red check blocks merge — including for you.
 
 ### Styling
 
-| Context | Default | Reason |
-|---|---|---|
-| Component library | CSS Modules + `data-*` | Scoped, no runtime, consumer can override |
-| Application | Tailwind | Iteration speed matters more than bundle purity |
-| Design system | Tokens + CSS Modules | Theming needs a variable layer |
+| Context           | Default                | Reason                                          |
+| ----------------- | ---------------------- | ----------------------------------------------- |
+| Component library | CSS Modules + `data-*` | Scoped, no runtime, consumer can override       |
+| Application       | Tailwind               | Iteration speed matters more than bundle purity |
+| Design system     | Tokens + CSS Modules   | Theming needs a variable layer                  |
 
 Defaults, not laws. Override with a reason, and record it.
 
@@ -197,7 +197,7 @@ Anything the project does not own — a third-party HTTP API, a CDN data dump, a
 - **Parse, do not cast.** Validate at the boundary with a schema (zod or equivalent) and fail
   loudly. `as SomeType` on an HTTP response is a lie that surfaces three layers later.
 - **Record fixtures from the real source; commit them.** Tests run against the recording. A
-  scheduled job re-records and the diff is reviewed like code — that diff *is* the early warning
+  scheduled job re-records and the diff is reviewed like code — that diff _is_ the early warning
   that upstream changed.
 - **Store the raw payload before transforming it.** Extraction logic will be wrong at least once.
   If the raw response is gone, so is every chance to reprocess without re-fetching.
@@ -213,7 +213,7 @@ Anything the project does not own — a third-party HTTP API, a CDN data dump, a
 The same rules apply as anywhere else; the model is just an untrusted, slow, expensive adapter.
 
 - **The model never computes.** Arithmetic, comparison, ranking, filtering and simulation happen
-  in tested domain code. The model chooses *what* to ask for and phrases the answer. If a number
+  in tested domain code. The model chooses _what_ to ask for and phrases the answer. If a number
   in the output was not returned by a tool, it is a hallucination by construction.
 - **The model never recalls.** Facts arrive as structured context or come back from a tool call.
   Never rely on what the model "knows" about a domain that changes — it will be confidently
@@ -261,8 +261,8 @@ Short reference. Expand only when the pattern is actually in play.
 
 **Polymorphic props**
 ```ts
-type OverridableProps<T extends ElementType, OwnProps = object> =
-  OwnProps & Omit<ComponentPropsWithoutRef<T>, keyof OwnProps>;
+type OverridableProps<T extends ElementType, OwnProps = object> = OwnProps &
+  Omit<ComponentPropsWithoutRef<T>, keyof OwnProps>;
 ```
 
 **Render props resolution**
@@ -272,12 +272,12 @@ const resolved = typeof children === 'function' ? children(state) : children;
 
 **Prop precedence with context**
 ```ts
-const size = sizeProp ?? group?.size ?? 'md';   // ?? not || — 0 and '' are valid values
+const size = sizeProp ?? group?.size ?? 'md'; // ?? not || — 0 and '' are valid values
 ```
 
 **State via data attributes**
 ```tsx
-<button data-variant={variant} data-pressed={isPressed || undefined} />
+<button data-variant={variant} data-pressed={isPressed || undefined} />;
 ```
 ```css
 .button[data-variant='primary'] { … }
@@ -293,11 +293,11 @@ Show focus rings on the second only.
 
 ## PART 4 — VERSION LOG
 
-| Version | Change | Trigger |
-|---|---|---|
-| 2.1 | Added *say when the CODEX has no rule* to the protocol; deployable-unit structure tree; E2E budget and no-network testing rules; new sections for External data, Non-deterministic components and Services/data stores | CODEX was written from a component library and had nothing to say about a backend, an ingestion pipeline or an LLM — the gap was silently improvised around |
-| 2.0 | Added Session Protocol and Behavioral Contract; made rules operational | Codex read as a style guide, not as instructions |
-| 1.0 | Initial principles, stack defaults, decision trees | Start of xd-components |
+| Version | Change                                                                                                                                                                                                                 | Trigger                                                                                                                                                     |
+| ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 2.1     | Added _say when the CODEX has no rule_ to the protocol; deployable-unit structure tree; E2E budget and no-network testing rules; new sections for External data, Non-deterministic components and Services/data stores | CODEX was written from a component library and had nothing to say about a backend, an ingestion pipeline or an LLM — the gap was silently improvised around |
+| 2.0     | Added Session Protocol and Behavioral Contract; made rules operational                                                                                                                                                 | Codex read as a style guide, not as instructions                                                                                                            |
+| 1.0     | Initial principles, stack defaults, decision trees                                                                                                                                                                     | Start of xd-components                                                                                                                                      |
 
 A decision graduates from ALTERNATIVES into the rules above as soon as it has proven itself in
 practice — working, with reasoning that generalises — not after an arbitrary project count. Add

@@ -8,7 +8,16 @@
   "scripts": {
     "build": "tsc -b",
     "test": "vitest run --passWithNoTests",
-    "type-check": "tsc -b --noEmit",
+    "type-check": "tsc -b",
     "migrate": "tsx src/migrate.ts"
+  },
+  "dependencies": {
+    "kysely": "^0.29.7",
+    "pg": "^8.23.1"
+  },
+  "devDependencies": {
+    "@testcontainers/postgresql": "^12.2.1",
+    "@types/node": "^26.6.5",
+    "@types/pg": "^8.23.1"
   }
 }
