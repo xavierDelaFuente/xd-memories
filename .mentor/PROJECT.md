@@ -1,9 +1,9 @@
 # PROJECT — xd-memories
 
 **Type**: app (multi-process: web + worker)
-**Status**: Phase 0 of 10 — not started. Scaffold generated; repo not created.
-**Repo**: _TBD — create as `xavierDelaFuente/xd-memories`_
-**Local**: _TBD — C:\Users\xixar\Repos\2026\xd-memories_
+**Status**: Phase 0 of 10 — in progress. Scaffold pushed to `main`.
+**Repo**: https://github.com/xavierDelaFuente/xd-memories
+**Local**: C:\Users\XavierdelaFuenteQuin\Repos\personal\xd-memories
 
 One place for everything I watch, read and listen to — movies, series, books, music — what comes
 next, and in which order. Tracking earns the data; recommendations are why it exists.
@@ -104,7 +104,6 @@ test for `Entry` (BACKLOG 1.1).
 7. Consume `@asnewyla/*` instead of Tailwind? That would need an ALTERNATIVES entry (watchlog's was never proven).
 8. Spoiler policy for the model and for community descriptions.
 9. "Where to watch" (TMDB watch providers, JustWatch attribution) — in scope, or a future phase?
-10. Is `xavierDelaFuente/xd-memories` free, and is the name final? Check before spreading it.
 
 ## Reference docs
 
