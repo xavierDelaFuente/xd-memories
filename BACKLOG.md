@@ -13,7 +13,7 @@ Each task names its first failing test. `U` = unit, `I` = integration, `E` = E2E
 
 - 1.1 `Entry` (`U`): logging "done" on a work with no entries yields one entry with status done
 - 1.2 `Entry` (`U`): a re-read appends a second entry, never mutates the first
-- 1.3 `Rating` (`U`): rating outside 1–5 is a typed error
+- 1.3 `Rating` (`U`): rating outside 0–100 is a typed error; source scales normalise to 0–100 by min–max; views round to whole numbers
 - 1.4 `ExternalRef` (`U`): two refs with the same source+id resolve to one `WorkId`
 - 1.5 `Ordering` (`U`): user position in a series = highest done position; next = position + 1
 - 1.6 `Ordering` (`U`): a series can hold several named orderings without conflict
