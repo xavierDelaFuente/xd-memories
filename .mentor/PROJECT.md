@@ -89,8 +89,9 @@ Full rationale, reorder notes and future phases: `docs/PHASES.md`.
 
 **Done**: Scaffold (configs, empty packages, mentor files). Screens v1 designed (`xd-memories Screens.dc.html`).
 0.1 — toolchain installed at current versions, CI green on `main` (PR #1).
-**In progress**: 0.2 — branch protection on `main` (0 approvals, see ALTERNATIVES); action versions bumped.
-**Next**: 0.3 domain boundary check, then 0.4 walking skeleton E2E + Vercel preview. Then Phase 1
+0.2 — `main` ruleset: PR, 0 approvals (see ALTERNATIVES), up to date, four required checks, no bypass (PR #2).
+**In progress**: 0.3 — domain boundary as a Biome override in `biome.json` (Node built-ins, db, sources, kysely, pg, next, react — subpaths included).
+**Next**: 0.4 walking skeleton E2E + Vercel preview. Then Phase 1
 opens with a failing test for `Entry` (BACKLOG 1.1).
 
 ## Open Questions

@@ -27,5 +27,45 @@
         "noExplicitAny": "error"
       }
     }
-  }
+  },
+  "overrides": [
+    {
+      "includes": ["packages/domain/**"],
+      "linter": {
+        "rules": {
+          "correctness": {
+            "noNodejsModules": "error"
+          },
+          "style": {
+            "noRestrictedImports": {
+              "level": "error",
+              "options": {
+                "paths": {
+                  "@xd-memories/db": "packages/domain is pure: no I/O. Define a port in domain; implement it in db.",
+                  "@xd-memories/sources": "packages/domain is pure: no I/O. Define a port in domain; implement it in sources.",
+                  "kysely": "packages/domain is pure: no I/O. SQL lives in packages/db.",
+                  "pg": "packages/domain is pure: no I/O. SQL lives in packages/db.",
+                  "next": "packages/domain is framework-free.",
+                  "react": "packages/domain is framework-free."
+                },
+                "patterns": [
+                  {
+                    "group": [
+                      "@xd-memories/db/**",
+                      "@xd-memories/sources/**",
+                      "kysely/**",
+                      "pg/**",
+                      "next/**",
+                      "react/**"
+                    ],
+                    "message": "packages/domain is pure: no I/O or framework imports, subpaths included."
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
 }
