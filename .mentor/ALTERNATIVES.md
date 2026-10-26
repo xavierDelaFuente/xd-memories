@@ -48,6 +48,14 @@ its entry is **deleted** from this file. A reversed decision gets a fresh entry 
 **Verdict**: pending — Phase 4
 **Generalise**: any import that maps free-text rows onto canonical records
 
+### 2026-10-26 · xd-memories · No required approval on a solo repo
+
+**CODEX said**: Minimum gate on `main` — pull request required · 1 approval · branches up to date.
+**I did**: Pull request required · 0 approvals · branches up to date · four required checks · no bypass list.
+**Because**: GitHub does not let an author approve their own PR, so 1 approval on a solo repo either blocks every merge or forces an admin bypass — and a bypass also skips the checks, breaking "a red check blocks merge — including for you".
+**Verdict**: pending — Phase 0
+**Generalise**: any single-maintainer repo; reinstate 1 approval as soon as a second contributor exists
+
 ---
 
 ## Cross-project observations

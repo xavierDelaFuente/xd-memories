@@ -5,7 +5,7 @@ Each task names its first failing test. `U` = unit, `I` = integration, `E` = E2E
 ## Phase 0 — Repo & gate
 
 - 0.1 Create repo, push scaffold, `pnpm add` toolchain at current versions (see README)
-- 0.2 Branch protection: PR, 1 approval, up to date; checks test · type-check · lint · build
+- 0.2 Branch protection: PR, 0 approvals (solo — see ALTERNATIVES), up to date, no bypass; checks test · type-check · lint · build
 - 0.3 Domain boundary: `E`-less check — CI fails if `packages/domain` imports an I/O package
 - 0.4 Walking skeleton (`E`): home page renders "xd-memories" and is reachable by keyboard
 
