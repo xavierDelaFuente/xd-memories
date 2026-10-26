@@ -1,7 +1,7 @@
 # PROJECT — xd-memories
 
 **Type**: app (multi-process: web + worker)
-**Status**: Phase 1 of 10 — in progress. Phase 0 closed 2026-10-26.
+**Status**: Phase 2 of 10 — not started. Phases 0 and 1 closed 2026-10-26.
 **Repo**: https://github.com/xavierDelaFuente/xd-memories
 **Local**: C:\Users\XavierdelaFuenteQuin\Repos\personal\xd-memories
 
@@ -76,7 +76,7 @@ they resolve to current (CODEX: check versions before recommending).
 ## Phases
 
 - [x] 0 — Repo & gate: five required checks (test · type-check · lint · build · e2e), domain boundary lint, skip-link E2E, Vercel deploys
-- [ ] 1 — Domain core: Work, Creator, ExternalRef, Entry, Rating, Ordering — pure, in-memory fakes
+- [x] 1 — Domain core: Work, Creator + Credit, ExternalRef, Entry, Rating (0–100), Ordering — pure, 100% covered
 - [ ] 2 — Catalog: TMDB → Open Library → MusicBrainz adapters, per-media browse/search/filter, add to library
 - [ ] 3 — Library: status, progress, ratings, highlights, auth, RLS
 - [ ] 4 — Imports: job queue + worker, file importers, OAuth where available, match review
@@ -96,13 +96,16 @@ Phase 0 — toolchain at current versions (PR #1); `main` ruleset: PR, 0 approva
 up to date, five required checks, no bypass (PR #2); domain boundary as a Biome override (PR #3);
 walking skeleton — skip link + single `<main>` in the root layout, Playwright E2E in CI (PR #4);
 Vercel deploys from `apps/web`, preview per PR.
-Phase 1 — BACKLOG 1.1–1.6 green (49 tests, 100% coverage): `logStatus`, `createRating` /
+Phase 1 — BACKLOG 1.1–1.9 green (83 tests, 100% coverage): `logStatus`, `createRating` /
 `normalizeRating` / `displayRating`, `resolveRef` over an immutable `WorkIndex`, `progress` and
-named orderings. Expected failures are `Result` values, never throws. Specs live in `src/__test__/`.
-**In progress**: Phase 1 — `Work` and `Creator` are in the phase description but have no BACKLOG
-tasks yet. `ExternalRef.sourceVersion` is not modelled yet.
-**Next**: decide whether `Work` / `Creator` get Phase 1 tasks or arrive with the catalog in Phase 2,
-then close Phase 1. Domain takes `now` as an argument; it never reads the clock.
+named orderings, `createWork` (movie · series · book · album), `createCreator`, `addCredit`.
+Expected failures are `Result` values, never throws. Specs live in `src/__test__/`. Domain takes
+`now` and new ids as arguments; it never reads the clock or generates randomness.
+**In progress**: nothing.
+**Next**: write the Phase 2 BACKLOG (TMDB adapter first: recorded fixture, zod parse into `Work` +
+`ExternalRef`). Deferred, unscheduled chore: AI PR review, squash-only merges, conventional PR
+titles (changesets rejected — nothing is published). `ExternalRef.sourceVersion` arrives with the
+first adapter that fetches.
 
 ## Open Questions
 

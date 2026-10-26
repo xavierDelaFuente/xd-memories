@@ -1,10 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { createRating, displayRating, normalizeRating } from '../rating';
-
-const unwrap = <T, E>(result: { ok: true; value: T } | { ok: false; error: E }): T => {
-  if (!result.ok) throw new Error(`expected ok, got ${JSON.stringify(result.error)}`);
-  return result.value;
-};
+import { unwrap } from './helpers';
 
 describe('createRating', () => {
   it.each([0, 50, 100])('accepts %i', (value) => {
@@ -70,6 +66,21 @@ describe('normalizeRating', () => {
       ok: false,
       error: { kind: 'InvalidScale', min: input.min, max: input.max },
     });
+  });
+});
+
+describe('normalizeRating boundaries', () => {
+  it.each([
+    { min: 0, max: 5 },
+    { min: 1, max: 10 },
+    { min: -10, max: 10 },
+  ])('maps $min to 0 and $max to 100 on $min–$max', ({ min, max }) => {
+    expect(unwrap(normalizeRating({ value: min, min, max }))).toBe(0);
+    expect(unwrap(normalizeRating({ value: max, min, max }))).toBe(100);
+  });
+
+  it('handles scales with negative values: 0 of -10–10 is 50', () => {
+    expect(unwrap(normalizeRating({ value: 0, min: -10, max: 10 }))).toBe(50);
   });
 });
 

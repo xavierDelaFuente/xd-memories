@@ -1,4 +1,14 @@
 // Pure domain. No I/O: no HTTP, no database, no filesystem, no clock, no random.
+export {
+  addCredit,
+  type Creator,
+  type CreatorError,
+  type CreatorId,
+  type CreatorInput,
+  type Credit,
+  createCreator,
+  type Role,
+} from './creator';
 export { type Entry, type LogStatusInput, logStatus, type Status } from './entry';
 export {
   type ExternalRef,
@@ -26,5 +36,12 @@ export {
   type RatingError,
   type SourceScore,
 } from './rating';
-export type { Result } from './result';
-export type { WorkId } from './work';
+export { err, ok, type Result } from './result';
+export {
+  createWork,
+  type MediaType,
+  type Work,
+  type WorkError,
+  type WorkId,
+  type WorkInput,
+} from './work';

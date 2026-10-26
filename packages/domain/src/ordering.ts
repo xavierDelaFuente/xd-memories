@@ -1,4 +1,4 @@
-import type { Result } from './result';
+import { err, ok, type Result } from './result';
 import type { WorkId } from './work';
 
 export type Ordering = { name: string; workIds: readonly WorkId[] };
@@ -29,9 +29,9 @@ export const createSeries = (id: string): Series => ({ id, orderings: [] });
 
 export function addOrdering(series: Series, ordering: Ordering): Result<Series, OrderingError> {
   if (orderingNamed(series, ordering.name) !== undefined) {
-    return { ok: false, error: { kind: 'DuplicateOrdering', name: ordering.name } };
+    return err({ kind: 'DuplicateOrdering', name: ordering.name });
   }
-  return { ok: true, value: { ...series, orderings: [...series.orderings, ordering] } };
+  return ok({ ...series, orderings: [...series.orderings, ordering] });
 }
 
 export function orderingNamed(series: Series, name: string): Ordering | undefined {
