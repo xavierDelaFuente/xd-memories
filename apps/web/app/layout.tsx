@@ -12,7 +12,12 @@ export const viewport: Viewport = { themeColor: '#F7F5F1' };
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <a href="#main">Skip to content</a>
+        <main id="main" tabIndex={-1}>
+          {children}
+        </main>
+      </body>
     </html>
   );
 }

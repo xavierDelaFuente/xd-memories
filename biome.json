@@ -1,13 +1,11 @@
 {
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true
+  },
   "files": {
-    "includes": [
-      "**",
-      "!**/.next",
-      "!**/dist",
-      "!**/fixtures/**/*.json",
-      "!pnpm-lock.yaml",
-      "!**/next-env.d.ts"
-    ]
+    "includes": ["**", "!**/fixtures/**/*.json", "!pnpm-lock.yaml"]
   },
   "formatter": {
     "indentStyle": "space",
