@@ -1,7 +1,7 @@
 # PROJECT — xd-memories
 
 **Type**: app (multi-process: web + worker)
-**Status**: Phase 0 of 10 — in progress. Scaffold pushed to `main`.
+**Status**: Phase 1 of 10 — starting. Phase 0 closed 2026-10-26.
 **Repo**: https://github.com/xavierDelaFuente/xd-memories
 **Local**: C:\Users\XavierdelaFuenteQuin\Repos\personal\xd-memories
 
@@ -71,7 +71,7 @@ they resolve to current (CODEX: check versions before recommending).
 
 ## Phases
 
-- [ ] 0 — Repo & gate: workspace, CI (test · type-check · lint · build), Vercel preview, one green E2E
+- [x] 0 — Repo & gate: five required checks (test · type-check · lint · build · e2e), domain boundary lint, skip-link E2E, Vercel deploys
 - [ ] 1 — Domain core: Work, Creator, ExternalRef, Entry, Rating, Ordering — pure, in-memory fakes
 - [ ] 2 — Catalog: TMDB → Open Library → MusicBrainz adapters, per-media browse/search/filter, add to library
 - [ ] 3 — Library: status, progress, ratings, highlights, auth, RLS
@@ -88,11 +88,13 @@ Full rationale, reorder notes and future phases: `docs/PHASES.md`.
 ## Current State
 
 **Done**: Scaffold (configs, empty packages, mentor files). Screens v1 designed (`xd-memories Screens.dc.html`).
-0.1 — toolchain installed at current versions, CI green on `main` (PR #1).
-0.2 — `main` ruleset: PR, 0 approvals (see ALTERNATIVES), up to date, four required checks, no bypass (PR #2).
-**In progress**: 0.3 — domain boundary as a Biome override in `biome.json` (Node built-ins, db, sources, kysely, pg, next, react — subpaths included).
-**Next**: 0.4 walking skeleton E2E + Vercel preview. Then Phase 1
-opens with a failing test for `Entry` (BACKLOG 1.1).
+Phase 0 — toolchain at current versions (PR #1); `main` ruleset: PR, 0 approvals (see ALTERNATIVES),
+up to date, five required checks, no bypass (PR #2); domain boundary as a Biome override (PR #3);
+walking skeleton — skip link + single `<main>` in the root layout, Playwright E2E in CI (PR #4);
+Vercel deploys from `apps/web`, preview per PR.
+**In progress**: nothing.
+**Next**: Phase 1 — failing unit test for `Entry` (BACKLOG 1.1). Domain takes `now` as an argument;
+it never reads the clock.
 
 ## Open Questions
 
