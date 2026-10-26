@@ -85,25 +85,31 @@ already graduated into the CODEX. Only PROJECT.md is genuinely new.
 **Local**: <path>
 
 ## Stack
+
 <language, framework, package manager, test runner, build, styling, CI, deploy>
 
 ## Architecture Decisions
+
 | Decision | Choice | Why |
-|---|---|---|
+| -------- | ------ | --- |
 
 ## Constraints
+
 <anything that limits choices: browser support, bundle budget, team size, deadline>
 
 ## Phases
+
 - [x] <phase 1> — <one line on what shipped>
 - [ ] <phase 2> — <what it covers>
 
 ## Current State
+
 **Done**: <what exists and works>
 **In progress**: <what you are mid-way through>
 **Next**: <the immediate next step>
 
 ## Open Questions
+
 <things you have not decided yet>
 ```
 
@@ -114,6 +120,6 @@ already graduated into the CODEX. Only PROJECT.md is genuinely new.
 - **MENTOR_CODEX** grows when a decision proves itself in practice — working, with reasoning that
   generalises. No project-count gate. That is the file that carries learning between repos.
 - **PROJECT.md** changes every phase. Keep it under ~150 lines; it is state, not history.
-- **ALTERNATIVES.md** holds only *unproven* overrides. When one graduates into the CODEX, delete
+- **ALTERNATIVES.md** holds only _unproven_ overrides. When one graduates into the CODEX, delete
   its entry. A reversed decision gets a fresh entry saying so. The file starts empty in a new repo.
 - Everything is committed. `git log .mentor/` is the story of how you learned.

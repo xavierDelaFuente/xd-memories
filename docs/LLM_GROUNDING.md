@@ -9,13 +9,13 @@ CODEX Part 2, Non-deterministic components applies in full. This file is how.
 
 ## Tools the model may call
 
-| Tool | Returns | Computed by |
-|---|---|---|
-| `get_profile()` | library summary, ratings, highlights, current progress | db + domain |
-| `get_ordering(seriesId)` | named orderings + user position → spoiler horizon | domain |
-| `find_candidates(workId, facets)` | candidates from groups, tags, co-consumption, with `n` | domain |
-| `rank(candidates, profile)` | ordered list with score components | domain — never the model |
-| `search_catalog(query, type)` | works from catalog/cache | sources |
+| Tool                              | Returns                                                | Computed by              |
+| --------------------------------- | ------------------------------------------------------ | ------------------------ |
+| `get_profile()`                   | library summary, ratings, highlights, current progress | db + domain              |
+| `get_ordering(seriesId)`          | named orderings + user position → spoiler horizon      | domain                   |
+| `find_candidates(workId, facets)` | candidates from groups, tags, co-consumption, with `n` | domain                   |
+| `rank(candidates, profile)`       | ordered list with score components                     | domain — never the model |
+| `search_catalog(query, type)`     | works from catalog/cache                               | sources                  |
 
 ## Rules
 

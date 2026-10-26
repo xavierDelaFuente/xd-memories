@@ -6,7 +6,11 @@
   "scripts": {
     "start": "tsx src/main.ts",
     "test": "vitest run --passWithNoTests",
-    "type-check": "tsc -b --noEmit",
+    "type-check": "tsc -b",
     "build": "tsc -b"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.5",
+    "tsx": "^4.23.15"
   }
 }

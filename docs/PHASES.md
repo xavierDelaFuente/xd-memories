@@ -41,19 +41,19 @@
 
 ## Phase plan
 
-| # | Phase | Brief origin | Ships |
-|---|---|---|---|
-| 0 | Repo & gate | — | CI, preview deploys, one green E2E |
-| 1 | Domain core | — | Pure types + rules, in-memory fakes |
-| 2 | Catalog | Data 1 | Per-media browse/search/filter, add to library |
-| 3 | Library | Data 4 (ratings, highlights) | Status, progress, ratings, auth |
-| 4 | Imports | Data 3 | File + OAuth importers, match review |
-| 5 | Series & orders | LLM "reading order", as data | Author page, named orderings |
-| 6 | Community catalog | Data 2 | Create works + creators, dedupe, history |
-| 7 | Groups & links | Data 4 (link/group) | Cross-media groups, related-from-groups |
-| 8 | Recommendations v1 | Data 4 (ask) | Deterministic ranker, "ask" with filters |
-| 9 | LLM recommender | LLM 1 + 2 | Profile tool, clarifying question, citations, evals |
-| 10 | Journey | LLM 2 (roadmap) | Threads-over-time map, road ahead |
+| #   | Phase              | Brief origin                 | Ships                                               |
+| --- | ------------------ | ---------------------------- | --------------------------------------------------- |
+| 0   | Repo & gate        | —                            | CI, preview deploys, one green E2E                  |
+| 1   | Domain core        | —                            | Pure types + rules, in-memory fakes                 |
+| 2   | Catalog            | Data 1                       | Per-media browse/search/filter, add to library      |
+| 3   | Library            | Data 4 (ratings, highlights) | Status, progress, ratings, auth                     |
+| 4   | Imports            | Data 3                       | File + OAuth importers, match review                |
+| 5   | Series & orders    | LLM "reading order", as data | Author page, named orderings                        |
+| 6   | Community catalog  | Data 2                       | Create works + creators, dedupe, history            |
+| 7   | Groups & links     | Data 4 (link/group)          | Cross-media groups, related-from-groups             |
+| 8   | Recommendations v1 | Data 4 (ask)                 | Deterministic ranker, "ask" with filters            |
+| 9   | LLM recommender    | LLM 1 + 2                    | Profile tool, clarifying question, citations, evals |
+| 10  | Journey            | LLM 2 (roadmap)              | Threads-over-time map, road ahead                   |
 
 Each phase ends usable. Phase 2 is the first a human can use; Phase 4 the first that saves real time.
 
@@ -61,7 +61,7 @@ Each phase ends usable. Phase 2 is the first a human can use; Phase 4 the first 
 
 - **Release radar** — notify when a followed saga, creator or series gets a new entry.
 - **Where to watch / read / listen** — availability per region (TMDB providers, attribution).
-- **Social** — follow people, public profile, shareable lists, recommendations *to* a friend.
+- **Social** — follow people, public profile, shareable lists, recommendations _to_ a friend.
 - **More media** — podcasts, video games (IGDB), comics/manga/anime (AniList), audiobooks.
 - **Stats & year-in-review** — the append-only entries make this nearly free.
 - **Native app** (Expo) reusing `packages/domain` + `contracts`; needs `apps/api` extracted.

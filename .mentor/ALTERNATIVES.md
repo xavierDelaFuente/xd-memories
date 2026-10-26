@@ -25,6 +25,7 @@ its entry is **deleted** from this file. A reversed decision gets a fresh entry 
 ## Entries
 
 ### 2026-10-01 · xd-memories · Job execution on a €0 budget (gap filled)
+
 **CODEX said**: nothing — no rule for where background jobs run.
 **I did**: `jobs` table in Postgres (idempotent, resumable); `apps/worker` runs as a GitHub Actions job started by `workflow_dispatch` when a user asks for a sync.
 **Because**: Free always-on workers barely exist; syncs are user-triggered, so ~30 s start latency is acceptable. Public repo → unlimited minutes.
@@ -32,6 +33,7 @@ its entry is **deleted** from this file. A reversed decision gets a fresh entry 
 **Generalise**: any user-triggered, minutes-long job in a €0 project; not for anything needing sub-second start
 
 ### 2026-10-01 · xd-memories · User-generated catalog data (gap filled)
+
 **CODEX said**: External data rules cover third-party sources; nothing on data users create.
 **I did**: Treat users as one more source: same schema validation, `source = 'community'`, provenance per field, append-only edit history, duplicate check before public.
 **Because**: Community rows are as untrusted as an API response, and edits must be reversible.
@@ -39,6 +41,7 @@ its entry is **deleted** from this file. A reversed decision gets a fresh entry 
 **Generalise**: any app where users contribute shared records
 
 ### 2026-10-01 · xd-memories · Entity matching with a human queue (gap filled)
+
 **CODEX said**: nothing on reconciling records from different sources.
 **I did**: Matching is a pure domain scorer with fixture-driven tests; scores below a threshold go to a review queue, never auto-merge.
 **Because**: A wrong merge silently corrupts a library; a review item costs one tap.

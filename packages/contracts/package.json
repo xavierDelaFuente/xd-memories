@@ -8,6 +8,9 @@
   "scripts": {
     "build": "tsc -b",
     "test": "vitest run --passWithNoTests",
-    "type-check": "tsc -b --noEmit"
+    "type-check": "tsc -b"
+  },
+  "dependencies": {
+    "zod": "^4.6.7"
   }
 }

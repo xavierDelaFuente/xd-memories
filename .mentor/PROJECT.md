@@ -30,30 +30,30 @@ they resolve to current (CODEX: check versions before recommending).
 
 ## Architecture Decisions
 
-| Decision | Choice | Why |
-|---|---|---|
-| Workspace shape | `apps/` + `packages/` | Web (request) and worker (long, rate-limited jobs) differ in runtime and cadence, and share domain types — CODEX deployable-units tree, both yes |
-| No `apps/api` | Next route handlers are the API | One client today. Contracts live in `packages/contracts`, so extracting an API for a native app later is cheap |
-| Catalog strategy | Search-through + cache-on-save, never mirror | "All media that exists" breaks every free tier and most terms. Search proxies to the source; a work is stored (raw payload + parsed) the first time anyone saves it |
-| Movies & series | TMDB; IMDb id kept as a cross-reference only | IMDb has no free API and its datasets are personal/non-commercial use. TMDB is free with attribution and returns IMDb ids |
-| Books | Open Library primary, Google Books fallback, Wikidata for series ordinals | See `docs/DATA_SOURCES.md` |
-| Music | MusicBrainz + Cover Art Archive; trackable unit = release group (album) | Open data, no key. 1 req/s budget → rate limiter is domain logic |
-| Domain identity | Own `WorkId`; many `ExternalRef { source, externalId, sourceVersion }` per work | Same work arrives from TMDB, an import and a user. The domain is never keyed on a vendor id |
-| Consumption | Append-only `entries` (status change, progress, re-read) | History, not a boolean. Carried from watchlog |
-| Rating vs highlight | Separate: rating is private signal, highlight is a public recommendation | Users rate what they would not recommend to others |
-| Orderings | Named orderings per series (publication · chronological · recommended), each with provenance | A saga has more than one valid order. "Saga 2 — Book 1" is an ordering, not a field on a book |
-| Community works | Same `works` table, `source = 'community'`, provenance + edit history; duplicate check before public | One query path; users cannot tell or care which source a work came from |
-| Platform sync | User-triggered imports. File upload first; OAuth only where a first-party API exists; never stored passwords | Most platforms have no API. Credential scraping breaks terms and means holding user passwords |
-| Matching | Pure scoring function in domain; below threshold → human review queue | An import is only as good as its matching |
-| Job execution | `jobs` table in Postgres; worker run on demand by GitHub Actions | €0 and user-triggered. ALTERNATIVES, gap filled |
-| Recommendations | Deterministic ranker first (Phase 8); LLM picks tools and phrases (Phase 9) | CODEX: the model never computes, never recalls |
-| Reading order | Data decides (Wikidata + community orderings); model may only explain an order it was handed | Asking the model to "analyse the author" is recall — confidently wrong on newer books |
-| LLM provider | `Recommender` port; Groq in prod, Ollama locally, deterministic fallback when throttled | Free. A throttled model degrades, never errors |
-| Multi-tenancy | Postgres RLS on `auth.uid()` for every user-owned table | An app bug cannot leak another library. Carried from watchlog |
-| Secrets | Server only. A test asserts none reach the client bundle | TMDB, Groq and OAuth secrets |
-| E2E | Playwright, one flow per feature | CODEX budget. watchlog's Cypress choice not carried |
-| Styling | Tailwind (CODEX app default) | See Open Question 7 |
-| Mobile | Responsive web + PWA now; native (Expo) later reusing `packages/*` | Cheapest path to a phone |
+| Decision            | Choice                                                                                                       | Why                                                                                                                                                                 |
+| ------------------- | ------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Workspace shape     | `apps/` + `packages/`                                                                                        | Web (request) and worker (long, rate-limited jobs) differ in runtime and cadence, and share domain types — CODEX deployable-units tree, both yes                    |
+| No `apps/api`       | Next route handlers are the API                                                                              | One client today. Contracts live in `packages/contracts`, so extracting an API for a native app later is cheap                                                      |
+| Catalog strategy    | Search-through + cache-on-save, never mirror                                                                 | "All media that exists" breaks every free tier and most terms. Search proxies to the source; a work is stored (raw payload + parsed) the first time anyone saves it |
+| Movies & series     | TMDB; IMDb id kept as a cross-reference only                                                                 | IMDb has no free API and its datasets are personal/non-commercial use. TMDB is free with attribution and returns IMDb ids                                           |
+| Books               | Open Library primary, Google Books fallback, Wikidata for series ordinals                                    | See `docs/DATA_SOURCES.md`                                                                                                                                          |
+| Music               | MusicBrainz + Cover Art Archive; trackable unit = release group (album)                                      | Open data, no key. 1 req/s budget → rate limiter is domain logic                                                                                                    |
+| Domain identity     | Own `WorkId`; many `ExternalRef { source, externalId, sourceVersion }` per work                              | Same work arrives from TMDB, an import and a user. The domain is never keyed on a vendor id                                                                         |
+| Consumption         | Append-only `entries` (status change, progress, re-read)                                                     | History, not a boolean. Carried from watchlog                                                                                                                       |
+| Rating vs highlight | Separate: rating is private signal, highlight is a public recommendation                                     | Users rate what they would not recommend to others                                                                                                                  |
+| Orderings           | Named orderings per series (publication · chronological · recommended), each with provenance                 | A saga has more than one valid order. "Saga 2 — Book 1" is an ordering, not a field on a book                                                                       |
+| Community works     | Same `works` table, `source = 'community'`, provenance + edit history; duplicate check before public         | One query path; users cannot tell or care which source a work came from                                                                                             |
+| Platform sync       | User-triggered imports. File upload first; OAuth only where a first-party API exists; never stored passwords | Most platforms have no API. Credential scraping breaks terms and means holding user passwords                                                                       |
+| Matching            | Pure scoring function in domain; below threshold → human review queue                                        | An import is only as good as its matching                                                                                                                           |
+| Job execution       | `jobs` table in Postgres; worker run on demand by GitHub Actions                                             | €0 and user-triggered. ALTERNATIVES, gap filled                                                                                                                     |
+| Recommendations     | Deterministic ranker first (Phase 8); LLM picks tools and phrases (Phase 9)                                  | CODEX: the model never computes, never recalls                                                                                                                      |
+| Reading order       | Data decides (Wikidata + community orderings); model may only explain an order it was handed                 | Asking the model to "analyse the author" is recall — confidently wrong on newer books                                                                               |
+| LLM provider        | `Recommender` port; Groq in prod, Ollama locally, deterministic fallback when throttled                      | Free. A throttled model degrades, never errors                                                                                                                      |
+| Multi-tenancy       | Postgres RLS on `auth.uid()` for every user-owned table                                                      | An app bug cannot leak another library. Carried from watchlog                                                                                                       |
+| Secrets             | Server only. A test asserts none reach the client bundle                                                     | TMDB, Groq and OAuth secrets                                                                                                                                        |
+| E2E                 | Playwright, one flow per feature                                                                             | CODEX budget. watchlog's Cypress choice not carried                                                                                                                 |
+| Styling             | Tailwind (CODEX app default)                                                                                 | See Open Question 7                                                                                                                                                 |
+| Mobile              | Responsive web + PWA now; native (Expo) later reusing `packages/*`                                           | Cheapest path to a phone                                                                                                                                            |
 
 ## Constraints
 
