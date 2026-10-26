@@ -88,10 +88,10 @@ Full rationale, reorder notes and future phases: `docs/PHASES.md`.
 ## Current State
 
 **Done**: Scaffold (configs, empty packages, mentor files). Screens v1 designed (`xd-memories Screens.dc.html`).
-**In progress**: nothing.
-**Next**: Phase 0 — create the repo, `pnpm add` the toolchain at current versions, branch
-protection, confirm all four checks go green on an empty PR. Then Phase 1 opens with a failing
-test for `Entry` (BACKLOG 1.1).
+0.1 — toolchain installed at current versions, CI green on `main` (PR #1).
+**In progress**: 0.2 — branch protection on `main` (0 approvals, see ALTERNATIVES); action versions bumped.
+**Next**: 0.3 domain boundary check, then 0.4 walking skeleton E2E + Vercel preview. Then Phase 1
+opens with a failing test for `Entry` (BACKLOG 1.1).
 
 ## Open Questions
 
