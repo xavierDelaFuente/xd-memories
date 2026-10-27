@@ -1,9 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import { type CatalogItem, inMemoryCatalog } from '../catalog';
 
-const item = (id: string, mediaType: CatalogItem['work']['mediaType'], title: string) => ({
-  work: { id, mediaType, title },
-  ref: { source: 'fixture', externalId: id },
+const item = (externalId: string, mediaType: CatalogItem['mediaType'], title: string) => ({
+  ref: { source: 'fixture', externalId },
+  mediaType,
+  title,
 });
 
 const matrix = item('m1', 'movie', 'The Matrix');

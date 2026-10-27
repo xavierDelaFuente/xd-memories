@@ -5,7 +5,7 @@
   "version": "0.0.0",
   "scripts": {
     "start": "tsx src/main.ts",
-    "test": "vitest run --dir src --passWithNoTests",
+    "test": "vitest run --passWithNoTests",
     "type-check": "tsc -b",
     "build": "tsc -b"
   },

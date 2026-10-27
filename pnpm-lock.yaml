@@ -83,10 +83,20 @@ importers:
   packages/domain: {}
 
   packages/sources:
+    dependencies:
+      '@xd-memories/domain':
+        specifier: workspace:*
+        version: link:../domain
+      zod:
+        specifier: ^4.6.7
+        version: 4.6.7
     devDependencies:
       '@types/node':
         specifier: ^26.6.5
         version: 26.6.5
+      tsx:
+        specifier: ^4.23.15
+        version: 4.23.15
 
 packages:
 

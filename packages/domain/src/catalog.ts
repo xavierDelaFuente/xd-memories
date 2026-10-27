@@ -4,7 +4,7 @@ import type { MediaType, Work } from './work';
 
 export type CatalogQuery = { mediaType: MediaType; query: string };
 
-export type CatalogItem = { work: Work; ref: ExternalRef };
+export type CatalogItem = Omit<Work, 'id'> & { ref: ExternalRef };
 
 export type SourceError =
   | { kind: 'SourceUnavailable' }
@@ -20,7 +20,7 @@ export function inMemoryCatalog(items: readonly CatalogItem[]): CatalogSource {
       const needle = query.toLowerCase();
       return ok(
         items.filter(
-          ({ work }) => work.mediaType === mediaType && work.title.toLowerCase().includes(needle),
+          (item) => item.mediaType === mediaType && item.title.toLowerCase().includes(needle),
         ),
       );
     },
