@@ -1,5 +1,12 @@
 // Pure domain. No I/O: no HTTP, no database, no filesystem, no clock, no random.
 export {
+  type CatalogItem,
+  type CatalogQuery,
+  type CatalogSource,
+  inMemoryCatalog,
+  type SourceError,
+} from './catalog';
+export {
   addCredit,
   type Creator,
   type CreatorError,
