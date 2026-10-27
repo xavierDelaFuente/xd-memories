@@ -28,7 +28,7 @@ Movies end to end first; books and music reuse the path.
 - 2.1 `CatalogSource` port (`U`): an in-memory catalog returns only items of the requested media type whose title matches the query
 - 2.2 TMDB parse (`U`, recorded fixture): a movie search response parses into catalog items with a `tmdb` ref (no IMDb id in search — it comes with the detail page; `sourceVersion` is stored with the raw payload in Phase 3)
 - 2.3 TMDB parse (`U`): a malformed payload is a typed error, never a cast; TV results map to `series`
-- 2.4 TMDB client (`U`): the request carries the token and the query; `fetch` is injected, no network
+- 2.4 TMDB client (`U`): the request carries the token and the query; `fetch` is injected, no network; failures are typed (UnsupportedMediaType · Unauthorized · RateLimited · RequestRejected · SourceUnavailable · InvalidResponse)
 - 2.5 Contracts (`U`): `CatalogSearchQuery` accepts a known media type and a non-blank query
 - 2.6 Catalog page (`E`): `/catalog/movies?q=matrix` lists results by keyboard and shows TMDB attribution; E2E uses the fixture adapter
 - 2.7 Open Library parse (`U`, recorded fixture): a search result parses into a book `Work` keyed on the work, not the edition
