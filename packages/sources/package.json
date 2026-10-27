@@ -7,11 +7,16 @@
   "types": "./src/index.ts",
   "scripts": {
     "build": "tsc -b",
-    "test": "vitest run --dir src --passWithNoTests",
+    "test": "vitest run",
     "type-check": "tsc -b",
-    "record-fixtures": "tsx scripts/record.ts"
+    "record-fixtures": "tsx --env-file=../../.env scripts/record.ts"
   },
   "devDependencies": {
-    "@types/node": "^26.6.5"
+    "@types/node": "^26.6.5",
+    "tsx": "^4.23.15"
+  },
+  "dependencies": {
+    "@xd-memories/domain": "workspace:*",
+    "zod": "^4.6.7"
   }
 }
