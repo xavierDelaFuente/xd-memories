@@ -77,8 +77,8 @@ they resolve to current (CODEX: check versions before recommending).
 
 - [x] 0 — Repo & gate: five required checks (test · type-check · lint · build · e2e), domain boundary lint, skip-link E2E, Vercel deploys
 - [x] 1 — Domain core: Work, Creator + Credit, ExternalRef, Entry, Rating (0–100), Ordering — pure, 100% covered
-- [ ] 2 — Catalog: TMDB → Open Library → MusicBrainz adapters, per-media browse/search/filter, add to library
-- [ ] 3 — Library: status, progress, ratings, highlights, auth, RLS
+- [ ] 2 — Catalog (read-only): `CatalogSource` port, TMDB → Open Library → MusicBrainz adapters, per-media search
+- [ ] 3 — Library: add to library (cache-on-save), status, progress, ratings, highlights, auth, RLS
 - [ ] 4 — Imports: job queue + worker, file importers, OAuth where available, match review
 - [ ] 5 — Series & reading orders: Wikidata ordinals, named orderings, author page
 - [ ] 6 — Community catalog: create works + creators, required fields, dedupe, edit history, reports
