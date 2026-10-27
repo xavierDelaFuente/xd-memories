@@ -1,38 +1,47 @@
-import { type CatalogItem, err, ok, type Result, type SourceError } from '@xd-memories/domain';
+import {
+  type CatalogItem,
+  err,
+  type MediaType,
+  ok,
+  type Result,
+  type SourceError,
+} from '@xd-memories/domain';
 import { z } from 'zod';
 
-const MovieSearchSchema = z.object({
-  results: z.array(z.object({ id: z.number(), title: z.string() })),
-});
+type SearchKind = {
+  path: 'movie' | 'tv';
+  mediaType: MediaType;
+  result: z.ZodType<{ id: number; title: string }>;
+};
 
-const TvSearchSchema = z.object({
-  results: z.array(z.object({ id: z.number(), name: z.string() })),
-});
+const MOVIE: SearchKind = {
+  path: 'movie',
+  mediaType: 'movie',
+  result: z.object({ id: z.number(), title: z.string() }),
+};
 
-export function parseMovieSearch(json: unknown): Result<CatalogItem[], SourceError> {
-  const parsed = MovieSearchSchema.safeParse(json);
+const TV: SearchKind = {
+  path: 'tv',
+  mediaType: 'series',
+  result: z
+    .object({ id: z.number(), name: z.string() })
+    .transform(({ id, name }) => ({ id, title: name })),
+};
+
+function parseSearch(json: unknown, kind: SearchKind): Result<CatalogItem[], SourceError> {
+  const parsed = z.object({ results: z.array(kind.result) }).safeParse(json);
   if (!parsed.success) return err({ kind: 'InvalidResponse', detail: parsed.error.message });
   return ok(
     parsed.data.results.map(
-      (movie): CatalogItem => ({
-        ref: { source: 'tmdb', externalId: `movie/${movie.id}` },
-        mediaType: 'movie',
-        title: movie.title,
+      ({ id, title }): CatalogItem => ({
+        ref: { source: 'tmdb', externalId: `${kind.path}/${id}` },
+        mediaType: kind.mediaType,
+        title,
       }),
     ),
   );
 }
 
-export function parseTvSearch(json: unknown): Result<CatalogItem[], SourceError> {
-  const parsed = TvSearchSchema.safeParse(json);
-  if (!parsed.success) return err({ kind: 'InvalidResponse', detail: parsed.error.message });
-  return ok(
-    parsed.data.results.map(
-      (show): CatalogItem => ({
-        ref: { source: 'tmdb', externalId: `tv/${show.id}` },
-        mediaType: 'series',
-        title: show.name,
-      }),
-    ),
-  );
-}
+export const parseMovieSearch = (json: unknown) => parseSearch(json, MOVIE);
+
+export const parseTvSearch = (json: unknown) => parseSearch(json, TV);

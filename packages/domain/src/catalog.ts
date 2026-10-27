@@ -7,6 +7,10 @@ export type CatalogQuery = { mediaType: MediaType; query: string };
 export type CatalogItem = Omit<Work, 'id'> & { ref: ExternalRef };
 
 export type SourceError =
+  | { kind: 'UnsupportedMediaType'; mediaType: MediaType }
+  | { kind: 'Unauthorized' }
+  | { kind: 'RateLimited'; retryAfterSeconds: number | null }
+  | { kind: 'RequestRejected'; status: number }
   | { kind: 'SourceUnavailable' }
   | { kind: 'InvalidResponse'; detail: string };
 
