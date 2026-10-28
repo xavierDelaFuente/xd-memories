@@ -1,36 +1,42 @@
 import { describe, expect, it } from 'vitest';
+import { unwrap } from '../../__test__/helpers';
 import movieSearch from '../fixtures/search-movie-matrix.json' with { type: 'json' };
 import tvSearch from '../fixtures/search-tv-matrix.json' with { type: 'json' };
 import { parseMovieSearch, parseTvSearch } from '../parse';
 
 describe('parseMovieSearch (recorded TMDB response)', () => {
   it('parses a result into a catalog item with a TMDB ref', () => {
-    const result = parseMovieSearch(movieSearch);
+    const items = unwrap(parseMovieSearch(movieSearch));
 
-    expect(result.ok && result.value[0]).toEqual({
+    expect(items[0]).toEqual({
       ref: { source: 'tmdb', externalId: 'movie/603' },
       mediaType: 'movie',
       title: 'The Matrix',
     });
   });
 
-  it('parses every result on the page, in TMDB order', () => {
-    const result = parseMovieSearch(movieSearch);
+  it('keeps TMDB order', () => {
+    const items = unwrap(parseMovieSearch(movieSearch));
 
-    expect(result.ok && result.value.map((item) => item.title).slice(0, 3)).toEqual([
+    expect(items.slice(0, 3).map((item) => item.title)).toEqual([
       'The Matrix',
       'The Matrix Reloaded',
       'The Matrix Resurrections',
     ]);
-    expect(result.ok && result.value).toHaveLength(movieSearch.results.length);
+  });
+
+  it('parses every result on the page', () => {
+    const items = unwrap(parseMovieSearch(movieSearch));
+
+    expect(items).toHaveLength(movieSearch.results.length);
   });
 });
 
 describe('parseTvSearch (recorded TMDB response)', () => {
   it('parses a TV result into a series, using its name as the title', () => {
-    const result = parseTvSearch(tvSearch);
+    const items = unwrap(parseTvSearch(tvSearch));
 
-    expect(result.ok && result.value[0]).toEqual({
+    expect(items[0]).toEqual({
       ref: { source: 'tmdb', externalId: 'tv/711' },
       mediaType: 'series',
       title: 'Threat Matrix',
@@ -38,40 +44,42 @@ describe('parseTvSearch (recorded TMDB response)', () => {
   });
 
   it('parses every result, including shows with no first air date', () => {
-    const result = parseTvSearch(tvSearch);
+    const items = unwrap(parseTvSearch(tvSearch));
 
-    expect(result.ok && result.value).toHaveLength(tvSearch.results.length);
+    expect(items).toHaveLength(tvSearch.results.length);
   });
 });
 
 describe('TMDB identity', () => {
   it('a movie and a TV show with the same TMDB number are different refs', () => {
-    const movie = parseMovieSearch({ results: [{ id: 1399, title: 'A movie' }] });
-    const show = parseTvSearch({ results: [{ id: 1399, name: 'A show' }] });
+    const [movie] = unwrap(parseMovieSearch({ results: [{ id: 1399, title: 'A movie' }] }));
 
-    expect(movie.ok && movie.value[0]?.ref).not.toEqual(show.ok && show.value[0]?.ref);
+    const [show] = unwrap(parseTvSearch({ results: [{ id: 1399, name: 'A show' }] }));
+
+    expect(movie?.ref).not.toEqual(show?.ref);
   });
 });
 
 describe('malformed responses are typed errors, never casts or crashes', () => {
-  it.each([
-    ['null', null],
-    ['a string', 'not json'],
-    ['no results field', { page: 1 }],
-    ['results that is not a list', { results: 'nope' }],
-    ['an id that is not a number', { results: [{ id: '603', title: 'The Matrix' }] }],
-    ['a movie without a title', { results: [{ id: 603 }] }],
-  ])('movie search: %s', (_case, payload) => {
-    expect(parseMovieSearch(payload)).toEqual({
-      ok: false,
-      error: { kind: 'InvalidResponse', detail: expect.any(String) },
-    });
+  const invalid = { ok: false, error: { kind: 'InvalidResponse', detail: expect.any(String) } };
+
+  it.each`
+    case                            | payload
+    ${'null'}                       | ${null}
+    ${'a string'}                   | ${'not json'}
+    ${'no results field'}           | ${{ page: 1 }}
+    ${'results that is not a list'} | ${{ results: 'nope' }}
+    ${'an id that is not a number'} | ${{ results: [{ id: '603', title: 'The Matrix' }] }}
+    ${'a movie without a title'}    | ${{ results: [{ id: 603 }] }}
+  `('movie search: $case', ({ payload }: { payload: unknown }) => {
+    const result = parseMovieSearch(payload);
+
+    expect(result).toEqual(invalid);
   });
 
   it('tv search: a show without a name', () => {
-    expect(parseTvSearch({ results: [{ id: 711, title: 'Threat Matrix' }] })).toEqual({
-      ok: false,
-      error: { kind: 'InvalidResponse', detail: expect.any(String) },
-    });
+    const result = parseTvSearch({ results: [{ id: 711, title: 'Threat Matrix' }] });
+
+    expect(result).toEqual(invalid);
   });
 });

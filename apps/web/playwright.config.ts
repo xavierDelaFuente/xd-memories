@@ -7,6 +7,7 @@ export default defineConfig({
     command: 'pnpm build && pnpm start',
     port: 3000,
     reuseExistingServer: !process.env.CI,
+    env: { CATALOG_SOURCE: 'fixtures' },
   },
   use: { baseURL: 'http://localhost:3000' },
 });

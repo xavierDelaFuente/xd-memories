@@ -17,60 +17,83 @@ const seriesWith = (...orderings: Ordering[]): Series =>
 
 describe('progress', () => {
   it('with nothing done, position is 0 and next is the first work', () => {
-    expect(progress(publication, [])).toEqual({
-      position: 0,
-      next: { position: 1, workId: 'w1' },
-    });
+    const result = progress(publication, []);
+
+    expect(result).toEqual({ position: 0, next: { position: 1, workId: 'w1' } });
   });
 
   it('position is the highest done position, even with gaps; next is the work after it', () => {
-    expect(progress(publication, ['w1', 'w2'])).toEqual({
-      position: 2,
-      next: { position: 3, workId: 'w3' },
-    });
+    const result = progress(publication, ['w1', 'w2']);
+
+    expect(result).toEqual({ position: 2, next: { position: 3, workId: 'w3' } });
   });
 
   it('when the last work is done, the reader is caught up: next is null', () => {
-    expect(progress(publication, ['w1', 'w3'])).toEqual({ position: 3, next: null });
+    const result = progress(publication, ['w1', 'w3']);
+
+    expect(result).toEqual({ position: 3, next: null });
   });
 
   it('an empty ordering has nothing next', () => {
-    expect(progress({ name: 'publication', workIds: [] }, [])).toEqual({ position: 0, next: null });
+    const result = progress({ name: 'publication', workIds: [] }, []);
+
+    expect(result).toEqual({ position: 0, next: null });
   });
 
   it('does not depend on the order the works were done in', () => {
-    expect(progress(publication, ['w2', 'w1'])).toEqual(progress(publication, ['w1', 'w2']));
+    const forwards = progress(publication, ['w1', 'w2']);
+
+    const backwards = progress(publication, ['w2', 'w1']);
+
+    expect(backwards).toEqual(forwards);
   });
 
   it('ignores done works that are not part of the ordering', () => {
-    expect(progress(publication, ['w1', 'other-saga'])).toEqual({
-      position: 1,
-      next: { position: 2, workId: 'w2' },
-    });
+    const result = progress(publication, ['w1', 'other-saga']);
+
+    expect(result).toEqual({ position: 1, next: { position: 2, workId: 'w2' } });
   });
 
-  it('the same reading history gives a different position in each ordering', () => {
-    const done = ['w2'];
+  it.each`
+    ordering         | position
+    ${publication}   | ${2}
+    ${chronological} | ${1}
+  `(
+    'the same reading history is position $position in the $ordering.name ordering',
+    ({ ordering, position }: { ordering: Ordering; position: number }) => {
+      const result = progress(ordering, ['w2']);
 
-    expect(progress(publication, done).position).toBe(2);
-    expect(progress(chronological, done).position).toBe(1);
-  });
+      expect(result.position).toBe(position);
+    },
+  );
 });
 
 describe('series orderings', () => {
-  it('a series holds several named orderings without conflict', () => {
-    const series = seriesWith(publication, chronological);
+  it.each`
+    name               | ordering
+    ${'publication'}   | ${publication}
+    ${'chronological'} | ${chronological}
+  `(
+    'a series with several orderings finds the $name one',
+    ({ name, ordering }: { name: string; ordering: Ordering }) => {
+      const series = seriesWith(publication, chronological);
 
-    expect(orderingNamed(series, 'publication')).toEqual(publication);
-    expect(orderingNamed(series, 'chronological')).toEqual(chronological);
-  });
+      const found = orderingNamed(series, name);
+
+      expect(found).toEqual(ordering);
+    },
+  );
 
   it('a new series has no orderings', () => {
-    expect(orderingNamed(createSeries('s1'), 'publication')).toBeUndefined();
+    const found = orderingNamed(createSeries('s1'), 'publication');
+
+    expect(found).toBeUndefined();
   });
 
   it('an unknown ordering name returns undefined', () => {
-    expect(orderingNamed(seriesWith(publication), 'recommended')).toBeUndefined();
+    const found = orderingNamed(seriesWith(publication), 'recommended');
+
+    expect(found).toBeUndefined();
   });
 
   it('adding an ordering never mutates the original series', () => {
@@ -90,6 +113,14 @@ describe('series orderings', () => {
       ok: false,
       error: { kind: 'DuplicateOrdering', name: 'publication' },
     });
-    expect(orderingNamed(series, 'publication')).toEqual(publication);
+  });
+
+  it('a rejected duplicate leaves the existing ordering in place', () => {
+    const series = seriesWith(publication);
+    addOrdering(series, { name: 'publication', workIds: ['w3', 'w2', 'w1'] });
+
+    const found = orderingNamed(series, 'publication');
+
+    expect(found).toEqual(publication);
   });
 });

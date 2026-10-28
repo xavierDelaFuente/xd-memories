@@ -11,7 +11,7 @@ describe('logStatus', () => {
     expect(history).toEqual([{ workId: 'w1', status: 'done', at: oct }]);
   });
 
-  it('a re-read appends a second entry and never mutates the first', () => {
+  it('a re-read appends a second entry', () => {
     const history = logStatus([], { workId: 'w1', status: 'done', now: jan });
 
     const updated = logStatus(history, { workId: 'w1', status: 'done', now: oct });
@@ -20,21 +20,28 @@ describe('logStatus', () => {
       { workId: 'w1', status: 'done', at: jan },
       { workId: 'w1', status: 'done', at: oct },
     ]);
+  });
+
+  it('a re-read never mutates the history it was given', () => {
+    const history = logStatus([], { workId: 'w1', status: 'done', now: jan });
+
+    logStatus(history, { workId: 'w1', status: 'done', now: oct });
+
     expect(history).toHaveLength(1);
   });
 
   it('works on a frozen history, so it can never mutate its input', () => {
     const history: readonly Entry[] = Object.freeze([{ workId: 'w1', status: 'done', at: jan }]);
 
-    expect(() => logStatus(history, { workId: 'w1', status: 'done', now: oct })).not.toThrow();
+    const logging = () => logStatus(history, { workId: 'w1', status: 'done', now: oct });
+
+    expect(logging).not.toThrow();
   });
 
   it('keeps entries of different works in one history, in the order they were logged', () => {
-    const history = logStatus(logStatus([], { workId: 'w1', status: 'done', now: jan }), {
-      workId: 'w2',
-      status: 'done',
-      now: oct,
-    });
+    const first = logStatus([], { workId: 'w1', status: 'done', now: jan });
+
+    const history = logStatus(first, { workId: 'w2', status: 'done', now: oct });
 
     expect(history.map((entry) => entry.workId)).toEqual(['w1', 'w2']);
   });
@@ -42,8 +49,8 @@ describe('logStatus', () => {
   it('stores the time it was given, not the time it ran', () => {
     const past = new Date('1999-12-31T23:59:59Z');
 
-    const [entry] = logStatus([], { workId: 'w1', status: 'done', now: past });
+    const history = logStatus([], { workId: 'w1', status: 'done', now: past });
 
-    expect(entry?.at).toEqual(past);
+    expect(history).toEqual([{ workId: 'w1', status: 'done', at: past }]);
   });
 });
