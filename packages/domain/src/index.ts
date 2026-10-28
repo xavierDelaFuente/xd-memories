@@ -46,6 +46,7 @@ export {
 export { err, ok, type Result } from './result';
 export {
   createWork,
+  MEDIA_TYPES,
   type MediaType,
   type Work,
   type WorkError,

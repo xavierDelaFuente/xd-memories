@@ -3,7 +3,7 @@ import { nonBlank } from './text';
 
 export type WorkId = string;
 
-const MEDIA_TYPES = ['movie', 'series', 'book', 'album'] as const;
+export const MEDIA_TYPES = ['movie', 'series', 'book', 'album'] as const;
 
 export type MediaType = (typeof MEDIA_TYPES)[number];
 
