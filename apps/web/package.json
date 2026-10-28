@@ -12,6 +12,9 @@
     "e2e": "playwright test"
   },
   "dependencies": {
+    "@xd-memories/contracts": "workspace:*",
+    "@xd-memories/domain": "workspace:*",
+    "@xd-memories/sources": "workspace:*",
     "next": "^16.4.3",
     "react": "^19.3.1",
     "react-dom": "^19.3.1"

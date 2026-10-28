@@ -6,7 +6,6 @@
   "main": "./src/index.ts",
   "types": "./src/index.ts",
   "scripts": {
-    "build": "tsc -b",
     "test": "vitest run --passWithNoTests",
     "type-check": "tsc -b",
     "migrate": "tsx src/migrate.ts"

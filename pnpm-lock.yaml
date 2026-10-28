@@ -26,6 +26,15 @@ importers:
 
   apps/web:
     dependencies:
+      '@xd-memories/contracts':
+        specifier: workspace:*
+        version: link:../../packages/contracts
+      '@xd-memories/domain':
+        specifier: workspace:*
+        version: link:../../packages/domain
+      '@xd-memories/sources':
+        specifier: workspace:*
+        version: link:../../packages/sources
       next:
         specifier: ^16.4.3
         version: 16.4.3(@playwright/test@1.64.1)(@types/node@26.6.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
