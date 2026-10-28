@@ -3,52 +3,51 @@ import { addCredit, type Credit, createCreator } from '../creator';
 
 describe('createCreator', () => {
   it('creates a creator with a trimmed name', () => {
-    expect(createCreator({ id: 'c1', name: ' Frank Herbert ' })).toEqual({
-      ok: true,
-      value: { id: 'c1', name: 'Frank Herbert' },
-    });
+    const result = createCreator({ id: 'c1', name: ' Frank Herbert ' });
+
+    expect(result).toEqual({ ok: true, value: { id: 'c1', name: 'Frank Herbert' } });
   });
 
   it.each(['', '   ', ' '])('rejects the blank name %j as a typed error', (name) => {
-    expect(createCreator({ id: 'c1', name })).toEqual({ ok: false, error: { kind: 'BlankName' } });
+    const result = createCreator({ id: 'c1', name });
+
+    expect(result).toEqual({ ok: false, error: { kind: 'BlankName' } });
   });
 });
 
 describe('addCredit', () => {
   const directing: Credit = { workId: 'w1', creatorId: 'c1', role: 'director' };
   const writing: Credit = { workId: 'w1', creatorId: 'c1', role: 'writer' };
+  const coDirecting: Credit = { workId: 'w1', creatorId: 'c2', role: 'director' };
+  const otherWork: Credit = { workId: 'w2', creatorId: 'c1', role: 'director' };
 
-  it('adds a credit to the list', () => {
-    expect(addCredit([], directing)).toEqual([directing]);
+  it('adds a credit to an empty list', () => {
+    const credits = addCredit([], directing);
+
+    expect(credits).toEqual([directing]);
   });
 
-  it('the same creator, work and role twice is one credit', () => {
-    expect(addCredit([directing], { ...directing })).toEqual([directing]);
-  });
+  it.each`
+    case                                         | existing                | added               | expected
+    ${'same creator, work and role: one credit'} | ${[directing]}          | ${{ ...directing }} | ${[directing]}
+    ${'same creator in two roles'}               | ${[directing]}          | ${writing}          | ${[directing, writing]}
+    ${'same creator and role on another work'}   | ${[directing]}          | ${otherWork}        | ${[directing, otherWork]}
+    ${'two creators on one work'}                | ${[directing]}          | ${coDirecting}      | ${[directing, coDirecting]}
+    ${'a duplicate keeps the existing order'}    | ${[directing, writing]} | ${{ ...directing }} | ${[directing, writing]}
+  `(
+    '$case',
+    ({ existing, added, expected }: { existing: Credit[]; added: Credit; expected: Credit[] }) => {
+      const credits = addCredit(existing, added);
 
-  it('the same creator in two roles on one work is two credits', () => {
-    expect(addCredit([directing], writing)).toEqual([directing, writing]);
-  });
-
-  it('the same creator and role on another work is another credit', () => {
-    const otherWork: Credit = { ...directing, workId: 'w2' };
-
-    expect(addCredit([directing], otherWork)).toEqual([directing, otherWork]);
-  });
+      expect(credits).toEqual(expected);
+    },
+  );
 
   it('never mutates the credits it was given', () => {
     const credits: readonly Credit[] = Object.freeze([directing]);
 
-    expect(() => addCredit(credits, writing)).not.toThrow();
-  });
+    const adding = () => addCredit(credits, writing);
 
-  it('several creators on one work are separate credits', () => {
-    const coDirecting: Credit = { workId: 'w1', creatorId: 'c2', role: 'director' };
-
-    expect(addCredit([directing], coDirecting)).toEqual([directing, coDirecting]);
-  });
-
-  it('a duplicate leaves the existing order untouched', () => {
-    expect(addCredit([directing, writing], { ...directing })).toEqual([directing, writing]);
+    expect(adding).not.toThrow();
   });
 });

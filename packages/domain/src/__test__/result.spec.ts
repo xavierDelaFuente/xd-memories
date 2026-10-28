@@ -3,11 +3,15 @@ import { err, ok, type Result } from '../result';
 
 describe('Result', () => {
   it('ok wraps a value', () => {
-    expect(ok(42)).toEqual({ ok: true, value: 42 });
+    const result = ok(42);
+
+    expect(result).toEqual({ ok: true, value: 42 });
   });
 
   it('err wraps an error', () => {
-    expect(err({ kind: 'Nope' })).toEqual({ ok: false, error: { kind: 'Nope' } });
+    const result = err({ kind: 'Nope' });
+
+    expect(result).toEqual({ ok: false, error: { kind: 'Nope' } });
   });
 
   it('checking ok narrows to the value or the error', () => {

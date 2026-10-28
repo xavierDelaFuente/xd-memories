@@ -16,10 +16,9 @@ const catalog = inMemoryCatalog([matrix, matrixReloaded, animatrix, dune]);
 
 describe('inMemoryCatalog', () => {
   it('returns items of the requested media type whose title matches the query', async () => {
-    expect(await catalog.search({ mediaType: 'movie', query: 'matrix' })).toEqual({
-      ok: true,
-      value: [matrix, matrixReloaded],
-    });
+    const result = await catalog.search({ mediaType: 'movie', query: 'matrix' });
+
+    expect(result).toEqual({ ok: true, value: [matrix, matrixReloaded] });
   });
 
   it('never returns items of another media type, even when the title matches', async () => {
@@ -29,23 +28,20 @@ describe('inMemoryCatalog', () => {
   });
 
   it('matches regardless of letter case', async () => {
-    expect(await catalog.search({ mediaType: 'book', query: 'DUNE' })).toEqual({
-      ok: true,
-      value: [dune],
-    });
+    const result = await catalog.search({ mediaType: 'book', query: 'DUNE' });
+
+    expect(result).toEqual({ ok: true, value: [dune] });
   });
 
   it('a blank query matches every item of the media type; contracts reject blank queries first (2.5)', async () => {
-    expect(await catalog.search({ mediaType: 'movie', query: '' })).toEqual({
-      ok: true,
-      value: [matrix, matrixReloaded],
-    });
+    const result = await catalog.search({ mediaType: 'movie', query: '' });
+
+    expect(result).toEqual({ ok: true, value: [matrix, matrixReloaded] });
   });
 
   it('no match is an empty list, not an error', async () => {
-    expect(await catalog.search({ mediaType: 'album', query: 'matrix' })).toEqual({
-      ok: true,
-      value: [],
-    });
+    const result = await catalog.search({ mediaType: 'album', query: 'matrix' });
+
+    expect(result).toEqual({ ok: true, value: [] });
   });
 });

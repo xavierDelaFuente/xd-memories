@@ -30,8 +30,8 @@ describe('resolveRef', () => {
 
   it('links a second source to an existing work when that work is passed as the candidate', () => {
     const tmdb = resolveRef(emptyWorkIndex(), matrix, 'work-1');
-
     const imdb = resolveRef(tmdb.index, { source: 'imdb', externalId: 'tt0133093' }, tmdb.workId);
+
     const again = resolveRef(imdb.index, { source: 'imdb', externalId: 'tt0133093' }, 'work-9');
 
     expect(again.workId).toBe('work-1');
@@ -43,7 +43,15 @@ describe('resolveRef', () => {
     resolveRef(empty, matrix, 'work-1');
 
     expect(empty.size).toBe(0);
-    expect(resolveRef(empty, matrix, 'work-2').workId).toBe('work-2');
+  });
+
+  it('an index left untouched still treats the ref as new', () => {
+    const empty = emptyWorkIndex();
+    resolveRef(empty, matrix, 'work-1');
+
+    const again = resolveRef(empty, matrix, 'work-2');
+
+    expect(again.workId).toBe('work-2');
   });
 
   it('cannot confuse refs whose source and id contain a separator', () => {

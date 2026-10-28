@@ -2,7 +2,9 @@ import { expect, it } from 'vitest';
 import * as domain from '../index';
 
 it('exposes exactly the intended runtime API, so adding or dropping an export is deliberate', () => {
-  expect(Object.keys(domain).sort()).toEqual([
+  const exported = Object.keys(domain).sort();
+
+  expect(exported).toEqual([
     'MEDIA_TYPES',
     'addCredit',
     'addOrdering',
