@@ -34,3 +34,15 @@ test('searching books lists only books, without crediting TMDB', async ({ page }
   ]);
   await expect(page.getByText('This product uses the TMDB API', { exact: false })).toHaveCount(0);
 });
+
+test('searching albums lists only albums', async ({ page }) => {
+  await page.goto('/catalog/albums');
+  await page.getByRole('searchbox', { name: 'Search albums' }).fill('computer');
+
+  await page.keyboard.press('Enter');
+
+  await expect(page).toHaveURL(/\/catalog\/albums\?q=computer$/);
+  await expect(page.getByRole('list', { name: 'Results' }).getByRole('listitem')).toHaveText([
+    'OK Computer',
+  ]);
+});

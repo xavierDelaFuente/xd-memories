@@ -33,4 +33,4 @@ Movies end to end first; books and music reuse the path.
 - 2.6 Catalog page (`E`): `/catalog/movies?q=matrix` lists results by keyboard and shows TMDB attribution; E2E uses the fixture adapter
 - 2.7 Open Library (`U`, recorded fixture): a search result parses into a book keyed on the work (`works/…`), not the edition (`books/…`); client sends a contact User-Agent; same typed failures as TMDB
 - 2.8 Rate limiter (`U`): given the last request time (or none) and `now`, the ms to wait to stay under 1 req/s; interval configurable; a clock that moved back waits one interval, never more
-- 2.9 MusicBrainz parse (`U`, recorded fixture): a release-group search parses into an album `Work` + `ExternalRef`
+- 2.9 MusicBrainz (`U`, recorded fixture): a release-group search parses into an album keyed on the release group (`release-group/<MBID>`); the query is escaped and limited to primary type Album; the client stays under 1 req/s via `waitBeforeNextRequest` (clock and sleep injected); same typed failures as TMDB

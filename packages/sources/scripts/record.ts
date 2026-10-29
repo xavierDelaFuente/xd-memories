@@ -18,6 +18,9 @@ const tmdbHeaders = () => ({ Authorization: `Bearer ${env('TMDB_API_TOKEN')}` })
 const openLibrary = 'https://openlibrary.org/search.json';
 const openLibraryHeaders = () => ({ 'User-Agent': env('MUSICBRAINZ_USER_AGENT') });
 
+const musicBrainz = 'https://musicbrainz.org/ws/2/release-group';
+const musicBrainzHeaders = () => ({ 'User-Agent': env('MUSICBRAINZ_USER_AGENT') });
+
 const sources: Record<string, Recording[]> = {
   tmdb: [
     {
@@ -36,6 +39,13 @@ const sources: Record<string, Recording[]> = {
       file: 'src/openlibrary/fixtures/search-dune.json',
       url: `${openLibrary}?q=dune&fields=key,title&limit=20`,
       headers: openLibraryHeaders,
+    },
+  ],
+  musicbrainz: [
+    {
+      file: 'src/musicbrainz/fixtures/search-ok-computer.json',
+      url: `${musicBrainz}?query=${encodeURIComponent('(ok computer) AND primarytype:album')}&fmt=json&limit=20`,
+      headers: musicBrainzHeaders,
     },
   ],
 };
