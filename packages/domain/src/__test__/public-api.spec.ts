@@ -8,6 +8,7 @@ it('exposes exactly the intended runtime API, so adding or dropping an export is
     'MEDIA_TYPES',
     'addCredit',
     'addOrdering',
+    'catalogByMediaType',
     'createCreator',
     'createRating',
     'createSeries',

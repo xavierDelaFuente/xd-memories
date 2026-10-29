@@ -1,5 +1,5 @@
 import type { ExternalRef } from './external-ref';
-import { ok, type Result } from './result';
+import { err, ok, type Result } from './result';
 import type { MediaType, Work } from './work';
 
 export type CatalogQuery = { mediaType: MediaType; query: string };
@@ -27,6 +27,18 @@ export function inMemoryCatalog(items: readonly CatalogItem[]): CatalogSource {
           (item) => item.mediaType === mediaType && item.title.toLowerCase().includes(needle),
         ),
       );
+    },
+  };
+}
+
+export function catalogByMediaType(
+  sources: Partial<Record<MediaType, CatalogSource>>,
+): CatalogSource {
+  return {
+    async search(query) {
+      const source = sources[query.mediaType];
+      if (!source) return err({ kind: 'UnsupportedMediaType', mediaType: query.mediaType });
+      return source.search(query);
     },
   };
 }

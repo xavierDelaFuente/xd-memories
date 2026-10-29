@@ -31,6 +31,6 @@ Movies end to end first; books and music reuse the path.
 - 2.4 TMDB client (`U`): the request carries the token and the query; `fetch` is injected, no network; failures are typed (UnsupportedMediaType · Unauthorized · RateLimited · RequestRejected · SourceUnavailable · InvalidResponse)
 - 2.5 Contracts (`U`): `CatalogSearchQuery` accepts a known media type and a non-blank query
 - 2.6 Catalog page (`E`): `/catalog/movies?q=matrix` lists results by keyboard and shows TMDB attribution; E2E uses the fixture adapter
-- 2.7 Open Library parse (`U`, recorded fixture): a search result parses into a book `Work` keyed on the work, not the edition
+- 2.7 Open Library (`U`, recorded fixture): a search result parses into a book keyed on the work (`works/…`), not the edition (`books/…`); client sends a contact User-Agent; same typed failures as TMDB
 - 2.8 Rate limiter (`U`): given the last request time and `now`, the wait needed to stay under 1 req/s
 - 2.9 MusicBrainz parse (`U`, recorded fixture): a release-group search parses into an album `Work` + `ExternalRef`

@@ -1,0 +1,91 @@
+{
+  "numFound": 48307,
+  "start": 0,
+  "numFoundExact": true,
+  "num_found": 48307,
+  "documentation_url": "https://openlibrary.org/dev/docs/api/search",
+  "q": "dune",
+  "offset": null,
+  "docs": [
+    {
+      "key": "/works/OL893414W",
+      "title": "Dune"
+    },
+    {
+      "key": "/works/OL893461W",
+      "title": "Dune Messiah"
+    },
+    {
+      "key": "/works/OL893516W",
+      "title": "Children of Dune"
+    },
+    {
+      "key": "/works/OL893515W",
+      "title": "God Emperor of Dune"
+    },
+    {
+      "key": "/works/OL893502W",
+      "title": "Heretics of Dune"
+    },
+    {
+      "key": "/works/OL893508W",
+      "title": "Chapterhouse Dune"
+    },
+    {
+      "key": "/works/OL893444W",
+      "title": "Dune, Dune Messiah, Children of Dune"
+    },
+    {
+      "key": "/works/OL14961045W",
+      "title": "Sandworms of Dune"
+    },
+    {
+      "key": "/works/OL264729W",
+      "title": "Go Ask Alice"
+    },
+    {
+      "key": "/works/OL19618275W",
+      "title": "Dune"
+    },
+    {
+      "key": "/works/OL18149681W",
+      "title": "Navigators of Dune"
+    },
+    {
+      "key": "/works/OL14961038W",
+      "title": "The Butlerian Jihad"
+    },
+    {
+      "key": "/works/OL522172W",
+      "title": "Hunter's Moon & Other American Gothic Tales"
+    },
+    {
+      "key": "/works/OL260382W",
+      "title": "Mémoires d'une jeune fille rangée"
+    },
+    {
+      "key": "/works/OL472165W",
+      "title": "Peril at End House"
+    },
+    {
+      "key": "/works/OL5275519W",
+      "title": "Dune House Corrino"
+    },
+    {
+      "key": "/works/OL554692W",
+      "title": "Shadow of a Dark Queen"
+    },
+    {
+      "key": "/works/OL17057W",
+      "title": "Potent Pleasures"
+    },
+    {
+      "key": "/works/OL8383295W",
+      "title": "House Corrino"
+    },
+    {
+      "key": "/works/OL2644757W",
+      "title": "砂の女"
+    }
+  ]
+}

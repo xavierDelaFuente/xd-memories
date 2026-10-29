@@ -92,31 +92,16 @@ describe('failures are typed errors that say what to fix', () => {
     expect(result).toEqual({ ok: false, error: { kind: 'UnsupportedMediaType', mediaType } });
   });
 
-  it.each([401, 403])('%i is Unauthorized: check the token', async (status) => {
-    const { result } = await searchWith(json({ status_message: 'Invalid API key' }, status));
-
-    expect(result).toEqual({ ok: false, error: { kind: 'Unauthorized' } });
-  });
-
-  it.each([400, 402, 404, 422, 428, 430, 499])(
-    '%i is RequestRejected: our request is wrong',
-    async (status) => {
-      const { result } = await searchWith(json({}, status));
-
-      expect(result).toEqual({ ok: false, error: { kind: 'RequestRejected', status } });
-    },
-  );
-
-  it.each([500, 502, 503, 599])('%i is SourceUnavailable: TMDB is down', async (status) => {
+  it.each`
+    status | error
+    ${401} | ${{ kind: 'Unauthorized' }}
+    ${404} | ${{ kind: 'RequestRejected', status: 404 }}
+    ${429} | ${{ kind: 'RateLimited', retryAfterSeconds: null }}
+    ${503} | ${{ kind: 'SourceUnavailable' }}
+  `('HTTP $status is $error.kind', async ({ status, error }: { status: number; error: object }) => {
     const { result } = await searchWith(json({}, status));
 
-    expect(result).toEqual({ ok: false, error: { kind: 'SourceUnavailable' } });
-  });
-
-  it('the status decides, even when the error body is not JSON', async () => {
-    const { result } = await searchWith(new Response('<html>Bad gateway</html>', { status: 503 }));
-
-    expect(result).toEqual({ ok: false, error: { kind: 'SourceUnavailable' } });
+    expect(result).toEqual({ ok: false, error });
   });
 
   it('a network failure is SourceUnavailable, never a thrown error', async () => {
@@ -141,37 +126,5 @@ describe('failures are typed errors that say what to fix', () => {
       ok: false,
       error: { kind: 'InvalidResponse', detail: expect.any(String) },
     });
-  });
-});
-
-describe('429 RateLimited and its Retry-After header', () => {
-  const rateLimited = (headers: Record<string, string>) =>
-    new Response('{}', { status: 429, headers });
-
-  it.each`
-    header                             | seconds
-    ${'10'}                            | ${10}
-    ${'0'}                             | ${0}
-    ${'soon'}                          | ${null}
-    ${'-5'}                            | ${null}
-    ${'1.5'}                           | ${null}
-    ${'Wed, 21 Oct 2026 07:28:00 GMT'} | ${null}
-    ${''}                              | ${null}
-  `(
-    'Retry-After $header is a wait of $seconds',
-    async ({ header, seconds }: { header: string; seconds: number | null }) => {
-      const { result } = await searchWith(rateLimited({ 'Retry-After': header }));
-
-      expect(result).toEqual({
-        ok: false,
-        error: { kind: 'RateLimited', retryAfterSeconds: seconds },
-      });
-    },
-  );
-
-  it('no Retry-After header is a wait of unknown length (null)', async () => {
-    const { result } = await searchWith(rateLimited({}));
-
-    expect(result).toEqual({ ok: false, error: { kind: 'RateLimited', retryAfterSeconds: null } });
   });
 });

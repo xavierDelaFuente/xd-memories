@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { type CatalogItem, inMemoryCatalog } from '../catalog';
+import {
+  type CatalogItem,
+  type CatalogSource,
+  catalogByMediaType,
+  inMemoryCatalog,
+} from '../catalog';
+import type { MediaType } from '../work';
 
 const item = (externalId: string, mediaType: CatalogItem['mediaType'], title: string) => ({
   ref: { source: 'fixture', externalId },
@@ -43,5 +49,54 @@ describe('inMemoryCatalog', () => {
     const result = await catalog.search({ mediaType: 'album', query: 'matrix' });
 
     expect(result).toEqual({ ok: true, value: [] });
+  });
+});
+
+describe('catalogByMediaType', () => {
+  const movies = inMemoryCatalog([matrix, matrixReloaded]);
+  const books = inMemoryCatalog([dune]);
+  const routed = catalogByMediaType({ movie: movies, book: books });
+
+  it.each`
+    mediaType  | query       | expected
+    ${'movie'} | ${'matrix'} | ${[matrix, matrixReloaded]}
+    ${'book'}  | ${'dune'}   | ${[dune]}
+  `(
+    'sends a $mediaType search to the $mediaType source',
+    async ({
+      mediaType,
+      query,
+      expected,
+    }: {
+      mediaType: MediaType;
+      query: string;
+      expected: CatalogItem[];
+    }) => {
+      const result = await routed.search({ mediaType, query });
+
+      expect(result).toEqual({ ok: true, value: expected });
+    },
+  );
+
+  it('a media type with no source is UnsupportedMediaType', async () => {
+    const result = await routed.search({ mediaType: 'album', query: 'dune' });
+
+    expect(result).toEqual({
+      ok: false,
+      error: { kind: 'UnsupportedMediaType', mediaType: 'album' },
+    });
+  });
+
+  it('passes a source error through unchanged', async () => {
+    const failing: CatalogSource = {
+      search: async () => ({ ok: false, error: { kind: 'SourceUnavailable' } }),
+    };
+
+    const result = await catalogByMediaType({ movie: failing }).search({
+      mediaType: 'movie',
+      query: 'm',
+    });
+
+    expect(result).toEqual({ ok: false, error: { kind: 'SourceUnavailable' } });
   });
 });
