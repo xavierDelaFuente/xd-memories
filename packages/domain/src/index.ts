@@ -35,6 +35,7 @@ export {
   progress,
   type Series,
 } from './ordering';
+export { type RateLimitInput, waitBeforeNextRequest } from './rate-limit';
 export {
   createRating,
   displayRating,
