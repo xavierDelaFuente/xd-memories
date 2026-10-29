@@ -3,6 +3,7 @@ export {
   type CatalogItem,
   type CatalogQuery,
   type CatalogSource,
+  catalogByMediaType,
   inMemoryCatalog,
   type SourceError,
 } from './catalog';
