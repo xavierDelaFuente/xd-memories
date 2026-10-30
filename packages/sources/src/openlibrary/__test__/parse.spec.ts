@@ -11,6 +11,8 @@ describe('parseBookSearch (recorded Open Library response)', () => {
       ref: { source: 'openlibrary', externalId: 'works/OL893414W' },
       mediaType: 'book',
       title: 'Dune',
+      creators: ['Frank Herbert'],
+      year: 1965,
     });
   });
 
@@ -37,6 +39,29 @@ describe('parseBookSearch (recorded Open Library response)', () => {
   });
 });
 
+describe('authors and year', () => {
+  it('keeps every author, in Open Library order', () => {
+    const items = unwrap(parseBookSearch(bookSearch));
+
+    expect(items.find((item) => item.title === 'Sandworms of Dune')?.creators).toEqual([
+      'Kevin J. Anderson',
+      'Brian Herbert',
+    ]);
+  });
+
+  it('a work with no author has no creators', () => {
+    const [book] = unwrap(parseBookSearch({ docs: [{ key: '/works/OL1W', title: 'Anonymous' }] }));
+
+    expect(book?.creators).toEqual([]);
+  });
+
+  it('a work with no first publish year has no year', () => {
+    const [book] = unwrap(parseBookSearch({ docs: [{ key: '/works/OL1W', title: 'Undated' }] }));
+
+    expect(book?.year).toBeNull();
+  });
+});
+
 it('a work is recognised by its /works/ path, whatever the id looks like', () => {
   const items = unwrap(
     parseBookSearch({ docs: [{ key: '/works/OL16477528M', title: 'Dossier sur les colonies' }] }),
@@ -55,6 +80,7 @@ describe('malformed responses are typed errors, never casts or crashes', () => {
     ${'docs that is not a list'}          | ${{ docs: 'nope' }}
     ${'a doc without a title'}            | ${{ docs: [{ key: '/works/OL1W' }] }}
     ${'a key that is not text'}           | ${{ docs: [{ key: 42, title: 'Dune' }] }}
+    ${'authors that are not a list'}      | ${{ docs: [{ key: '/works/OL1W', title: 'Dune', author_name: 'Frank Herbert' }] }}
     ${'an edition key instead of a work'} | ${{ docs: [{ key: '/books/OL7353617M', title: 'Dune' }] }}
   `('$case', ({ payload }: { payload: unknown }) => {
     const result = parseBookSearch(payload);

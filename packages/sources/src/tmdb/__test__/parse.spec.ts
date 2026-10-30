@@ -12,6 +12,8 @@ describe('parseMovieSearch (recorded TMDB response)', () => {
       ref: { source: 'tmdb', externalId: 'movie/603' },
       mediaType: 'movie',
       title: 'The Matrix',
+      creators: [],
+      year: 1999,
     });
   });
 
@@ -40,6 +42,8 @@ describe('parseTvSearch (recorded TMDB response)', () => {
       ref: { source: 'tmdb', externalId: 'tv/711' },
       mediaType: 'series',
       title: 'Threat Matrix',
+      creators: [],
+      year: 2003,
     });
   });
 
@@ -47,6 +51,34 @@ describe('parseTvSearch (recorded TMDB response)', () => {
     const items = unwrap(parseTvSearch(tvSearch));
 
     expect(items).toHaveLength(tvSearch.results.length);
+  });
+});
+
+describe('the year comes from the release date', () => {
+  it.each`
+    case               | result
+    ${'an empty date'} | ${{ id: 1, title: 'Unreleased', release_date: '' }}
+    ${'no date field'} | ${{ id: 1, title: 'Unreleased' }}
+  `('a movie with $case has no year', ({ result }: { result: unknown }) => {
+    const [movie] = unwrap(parseMovieSearch({ results: [result] }));
+
+    expect(movie?.year).toBeNull();
+  });
+
+  it('a show takes its year from the first air date', () => {
+    const [show] = unwrap(
+      parseTvSearch({ results: [{ id: 1, name: 'Matrix', first_air_date: '1993-03-01' }] }),
+    );
+
+    expect(show?.year).toBe(1993);
+  });
+
+  it('a show with an empty first air date has no year', () => {
+    const [show] = unwrap(
+      parseTvSearch({ results: [{ id: 1, name: 'Soon', first_air_date: '' }] }),
+    );
+
+    expect(show?.year).toBeNull();
   });
 });
 

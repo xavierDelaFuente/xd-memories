@@ -12,7 +12,7 @@ export function createOpenLibraryCatalog({ userAgent, fetch }: OpenLibraryOption
       if (mediaType !== 'book') return err({ kind: 'UnsupportedMediaType', mediaType });
       const url = new URL(SEARCH_URL);
       url.searchParams.set('q', query);
-      url.searchParams.set('fields', 'key,title');
+      url.searchParams.set('fields', 'key,title,author_name,first_publish_year');
       url.searchParams.set('limit', '20');
 
       const body = await getJson(fetch, url, { 'User-Agent': userAgent });

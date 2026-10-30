@@ -1,16 +1,20 @@
 import { type CatalogSource, inMemoryCatalog, type SourceError } from '@xd-memories/domain';
 import { describe, expect, it } from 'vitest';
-import { messageFor, searchCatalog } from '../catalog-search';
+import { messageFor, resultLabel, searchCatalog } from '../catalog-search';
 
 const matrix = {
   ref: { source: 'fixture', externalId: 'm1' },
   mediaType: 'movie' as const,
   title: 'The Matrix',
+  creators: [],
+  year: 1999,
 };
 const animatrix = {
   ref: { source: 'fixture', externalId: 's1' },
   mediaType: 'series' as const,
   title: 'The Animatrix',
+  creators: [],
+  year: 2003,
 };
 const catalog = inMemoryCatalog([matrix, animatrix]);
 
@@ -117,6 +121,34 @@ describe('messageFor', () => {
       const text = messageFor(error);
 
       expect(text).toBe(message);
+    },
+  );
+});
+
+describe('resultLabel', () => {
+  it.each`
+    title            | creators                                  | year    | label
+    ${'OK Computer'} | ${['Radiohead']}                          | ${1997} | ${'OK Computer (1997) — Radiohead'}
+    ${'Dune'}        | ${[]}                                     | ${2021} | ${'Dune (2021)'}
+    ${'Sandworms'}   | ${['Kevin J. Anderson', 'Brian Herbert']} | ${2007} | ${'Sandworms (2007) — Kevin J. Anderson, Brian Herbert'}
+    ${'Untitled'}    | ${['Anonymous']}                          | ${null} | ${'Untitled — Anonymous'}
+    ${'Unknown'}     | ${[]}                                     | ${null} | ${'Unknown'}
+  `(
+    '$label',
+    ({
+      title,
+      creators,
+      year,
+      label,
+    }: {
+      title: string;
+      creators: string[];
+      year: number | null;
+      label: string;
+    }) => {
+      const result = resultLabel({ ...matrix, title, creators, year });
+
+      expect(result).toBe(label);
     },
   );
 });
