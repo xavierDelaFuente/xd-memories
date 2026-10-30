@@ -8,7 +8,8 @@
   "scripts": {
     "test": "vitest run",
     "type-check": "tsc -b",
-    "record-fixtures": "tsx --env-file=../../.env scripts/record.ts"
+    "record-fixtures": "tsx --env-file=../../.env scripts/record.ts",
+    "source-health": "tsx --env-file-if-exists=../../.env scripts/health.ts"
   },
   "devDependencies": {
     "@types/node": "^26.6.5",
