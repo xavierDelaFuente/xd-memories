@@ -1,7 +1,7 @@
 # PROJECT — xd-memories
 
 **Type**: app (multi-process: web + worker)
-**Status**: Phase 2 of 10 — not started. Phases 0 and 1 closed 2026-10-26.
+**Status**: Phase 3 of 10 — not started. Phases 0 and 1 closed 2026-10-26, Phase 2 closed 2026-10-30.
 **Repo**: https://github.com/xavierDelaFuente/xd-memories
 **Local**: C:\Users\XavierdelaFuenteQuin\Repos\personal\xd-memories
 
@@ -45,6 +45,10 @@ they resolve to current (CODEX: check versions before recommending).
 | Orderings           | Named orderings per series (chronological · recommended), each with provenance; publication order derived from release dates (Phase 5)                                                         | A saga has more than one valid order. "Saga 2 — Book 1" is an ordering, not a field on a book. Publication order is a fact, so it cannot conflict                   |
 | Duplicate orderings | Phase 1: same name rejected (`DuplicateOrdering`). Phase 5: same name + same source replaces; different sources coexist, default by precedence user → author/publisher → Wikidata → community  | Sequences cannot be merged; which one wins depends on where it came from                                                                                            |
 | Progress            | `progress` returns the next work; `next: null` when caught up                                                                                                                                  | The UI needs the work, not a number. "Caught up", not "finished": a series can get new releases                                                                     |
+| Source routing      | `catalogByMediaType` maps each media type to one `CatalogSource`; a type with no source is `UnsupportedMediaType`                                                                              | Adapters stay single-purpose; the web picks sources in one place                                                                                                    |
+| HTTP failures       | One `getJson` in `packages/sources` maps every source's network/status/body failure to `SourceError`                                                                                           | Same status means the same error everywhere; boundary tests live once                                                                                               |
+| Rate limiting       | `waitBeforeNextRequest` (domain, pure) + per-adapter state; slot reserved before waiting; MusicBrainz at 1200 ms                                                                               | Measured: 1000 ms spacing got 503s from network jitter, 1200 ms never did. Per server instance, not global — enough until the worker                                |
+| Source drift        | Recorded fixtures for unit tests; a daily `source-health` Action checks the live APIs with repository secrets                                                                                  | CI stays offline and secret-free; drift still gets noticed within a day                                                                                             |
 | Community works     | Same `works` table, `source = 'community'`, provenance + edit history; duplicate check before public                                                                                           | One query path; users cannot tell or care which source a work came from                                                                                             |
 | Platform sync       | User-triggered imports. File upload first; OAuth only where a first-party API exists; never stored passwords                                                                                   | Most platforms have no API. Credential scraping breaks terms and means holding user passwords                                                                       |
 | Matching            | Pure scoring function in domain; below threshold → human review queue                                                                                                                          | An import is only as good as its matching                                                                                                                           |
@@ -77,7 +81,7 @@ they resolve to current (CODEX: check versions before recommending).
 
 - [x] 0 — Repo & gate: five required checks (test · type-check · lint · build · e2e), domain boundary lint, skip-link E2E, Vercel deploys
 - [x] 1 — Domain core: Work, Creator + Credit, ExternalRef, Entry, Rating (0–100), Ordering — pure, 100% covered
-- [ ] 2 — Catalog (read-only): `CatalogSource` port, TMDB → Open Library → MusicBrainz adapters, per-media search
+- [x] 2 — Catalog (read-only): `CatalogSource` port, TMDB → Open Library → MusicBrainz adapters, per-media search, daily live source check
 - [ ] 3 — Library: add to library (cache-on-save), status, progress, ratings, highlights, auth, RLS
 - [ ] 4 — Imports: job queue + worker, file importers, OAuth where available, match review
 - [ ] 5 — Series & reading orders: Wikidata ordinals, named orderings, author page
@@ -101,11 +105,16 @@ Phase 1 — BACKLOG 1.1–1.9 green (83 tests, 100% coverage): `logStatus`, `cre
 named orderings, `createWork` (movie · series · book · album), `createCreator`, `addCredit`.
 Expected failures are `Result` values, never throws. Specs live in `src/__test__/`. Domain takes
 `now` and new ids as arguments; it never reads the clock or generates randomness.
+Phase 2 — BACKLOG 2.1–2.10 (280 tests): `/catalog/{movies,series,books,albums}` search TMDB, Open
+Library (works, not editions) and MusicBrainz (release groups, albums only) through
+`catalogByMediaType`. Fixtures recorded per source (`pnpm record-fixtures <source>`); E2E uses the
+in-memory catalog (`CATALOG_SOURCE=fixtures`). Daily `source-health` Action checks the live APIs.
 **In progress**: nothing.
-**Next**: write the Phase 2 BACKLOG (TMDB adapter first: recorded fixture, zod parse into `Work` +
-`ExternalRef`). Deferred, unscheduled chore: AI PR review, squash-only merges, conventional PR
-titles (changesets rejected — nothing is published). `ExternalRef.sourceVersion` arrives with the
-first adapter that fetches.
+**Next**: decide Open Question 6 (Supabase vs Neon) — it gates Phase 3 auth. Then write the Phase 3
+BACKLOG. Candidate before Phase 3: show creators (artist, author) in search results — titles alone
+are ambiguous ("OK Computer" tributes). Small follow-up: one retry on a MusicBrainz 503.
+Deferred, unscheduled chore: AI PR review, squash-only merges, conventional PR titles (changesets
+rejected — nothing is published). `ExternalRef.sourceVersion` is stored with the raw payload in Phase 3.
 
 ## Open Questions
 

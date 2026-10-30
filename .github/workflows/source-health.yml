@@ -1,0 +1,20 @@
+# Live check that TMDB, Open Library and MusicBrainz still answer in the shape we parse.
+# Not a PR check: CI stays secret-free and offline. A failed run emails the repo owner.
+# When it fails: re-record (pnpm --filter @xd-memories/sources record-fixtures <source>) and let the unit tests show what changed.
+name: source-health
+on:
+  schedule: [{ cron: "30 6 * * *" }]
+  workflow_dispatch:
+jobs:
+  live-search:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with: { node-version: lts/*, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @xd-memories/sources source-health
+        env:
+          TMDB_API_TOKEN: ${{ secrets.TMDB_API_TOKEN }}
+          MUSICBRAINZ_USER_AGENT: ${{ secrets.MUSICBRAINZ_USER_AGENT }}
