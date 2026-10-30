@@ -26,6 +26,16 @@ export function createMusicBrainzCatalog({
 }: MusicBrainzOptions): CatalogSource {
   let lastRequestAt: Date | null = null;
 
+  // Every request, retries included, takes its turn. The slot is reserved before awaiting,
+  // so searches started together are still spaced apart.
+  async function request(url: URL) {
+    const now = clock();
+    const wait = waitBeforeNextRequest({ lastRequestAt, now, minIntervalMs: MIN_INTERVAL_MS });
+    lastRequestAt = new Date(now.getTime() + wait);
+    await sleep(wait);
+    return getJson(fetch, url, { 'User-Agent': userAgent });
+  }
+
   return {
     async search({ mediaType, query }) {
       if (mediaType !== 'album') return err({ kind: 'UnsupportedMediaType', mediaType });
@@ -34,17 +44,9 @@ export function createMusicBrainzCatalog({
       url.searchParams.set('fmt', 'json');
       url.searchParams.set('limit', '20');
 
-      // Reserve the slot before awaiting, so searches started together are still spaced apart.
-      const now = clock();
-      const wait = waitBeforeNextRequest({
-        lastRequestAt,
-        now,
-        minIntervalMs: MIN_INTERVAL_MS,
-      });
-      lastRequestAt = new Date(now.getTime() + wait);
-      await sleep(wait);
-
-      const body = await getJson(fetch, url, { 'User-Agent': userAgent });
+      // MusicBrainz answers 503 when busy; one more try usually lands. Other failures would repeat.
+      let body = await request(url);
+      if (!body.ok && body.error.kind === 'SourceUnavailable') body = await request(url);
       return body.ok ? parseAlbumSearch(body.value) : body;
     },
   };

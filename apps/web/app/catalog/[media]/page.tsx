@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import { messageFor, searchCatalog } from '../../../lib/catalog-search';
+import { messageFor, resultLabel, searchCatalog } from '../../../lib/catalog-search';
 import { catalogSource } from '../../../lib/catalog-source';
 
 type Props = {
@@ -39,7 +39,7 @@ export default async function CatalogPage({ params, searchParams }: Props) {
         ) : (
           <ul aria-label="Results">
             {view.items.map((item) => (
-              <li key={`${item.ref.source}:${item.ref.externalId}`}>{item.title}</li>
+              <li key={`${item.ref.source}:${item.ref.externalId}`}>{resultLabel(item)}</li>
             ))}
           </ul>
         ))}

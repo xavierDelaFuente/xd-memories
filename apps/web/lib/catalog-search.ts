@@ -55,3 +55,9 @@ export function messageFor(error: SourceError): string {
       return 'Search is not working right now. The problem is on our side.';
   }
 }
+
+// "OK Computer (1997) — Radiohead". Year and creators are what tell same-titled works apart.
+export function resultLabel({ title, creators, year }: CatalogItem): string {
+  const dated = year === null ? title : `${title} (${year})`;
+  return creators.length === 0 ? dated : `${dated} — ${creators.join(', ')}`;
+}

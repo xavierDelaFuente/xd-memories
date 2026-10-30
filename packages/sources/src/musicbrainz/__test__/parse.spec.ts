@@ -14,6 +14,8 @@ describe('parseAlbumSearch (recorded MusicBrainz response)', () => {
       },
       mediaType: 'album',
       title: 'OK Computer',
+      creators: ['Radiohead'],
+      year: 1997,
     });
   });
 
@@ -38,6 +40,40 @@ describe('parseAlbumSearch (recorded MusicBrainz response)', () => {
 
     expect(items).toEqual([]);
   });
+
+  const mbid = 'b1392450-e666-3926-a536-22c65f834433';
+
+  it('keeps every credited artist, in credit order', () => {
+    const [album] = unwrap(
+      parseAlbumSearch({
+        'release-groups': [
+          {
+            id: mbid,
+            title: 'Collab',
+            'artist-credit': [{ name: 'Lemaitre', joinphrase: ' & ' }, { name: 'RebMoe' }],
+          },
+        ],
+      }),
+    );
+
+    expect(album?.creators).toEqual(['Lemaitre', 'RebMoe']);
+  });
+
+  it('a release group with no artist credit has no creators', () => {
+    const [album] = unwrap(
+      parseAlbumSearch({ 'release-groups': [{ id: mbid, title: 'Unknown' }] }),
+    );
+
+    expect(album?.creators).toEqual([]);
+  });
+
+  it('a release group with no first release date has no year', () => {
+    const [album] = unwrap(
+      parseAlbumSearch({ 'release-groups': [{ id: mbid, title: 'Undated' }] }),
+    );
+
+    expect(album?.year).toBeNull();
+  });
 });
 
 describe('malformed responses are typed errors, never casts or crashes', () => {
@@ -51,6 +87,7 @@ describe('malformed responses are typed errors, never casts or crashes', () => {
     ${'release-groups that is not a list'} | ${{ 'release-groups': 'nope' }}
     ${'a release group without a title'}   | ${{ 'release-groups': [{ id: mbid }] }}
     ${'an id that is not text'}            | ${{ 'release-groups': [{ id: 42, title: 'OK Computer' }] }}
+    ${'an artist credit without a name'}   | ${{ 'release-groups': [{ id: mbid, title: 'OK Computer', 'artist-credit': [{ joinphrase: '' }] }] }}
     ${'an id that is not an MBID'}         | ${{ 'release-groups': [{ id: 'ok-computer', title: 'OK Computer' }] }}
   `('$case', ({ payload }: { payload: unknown }) => {
     const result = parseAlbumSearch(payload);

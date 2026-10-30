@@ -10,21 +10,23 @@ import {
   createTmdbCatalog,
 } from '@xd-memories/sources';
 
-const fixture = (externalId: string, mediaType: CatalogItem['mediaType'], title: string) => ({
-  ref: { source: 'fixture', externalId },
-  mediaType,
-  title,
-});
+const fixture = (
+  externalId: string,
+  mediaType: CatalogItem['mediaType'],
+  title: string,
+  year: number,
+  creators: string[] = [],
+): CatalogItem => ({ ref: { source: 'fixture', externalId }, mediaType, title, creators, year });
 
 const FIXTURES: CatalogItem[] = [
-  fixture('m1', 'movie', 'The Matrix'),
-  fixture('m2', 'movie', 'The Matrix Reloaded'),
-  fixture('m3', 'movie', 'Dune'),
-  fixture('m4', 'movie', 'Computer Chess'),
-  fixture('s1', 'series', 'The Animatrix'),
-  fixture('b1', 'book', 'Dune'),
-  fixture('b2', 'book', 'Dune Messiah'),
-  fixture('a1', 'album', 'OK Computer'),
+  fixture('m1', 'movie', 'The Matrix', 1999),
+  fixture('m2', 'movie', 'The Matrix Reloaded', 2003),
+  fixture('m3', 'movie', 'Dune', 2021),
+  fixture('m4', 'movie', 'Computer Chess', 2013),
+  fixture('s1', 'series', 'The Animatrix', 2003),
+  fixture('b1', 'book', 'Dune', 1965, ['Frank Herbert']),
+  fixture('b2', 'book', 'Dune Messiah', 1969, ['Frank Herbert']),
+  fixture('a1', 'album', 'OK Computer', 1997, ['Radiohead']),
 ];
 
 const userAgent = process.env.MUSICBRAINZ_USER_AGENT ?? 'xd-memories';

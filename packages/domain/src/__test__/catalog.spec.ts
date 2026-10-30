@@ -11,6 +11,8 @@ const item = (externalId: string, mediaType: CatalogItem['mediaType'], title: st
   ref: { source: 'fixture', externalId },
   mediaType,
   title,
+  creators: [],
+  year: null,
 });
 
 const matrix = item('m1', 'movie', 'The Matrix');

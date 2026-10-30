@@ -1,89 +1,177 @@
 {
-  "numFound": 48307,
+  "numFound": 48304,
   "start": 0,
   "numFoundExact": true,
-  "num_found": 48307,
+  "num_found": 48304,
   "documentation_url": "https://openlibrary.org/dev/docs/api/search",
   "q": "dune",
   "offset": null,
   "docs": [
     {
+      "author_name": [
+        "Frank Herbert"
+      ],
+      "first_publish_year": 1965,
       "key": "/works/OL893414W",
       "title": "Dune"
     },
     {
+      "author_name": [
+        "Frank Herbert"
+      ],
+      "first_publish_year": 1969,
       "key": "/works/OL893461W",
       "title": "Dune Messiah"
     },
     {
+      "author_name": [
+        "Frank Herbert"
+      ],
+      "first_publish_year": 1976,
       "key": "/works/OL893516W",
       "title": "Children of Dune"
     },
     {
+      "author_name": [
+        "Frank Herbert"
+      ],
+      "first_publish_year": 1981,
       "key": "/works/OL893515W",
       "title": "God Emperor of Dune"
     },
     {
+      "author_name": [
+        "Frank Herbert"
+      ],
+      "first_publish_year": 1984,
       "key": "/works/OL893502W",
       "title": "Heretics of Dune"
     },
     {
+      "author_name": [
+        "Frank Herbert"
+      ],
+      "first_publish_year": 1985,
       "key": "/works/OL893508W",
       "title": "Chapterhouse Dune"
     },
     {
+      "author_name": [
+        "Frank Herbert"
+      ],
+      "first_publish_year": 1969,
       "key": "/works/OL893444W",
       "title": "Dune, Dune Messiah, Children of Dune"
     },
     {
+      "author_name": [
+        "Kevin J. Anderson",
+        "Brian Herbert"
+      ],
+      "first_publish_year": 1994,
       "key": "/works/OL14961045W",
       "title": "Sandworms of Dune"
     },
     {
+      "author_name": [
+        "Beatrice Sparks"
+      ],
+      "first_publish_year": 1971,
       "key": "/works/OL264729W",
       "title": "Go Ask Alice"
     },
     {
+      "author_name": [
+        "Brian Herbert",
+        "Kevin J. Anderson"
+      ],
+      "first_publish_year": 2001,
       "key": "/works/OL19618275W",
       "title": "Dune"
     },
     {
+      "author_name": [
+        "Brian Herbert",
+        "Kevin J. Anderson",
+        "Scott Brick"
+      ],
+      "first_publish_year": 2016,
       "key": "/works/OL18149681W",
       "title": "Navigators of Dune"
     },
     {
+      "author_name": [
+        "Kevin J. Anderson",
+        "Brian Herbert"
+      ],
+      "first_publish_year": 2002,
       "key": "/works/OL14961038W",
       "title": "The Butlerian Jihad"
     },
     {
+      "author_name": [
+        "Kevin J. Anderson",
+        "Brian Herbert"
+      ],
+      "first_publish_year": 1992,
       "key": "/works/OL522172W",
       "title": "Hunter's Moon & Other American Gothic Tales"
     },
     {
+      "author_name": [
+        "Simone de Beauvoir"
+      ],
+      "first_publish_year": 1900,
       "key": "/works/OL260382W",
       "title": "Mémoires d'une jeune fille rangée"
     },
     {
+      "author_name": [
+        "Agatha Christie"
+      ],
+      "first_publish_year": 1932,
       "key": "/works/OL472165W",
       "title": "Peril at End House"
     },
     {
+      "author_name": [
+        "Brian Herbert"
+      ],
+      "first_publish_year": 1999,
       "key": "/works/OL5275519W",
       "title": "Dune House Corrino"
     },
     {
+      "author_name": [
+        "Raymond E. Feist"
+      ],
+      "first_publish_year": 1994,
       "key": "/works/OL554692W",
       "title": "Shadow of a Dark Queen"
     },
     {
+      "author_name": [
+        "Eloisa James"
+      ],
+      "first_publish_year": 1999,
       "key": "/works/OL17057W",
       "title": "Potent Pleasures"
     },
     {
+      "author_name": [
+        "Frank Herbert",
+        "Kevin J. Anderson",
+        "Brian Herbert"
+      ],
+      "first_publish_year": 2001,
       "key": "/works/OL8383295W",
       "title": "House Corrino"
     },
     {
+      "author_name": [
+        "Abe Kōbō"
+      ],
+      "first_publish_year": 1962,
       "key": "/works/OL2644757W",
       "title": "砂の女"
     }

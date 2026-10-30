@@ -182,3 +182,72 @@ describe('failures are typed errors that say what to fix', () => {
     });
   });
 });
+
+describe('one retry when MusicBrainz is busy (it answers 503 under load)', () => {
+  const inOrder = (...responses: Response[]) => {
+    const queue = [...responses];
+    return () => queue.shift() ?? json({}, 500);
+  };
+
+  it('a 503 then a success is the success', async () => {
+    const { catalog } = setup(inOrder(json({}, 503), json(albumSearch)));
+
+    const result = await catalog.search(okComputer);
+
+    expect(unwrap(result)[0]).toMatchObject({ title: 'OK Computer' });
+  });
+
+  it('two 503s in a row is SourceUnavailable', async () => {
+    const { catalog } = setup(inOrder(json({}, 503), json({}, 503), json(albumSearch)));
+
+    const result = await catalog.search(okComputer);
+
+    expect(result).toEqual({ ok: false, error: { kind: 'SourceUnavailable' } });
+  });
+
+  it('retries once, never more', async () => {
+    const { catalog, calls } = setup(inOrder(json({}, 503), json({}, 503), json(albumSearch)));
+
+    await catalog.search(okComputer);
+
+    expect(calls).toHaveLength(2);
+  });
+
+  it('the retry waits its turn like any other request', async () => {
+    const { catalog, sleeps } = setup(inOrder(json({}, 503), json(albumSearch)));
+
+    await catalog.search(okComputer);
+
+    expect(sleeps).toEqual([0, 1200]);
+  });
+
+  it('a network failure is retried too', async () => {
+    let failed = false;
+    const { catalog } = setup(() => {
+      if (failed) return json(albumSearch);
+      failed = true;
+      throw new TypeError('fetch failed');
+    });
+
+    const result = await catalog.search(okComputer);
+
+    expect(unwrap(result)).toHaveLength(albumSearch['release-groups'].length);
+  });
+
+  it.each`
+    case                 | response
+    ${'403'}             | ${json({}, 403)}
+    ${'404'}             | ${json({}, 404)}
+    ${'429'}             | ${json({}, 429)}
+    ${'a non-JSON body'} | ${new Response('<html>oops</html>', { status: 200 })}
+  `(
+    '$case is not retried: trying again would not help',
+    async ({ response }: { response: Response }) => {
+      const { catalog, calls } = setup(inOrder(response, json(albumSearch)));
+
+      await catalog.search(okComputer);
+
+      expect(calls).toHaveLength(1);
+    },
+  );
+});

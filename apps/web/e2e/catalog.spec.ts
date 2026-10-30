@@ -13,8 +13,8 @@ test('searching movies by keyboard lists matching results and credits TMDB', asy
 
   await expect(page).toHaveURL(/\/catalog\/movies\?q=matrix$/);
   await expect(page.getByRole('list', { name: 'Results' }).getByRole('listitem')).toHaveText([
-    'The Matrix',
-    'The Matrix Reloaded',
+    'The Matrix (1999)',
+    'The Matrix Reloaded (2003)',
   ]);
   await expect(
     page.getByText('This product uses the TMDB API but is not endorsed or certified by TMDB.'),
@@ -29,8 +29,8 @@ test('searching books lists only books, without crediting TMDB', async ({ page }
 
   await expect(page).toHaveURL(/\/catalog\/books\?q=dune$/);
   await expect(page.getByRole('list', { name: 'Results' }).getByRole('listitem')).toHaveText([
-    'Dune',
-    'Dune Messiah',
+    'Dune (1965) — Frank Herbert',
+    'Dune Messiah (1969) — Frank Herbert',
   ]);
   await expect(page.getByText('This product uses the TMDB API', { exact: false })).toHaveCount(0);
 });
@@ -43,6 +43,6 @@ test('searching albums lists only albums', async ({ page }) => {
 
   await expect(page).toHaveURL(/\/catalog\/albums\?q=computer$/);
   await expect(page.getByRole('list', { name: 'Results' }).getByRole('listitem')).toHaveText([
-    'OK Computer',
+    'OK Computer (1997) — Radiohead',
   ]);
 });

@@ -4,7 +4,12 @@ import type { MediaType, Work } from './work';
 
 export type CatalogQuery = { mediaType: MediaType; query: string };
 
-export type CatalogItem = Omit<Work, 'id'> & { ref: ExternalRef };
+// What a search shows before anything is saved. Creators are display names, not Creator records yet.
+export type CatalogItem = Omit<Work, 'id'> & {
+  ref: ExternalRef;
+  creators: readonly string[];
+  year: number | null;
+};
 
 export type SourceError =
   | { kind: 'UnsupportedMediaType'; mediaType: MediaType }
