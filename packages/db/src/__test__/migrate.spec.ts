@@ -43,7 +43,7 @@ const refsOf = async (workId: string) => {
 
 describe('migrateToLatest', () => {
   it('applies every migration to an empty database', () => {
-    expect(firstRun).toEqual(['0001-catalog', '0002-app-user']);
+    expect(firstRun).toEqual(['0001-catalog', '0002-app-user', '0003-auth']);
   });
 
   it('applies nothing when the database is already up to date', async () => {
