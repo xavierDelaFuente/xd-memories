@@ -13,8 +13,10 @@
   },
   "dependencies": {
     "@xd-memories/contracts": "workspace:*",
+    "@xd-memories/db": "workspace:*",
     "@xd-memories/domain": "workspace:*",
     "@xd-memories/sources": "workspace:*",
+    "better-auth": "1.7.15",
     "next": "^16.4.3",
     "react": "^19.3.1",
     "react-dom": "^19.3.1"
