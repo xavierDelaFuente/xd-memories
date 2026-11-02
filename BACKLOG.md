@@ -35,3 +35,21 @@ Movies end to end first; books and music reuse the path.
 - 2.8 Rate limiter (`U`): given the last request time (or none) and `now`, the ms to wait to stay under 1 req/s; interval configurable; a clock that moved back waits one interval, never more
 - 2.9 MusicBrainz (`U`, recorded fixture): a release-group search parses into an album keyed on the release group (`release-group/<MBID>`); the query is escaped and limited to primary type Album; the client stays under 1 req/s via `waitBeforeNextRequest` (clock and sleep injected); same typed failures as TMDB
 - 2.10 Source health (live, scheduled): a daily GitHub Action runs each adapter against its live API and expects a known title (The Matrix · Breaking Bad · Dune · OK Computer); one retry for SourceUnavailable/RateLimited; not a PR check
+
+## Phase 3 — Library (Neon + Better Auth, RLS)
+
+Integration tests (`I`) run against Postgres in Testcontainers — Docker must be running locally; CI runners have it.
+
+- 3.1 Migrations (`I`): migrations apply to an empty Postgres and running them twice changes nothing; `works` + `external_refs` (one row per source + external id)
+- 3.2 RLS harness (`I`): the app connects as a role that does not own the tables; `withUser(userId, fn)` runs `fn` in a transaction with `set local app.user_id`; with no user set, user-owned rows are invisible
+- 3.3 Sign up / sign in (`E`): email + password through Better Auth (its tables in our migrations); a wrong password shows an error; signed out, `/library` redirects to sign-in
+- 3.4 Cache-on-save (`I`): the first save of a catalog item stores the work, its ref, the raw source payload and `sourceVersion`; a later save of the same ref, by anyone, reuses that `WorkId`
+- 3.5 Library entries + RLS (`I`): user A can neither read nor write user B's entries — the multi-tenancy test
+- 3.6 Add to library (`E`): from a search result, "Add" with a status (want · doing · done); `/library` lists it
+- 3.7 Status history (`I`): changing status appends an entry (`logStatus`); the library shows the latest
+- 3.8 Rating (`E`): personal 0–100 input, shown rounded; kept apart from source ratings
+- 3.9 Highlight (`I`): a highlight is visible to other signed-in users; everything else in a library stays private
+- 3.10 Progress (`E`): a series records the season reached (Open Question 2: season, episode optional later)
+- 3.11 Secrets (`I`): the built client bundle contains none of the server secret values
+- 3.12 Demo (`E`): "Try the demo" signs in to a seeded, read-only demo library — the showcase path for visitors
+- 3.13 Email verification + password reset (`I`): before anyone else signs up; Gmail SMTP (app password, €0) behind a `Mailer` port, so Resend + a domain can replace it
