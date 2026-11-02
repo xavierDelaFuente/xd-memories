@@ -42,7 +42,8 @@ Integration tests (`I`) run against Postgres in Testcontainers — Docker must b
 
 - 3.1 Migrations (`I`): migrations apply to an empty Postgres and running them twice changes nothing; `works` + `external_refs` (one row per source + external id)
 - 3.2 RLS harness (`I`): `withUser(db, userId, fn)` runs `fn` in one transaction as `app_user` (`set local role`; owns nothing, so RLS applies; no DDL) with `app.user_id()` set; both end with the transaction; a user sees only own rows and cannot write rows for others; `packages/db` exports no way to query outside `withUser`
-- 3.3 Sign up / sign in (`E`): email + password through Better Auth (its tables in our migrations); a wrong password shows an error; signed out, `/library` redirects to sign-in
+- 3.3a Auth storage (`I`): `0003-auth` matches what Better Auth expects (its migration planner finds nothing to create, add or fix); email + password sign-up and sign-in work; passwords stored hashed; `app_user` cannot read any auth table
+- 3.3b Sign up / sign in (`E`): `/sign-up` and `/sign-in` pages; a wrong password shows an error; signed out, `/library` redirects to sign-in; E2E runs against Postgres (Docker locally, a service container in CI)
 - 3.4 Cache-on-save (`I`): the first save of a catalog item stores the work, its ref, the raw source payload and `sourceVersion`; a later save of the same ref, by anyone, reuses that `WorkId`
 - 3.5 Library entries + RLS (`I`): user A can neither read nor write user B's entries — the multi-tenancy test
 - 3.6 Add to library (`E`): from a search result, "Add" with a status (want · doing · done); `/library` lists it
