@@ -2,6 +2,7 @@
 
 export { type AuthSettings, createAuth } from './auth';
 export { connect } from './connect';
+export { type LibraryItem, libraryOf, logEntry } from './library';
 export { migrateToLatest } from './migrate';
 export { withUser } from './rls';
-export { type CachedItem, saveWork } from './work-cache';
+export { saveWork } from './work-cache';

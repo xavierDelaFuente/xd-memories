@@ -8,6 +8,10 @@ export type CatalogItem = Omit<Work, 'id'> & {
   ref: ExternalRef;
   creators: readonly string[];
   year: number | null;
+  // The source's own payload and the API it came from: cache-on-save stores both, so the work
+  // can be parsed again later without asking the source.
+  sourceVersion: string;
+  raw: unknown;
 };
 
 export type SourceError =

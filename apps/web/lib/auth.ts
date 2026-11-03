@@ -8,13 +8,22 @@ function required(name: string): string {
   return value;
 }
 
+// Signs sessions, and (through a derived key) search results: see signed-item.ts.
+export const appSecret = () => required('BETTER_AUTH_SECRET');
+
+let db: ReturnType<typeof connect> | undefined;
 let auth: ReturnType<typeof createAuth> | undefined;
 
 // Built on first use, not at import: next build runs without database settings.
+export function getDb() {
+  db ??= connect(required('DATABASE_URL'));
+  return db;
+}
+
 export function getAuth() {
   auth ??= createAuth({
-    db: connect(required('DATABASE_URL')),
-    secret: required('BETTER_AUTH_SECRET'),
+    db: getDb(),
+    secret: appSecret(),
     baseURL: required('BETTER_AUTH_URL'),
     // Lets server actions set the session cookie.
     plugins: [nextCookies()],

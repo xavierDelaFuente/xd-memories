@@ -16,6 +16,8 @@ describe('parseAlbumSearch (recorded MusicBrainz response)', () => {
       title: 'OK Computer',
       creators: ['Radiohead'],
       year: 1997,
+      sourceVersion: 'ws/2/release-group',
+      raw: albumSearch['release-groups'][0],
     });
   });
 
