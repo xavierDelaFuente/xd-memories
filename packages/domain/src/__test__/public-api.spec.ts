@@ -6,6 +6,7 @@ it('exposes exactly the intended runtime API, so adding or dropping an export is
 
   expect(exported).toEqual([
     'MEDIA_TYPES',
+    'STATUSES',
     'addCredit',
     'addOrdering',
     'catalogByMediaType',
