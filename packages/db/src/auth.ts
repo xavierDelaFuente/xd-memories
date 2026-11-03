@@ -1,7 +1,13 @@
-import { type BetterAuthOptions, betterAuth } from 'better-auth';
+import { type BetterAuthOptions, type BetterAuthPlugin, betterAuth } from 'better-auth';
 import type { Kysely } from 'kysely';
 
-export type AuthSettings = { db: Kysely<unknown>; secret: string; baseURL: string };
+export type AuthSettings = {
+  db: Kysely<unknown>;
+  secret: string;
+  baseURL: string;
+  // The host framework's integration, such as nextCookies() in apps/web.
+  plugins?: BetterAuthPlugin[];
+};
 
 const timestamps = { createdAt: 'created_at', updatedAt: 'updated_at' };
 
@@ -41,13 +47,14 @@ const SCHEMA = {
   },
 } satisfies Partial<BetterAuthOptions>;
 
-export function authOptions({ db, secret, baseURL }: AuthSettings) {
+export function authOptions({ db, secret, baseURL, plugins = [] }: AuthSettings) {
   return {
     database: { db, type: 'postgres' },
     secret,
     baseURL,
     // Verification and reset arrive with a mailer (BACKLOG 3.13), before anyone else signs up.
     emailAndPassword: { enabled: true },
+    plugins,
     ...SCHEMA,
   } satisfies BetterAuthOptions;
 }

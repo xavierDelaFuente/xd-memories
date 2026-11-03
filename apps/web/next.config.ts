@@ -6,7 +6,12 @@ try {
 } catch {}
 
 const config: NextConfig = {
-  transpilePackages: ['@xd-memories/domain', '@xd-memories/contracts', '@xd-memories/sources'],
+  transpilePackages: [
+    '@xd-memories/domain',
+    '@xd-memories/contracts',
+    '@xd-memories/sources',
+    '@xd-memories/db',
+  ],
   typescript: { tsconfigPath: './tsconfig.build.json' },
 };
 

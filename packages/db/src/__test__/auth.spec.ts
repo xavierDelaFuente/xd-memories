@@ -39,6 +39,14 @@ describe('0003-auth matches what Better Auth expects', () => {
   );
 });
 
+it('the host app can add plugins, such as Next.js cookie handling', () => {
+  const plugin = { id: 'host-plugin' };
+
+  const options = authOptions({ ...settings(), plugins: [plugin] });
+
+  expect(options.plugins).toEqual([plugin]);
+});
+
 describe('email + password', () => {
   const signUp = (email: string, password = 'correct horse battery') =>
     createAuth(settings()).api.signUpEmail({ body: { email, password, name: 'Ada' } });

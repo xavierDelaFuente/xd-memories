@@ -48,6 +48,8 @@ jobs:
         with: { node-version: lts/*, cache: pnpm }
       - run: pnpm install --frozen-lockfile
       - run: pnpm --filter @xd-memories/web exec playwright install --with-deps chromium
+      # Same Postgres as local E2E runs (compose.yaml); migrations run as Playwright starts the app.
+      - run: docker compose up -d --wait
       - run: pnpm e2e
       - uses: actions/upload-artifact@v7
         if: failure()
