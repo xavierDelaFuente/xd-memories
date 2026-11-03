@@ -7,6 +7,7 @@ import {
   type SourceError,
 } from '@xd-memories/domain';
 import { z } from 'zod';
+import { withRaw } from '../raw';
 import { yearOf } from '../year';
 
 type SearchKind = {
@@ -32,17 +33,19 @@ const TV: SearchKind = {
 };
 
 function parseSearch(json: unknown, kind: SearchKind): Result<CatalogItem[], SourceError> {
-  const parsed = z.object({ results: z.array(kind.result) }).safeParse(json);
+  const parsed = z.object({ results: z.array(withRaw(kind.result)) }).safeParse(json);
   if (!parsed.success) return err({ kind: 'InvalidResponse', detail: parsed.error.message });
   return ok(
     parsed.data.results.map(
-      ({ id, title, date }): CatalogItem => ({
+      ({ value: { id, title, date }, raw }): CatalogItem => ({
         ref: { source: 'tmdb', externalId: `${kind.path}/${id}` },
         mediaType: kind.mediaType,
         title,
         // TMDB search carries no director or creator; that needs a credits call per result.
         creators: [],
         year: yearOf(date),
+        sourceVersion: `3/search/${kind.path}`,
+        raw,
       }),
     ),
   );

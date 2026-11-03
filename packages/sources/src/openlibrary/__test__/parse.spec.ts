@@ -13,6 +13,8 @@ describe('parseBookSearch (recorded Open Library response)', () => {
       title: 'Dune',
       creators: ['Frank Herbert'],
       year: 1965,
+      sourceVersion: 'search.json',
+      raw: bookSearch.docs[0],
     });
   });
 

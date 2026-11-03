@@ -16,7 +16,15 @@ const fixture = (
   title: string,
   year: number,
   creators: string[] = [],
-): CatalogItem => ({ ref: { source: 'fixture', externalId }, mediaType, title, creators, year });
+): CatalogItem => ({
+  ref: { source: 'fixture', externalId },
+  mediaType,
+  title,
+  creators,
+  year,
+  sourceVersion: 'fixture',
+  raw: { externalId, title },
+});
 
 const FIXTURES: CatalogItem[] = [
   fixture('m1', 'movie', 'The Matrix', 1999),

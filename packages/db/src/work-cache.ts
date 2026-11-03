@@ -2,9 +2,6 @@ import { randomUUID } from 'node:crypto';
 import type { CatalogItem, WorkId } from '@xd-memories/domain';
 import { sql, type Transaction } from 'kysely';
 
-// A catalog item as its source returned it: the parsed fields plus the raw payload.
-export type CachedItem = CatalogItem & { sourceVersion: string; raw: unknown };
-
 const UNIQUE_VIOLATION = '23505';
 
 const isUniqueViolation = (error: unknown) =>
@@ -20,7 +17,7 @@ async function workIdOf(db: Transaction<unknown>, { source, externalId }: Catalo
 // Cache-on-save: the first save of a ref, by anyone, stores the work; later saves reuse it.
 // Run inside withUser. Two requests saving the same new ref at once both insert; the loser's
 // ref collides on the primary key, its savepoint undoes its work too, and it reads the winner's.
-export async function saveWork(db: Transaction<unknown>, item: CachedItem): Promise<WorkId> {
+export async function saveWork(db: Transaction<unknown>, item: CatalogItem): Promise<WorkId> {
   const existing = await workIdOf(db, item.ref);
   if (existing !== undefined) return existing;
 

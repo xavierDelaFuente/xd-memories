@@ -3,7 +3,7 @@ import { type Kysely, sql } from 'kysely';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 import { migrateToLatest } from '../migrate';
 import { withUser } from '../rls';
-import { type CachedItem, saveWork } from '../work-cache';
+import { saveWork } from '../work-cache';
 import { startPostgres, type TestDatabase } from './postgres';
 
 let database: TestDatabase;
@@ -20,7 +20,7 @@ afterAll(async () => {
 });
 
 // Every test saves its own ref, so tests never see each other's works.
-const item = (externalId: string, overrides: Partial<CatalogItem> = {}): CachedItem => ({
+const item = (externalId: string, overrides: Partial<CatalogItem> = {}): CatalogItem => ({
   ref: { source: 'openlibrary', externalId },
   mediaType: 'book',
   title: 'Dune',
@@ -31,7 +31,7 @@ const item = (externalId: string, overrides: Partial<CatalogItem> = {}): CachedI
   ...overrides,
 });
 
-const save = (userId: string, cached: CachedItem) =>
+const save = (userId: string, cached: CatalogItem) =>
   withUser(db, userId, (trx) => saveWork(trx, cached));
 
 describe('the first save of a catalog item', () => {

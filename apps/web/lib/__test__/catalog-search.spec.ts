@@ -8,6 +8,8 @@ const matrix = {
   title: 'The Matrix',
   creators: [],
   year: 1999,
+  sourceVersion: 'fixture',
+  raw: {},
 };
 const animatrix = {
   ref: { source: 'fixture', externalId: 's1' },
@@ -15,6 +17,8 @@ const animatrix = {
   title: 'The Animatrix',
   creators: [],
   year: 2003,
+  sourceVersion: 'fixture',
+  raw: {},
 };
 const catalog = inMemoryCatalog([matrix, animatrix]);
 

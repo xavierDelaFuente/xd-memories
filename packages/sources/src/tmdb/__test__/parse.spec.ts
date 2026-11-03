@@ -14,6 +14,8 @@ describe('parseMovieSearch (recorded TMDB response)', () => {
       title: 'The Matrix',
       creators: [],
       year: 1999,
+      sourceVersion: '3/search/movie',
+      raw: movieSearch.results[0],
     });
   });
 
@@ -44,6 +46,8 @@ describe('parseTvSearch (recorded TMDB response)', () => {
       title: 'Threat Matrix',
       creators: [],
       year: 2003,
+      sourceVersion: '3/search/tv',
+      raw: tvSearch.results[0],
     });
   });
 

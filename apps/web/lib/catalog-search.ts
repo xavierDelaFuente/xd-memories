@@ -57,7 +57,11 @@ export function messageFor(error: SourceError): string {
 }
 
 // "OK Computer (1997) — Radiohead". Year and creators are what tell same-titled works apart.
-export function resultLabel({ title, creators, year }: CatalogItem): string {
+export function resultLabel({
+  title,
+  creators,
+  year,
+}: Pick<CatalogItem, 'title' | 'creators' | 'year'>): string {
   const dated = year === null ? title : `${title} (${year})`;
   return creators.length === 0 ? dated : `${dated} — ${creators.join(', ')}`;
 }
