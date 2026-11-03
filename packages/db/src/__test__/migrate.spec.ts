@@ -43,7 +43,7 @@ const refsOf = async (workId: string) => {
 
 describe('migrateToLatest', () => {
   it('applies every migration to an empty database', () => {
-    expect(firstRun).toEqual(['0001-catalog', '0002-app-user', '0003-auth']);
+    expect(firstRun).toEqual(['0001-catalog', '0002-app-user', '0003-auth', '0004-work-details']);
   });
 
   it('applies nothing when the database is already up to date', async () => {
@@ -56,7 +56,7 @@ describe('migrateToLatest', () => {
 describe('0001-catalog', () => {
   it.each`
     table              | columns
-    ${'works'}         | ${['created_at', 'id', 'media_type', 'title']}
+    ${'works'}         | ${['created_at', 'creators', 'id', 'media_type', 'title', 'year']}
     ${'external_refs'} | ${['external_id', 'fetched_at', 'raw', 'source', 'source_version', 'work_id']}
   `('creates $table', async ({ table, columns }: { table: string; columns: string[] }) => {
     const actual = await columnsOf(table);
@@ -105,6 +105,28 @@ describe('0001-catalog', () => {
   it('a title cannot be blank', async () => {
     const act = () =>
       sql`insert into works (id, media_type, title) values ('w-blank', 'movie', '  ')`.execute(db);
+
+    await expect(act()).rejects.toThrow(/check constraint/);
+  });
+});
+
+describe('0004-work-details', () => {
+  it('a work without creators has none, not null', async () => {
+    await work('w-no-creators');
+
+    const { rows } = await sql`select creators from works where id = 'w-no-creators'`.execute(db);
+
+    expect(rows).toEqual([{ creators: [] }]);
+  });
+
+  it.each`
+    year
+    ${-1}
+    ${10_000}
+  `('a year of $year is rejected', async ({ year }: { year: number }) => {
+    const act = () =>
+      sql`insert into works (id, media_type, title, year)
+          values (${`w-year-${year}`}, 'movie', 'X', ${year})`.execute(db);
 
     await expect(act()).rejects.toThrow(/check constraint/);
   });
