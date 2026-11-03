@@ -46,7 +46,7 @@ Integration tests (`I`) run against Postgres in Testcontainers — Docker must b
 - 3.3b Sign up / sign in (`E`): `/sign-up` and `/sign-in` pages; a wrong password shows an error; signed out, `/library` redirects to sign-in; E2E runs against Postgres from `compose.yaml`, locally and in CI
 - 3.4 Cache-on-save (`I`): the first save of a catalog item stores the work, its ref, the raw source payload and `sourceVersion`; a later save of the same ref, by anyone, reuses that `WorkId`
 - 3.5 Library entries + RLS (`I`): user A can neither read nor write user B's entries — the multi-tenancy test
-- 3.6 Add to library (`E`): from a search result, "Add" with a status (want · doing · done); `/library` lists it
+- 3.6 Add to library (`E`): from a search result, "Add" with a status (want · doing · done); `/library` lists it; works are shared by every user, so the saved item comes from the server (re-fetched or signed), never as posted by the browser
 - 3.7 Status history (`I`): changing status appends an entry (`logStatus`); the library shows the latest
 - 3.8 Rating (`E`): personal 0–100 input, shown rounded; kept apart from source ratings
 - 3.9 Highlight (`I`): a highlight is visible to other signed-in users; everything else in a library stays private
