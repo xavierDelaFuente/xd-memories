@@ -7,13 +7,18 @@ export const STATUS_LABELS: Record<Status, string> = {
   done: 'Done',
 };
 
-type Shown = Parameters<typeof resultLabel>[0] & { status: Status; rating: Rating | null };
+type Shown = Parameters<typeof resultLabel>[0] & {
+  status: Status;
+  season: number | null;
+  rating: Rating | null;
+};
 
 // A library row reads like the search result it was added from, so the same work looks the same.
-export const libraryLabel = ({ status, rating, ...work }: Shown) =>
+export const libraryLabel = ({ status, season, rating, ...work }: Shown) =>
   [
     resultLabel(work),
     STATUS_LABELS[status],
+    ...(season === null ? [] : [`Season ${season}`]),
     ...(rating === null ? [] : [`${displayRating(rating)}/100`]),
   ].join(' · ');
 

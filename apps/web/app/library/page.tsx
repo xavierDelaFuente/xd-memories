@@ -9,6 +9,7 @@ import {
   addHighlight,
   removeHighlight,
   updateRating,
+  updateSeason,
   updateStatus,
 } from '../../lib/library-actions';
 import { historyLabel, libraryLabel, STATUS_LABELS } from '../../lib/library-view';
@@ -58,6 +59,23 @@ export default async function LibraryPage() {
                     Update
                   </button>
                 </form>
+                {item.mediaType === 'series' && (
+                  <form action={updateSeason}>
+                    <input type="hidden" name="workId" value={item.workId} />
+                    <input
+                      type="number"
+                      name="season"
+                      min={1}
+                      step={1}
+                      required
+                      aria-label={`Season reached in ${work}`}
+                      defaultValue={item.season ?? ''}
+                    />
+                    <button type="submit" aria-label={`Save season for ${work}`}>
+                      Save season
+                    </button>
+                  </form>
+                )}
                 <form action={updateRating}>
                   <input type="hidden" name="workId" value={item.workId} />
                   <input

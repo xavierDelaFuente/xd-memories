@@ -33,3 +33,9 @@ export const RateForm = z.object({
 
 // Highlight, or stop highlighting, a work already in the library (BACKLOG 3.9).
 export const HighlightForm = z.object({ workId: z.string().min(1) });
+
+// The season reached in a series already in the library (BACKLOG 3.10): a whole season, from 1.
+export const SeasonForm = z.object({
+  workId: z.string().min(1),
+  season: z.string().trim().min(1).pipe(z.coerce.number<string>().int().min(1)),
+});

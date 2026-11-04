@@ -6,4 +6,5 @@ export {
   ChangeStatusForm,
   HighlightForm,
   RateForm,
+  SeasonForm,
 } from './library';

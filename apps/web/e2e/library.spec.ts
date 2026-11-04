@@ -79,3 +79,27 @@ test('rating a work in your library shows the rating, rounded', async ({ page })
 
   await expect(libraryHeadings(page)).toHaveText([`${DUNE} · Done · 88/100`]);
 });
+
+test('a series in your library records the season reached', async ({ page }) => {
+  const ANIMATRIX = 'The Animatrix (2003)';
+  await signUp(page);
+  await page.goto('/catalog/series?q=animatrix');
+  await page.getByRole('combobox', { name: `Status for ${ANIMATRIX}` }).selectOption('In progress');
+  await page.getByRole('button', { name: `Add ${ANIMATRIX}` }).click();
+  await expect(page.getByRole('status')).toHaveText('Added to your library as In progress.');
+  await page.goto('/library');
+  await page.getByRole('spinbutton', { name: `Season reached in ${ANIMATRIX}` }).fill('1');
+
+  await page.getByRole('button', { name: `Save season for ${ANIMATRIX}` }).click();
+
+  await expect(libraryHeadings(page)).toHaveText([`${ANIMATRIX} · In progress · Season 1`]);
+});
+
+test('a book in your library has no season to record', async ({ page }) => {
+  await signUp(page);
+  await addDune(page, 'Want');
+
+  await page.goto('/library');
+
+  await expect(page.getByRole('spinbutton', { name: /^Season reached in / })).toHaveCount(0);
+});

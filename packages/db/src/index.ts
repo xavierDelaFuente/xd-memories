@@ -12,6 +12,7 @@ export {
   libraryOf,
   logEntry,
   rate,
+  reachSeason,
   unhighlight,
 } from './library';
 export { migrateToLatest } from './migrate';
