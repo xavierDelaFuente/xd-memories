@@ -1,4 +1,4 @@
-import type { Entry, Status } from '@xd-memories/domain';
+import { displayRating, type Entry, type Rating, type Status } from '@xd-memories/domain';
 import { resultLabel } from './catalog-search';
 
 export const STATUS_LABELS: Record<Status, string> = {
@@ -7,11 +7,15 @@ export const STATUS_LABELS: Record<Status, string> = {
   done: 'Done',
 };
 
-type Shown = Parameters<typeof resultLabel>[0] & { status: Status };
+type Shown = Parameters<typeof resultLabel>[0] & { status: Status; rating: Rating | null };
 
 // A library row reads like the search result it was added from, so the same work looks the same.
-export const libraryLabel = ({ status, ...work }: Shown) =>
-  `${resultLabel(work)} · ${STATUS_LABELS[status]}`;
+export const libraryLabel = ({ status, rating, ...work }: Shown) =>
+  [
+    resultLabel(work),
+    STATUS_LABELS[status],
+    ...(rating === null ? [] : [`${displayRating(rating)}/100`]),
+  ].join(' · ');
 
 // UTC, so the server renders the same date wherever it runs.
 const DAY = new Intl.DateTimeFormat('en-GB', { dateStyle: 'medium', timeZone: 'UTC' });

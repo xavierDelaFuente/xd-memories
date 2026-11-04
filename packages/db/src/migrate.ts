@@ -5,6 +5,7 @@ import * as appUser from './migrations/0002-app-user';
 import * as auth from './migrations/0003-auth';
 import * as workDetails from './migrations/0004-work-details';
 import * as entries from './migrations/0005-entries';
+import * as ratings from './migrations/0006-ratings';
 
 // Listed in code, not read from a folder: migrations are type-checked and need no file paths at runtime.
 // Names sort in apply order; never rename or edit one that has shipped — add a new one.
@@ -14,6 +15,7 @@ const MIGRATIONS: Record<string, Migration> = {
   '0003-auth': auth,
   '0004-work-details': workDetails,
   '0005-entries': entries,
+  '0006-ratings': ratings,
 };
 
 // A failed migration is a deploy error, not a domain outcome, so it throws.

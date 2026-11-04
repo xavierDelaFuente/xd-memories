@@ -1,7 +1,8 @@
 'use server';
 
-import { AddToLibraryForm, ChangeStatusForm } from '@xd-memories/contracts';
-import { changeStatus, logEntry, saveWork, withUser } from '@xd-memories/db';
+import { AddToLibraryForm, ChangeStatusForm, RateForm } from '@xd-memories/contracts';
+import { changeStatus, logEntry, rate, saveWork, withUser } from '@xd-memories/db';
+import { createRating } from '@xd-memories/domain';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { appSecret, currentSession, getDb } from './auth';
@@ -48,5 +49,20 @@ export async function updateStatus(form: FormData): Promise<void> {
   await withUser(getDb(), session.user.id, (trx) =>
     changeStatus(trx, { workId, status, at: new Date() }),
   );
+  revalidatePath('/library');
+}
+
+// From /library, like updateStatus: a rating outside 0–100, or for a work not in this user's
+// library (rate checks), changes nothing.
+export async function updateRating(form: FormData): Promise<void> {
+  const session = await currentSession();
+  if (!session) redirect('/sign-in');
+
+  const parsed = RateForm.safeParse(Object.fromEntries(form));
+  if (!parsed.success) return;
+  const rating = createRating(parsed.data.rating);
+  if (!rating.ok) return;
+  const { workId } = parsed.data;
+  await withUser(getDb(), session.user.id, (trx) => rate(trx, { workId, rating: rating.value }));
   revalidatePath('/library');
 }

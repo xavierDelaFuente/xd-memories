@@ -1,7 +1,7 @@
-import type { CatalogItem } from '@xd-memories/domain';
+import { type CatalogItem, createRating, type Rating } from '@xd-memories/domain';
 import { type Kysely, sql } from 'kysely';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { changeStatus, historyOf, libraryOf, logEntry } from '../library';
+import { changeStatus, historyOf, libraryOf, logEntry, rate } from '../library';
 import { migrateToLatest } from '../migrate';
 import { withUser } from '../rls';
 import { saveWork } from '../work-cache';
@@ -30,7 +30,9 @@ beforeAll(async () => {
   await sql`
     insert into users (id, name, email, email_verified)
     select id, id, id || '@example.com', false
-    from unnest(array['ada', 'bea', 'cal', 'dan', 'eve', 'fay', 'gus']) as id`.execute(db);
+    from unnest(array[
+      'ada', 'bea', 'cal', 'dan', 'eve', 'fay', 'gus', 'hal', 'ivy', 'jo', 'kim', 'lou'
+    ]) as id`.execute(db);
 });
 
 afterAll(async () => {
@@ -61,6 +63,7 @@ describe('libraryOf', () => {
         year: 1965,
         status: 'want',
         at: day(1),
+        rating: null,
       },
     ]);
   });
@@ -134,5 +137,70 @@ describe('historyOf', () => {
       { workId, status: 'want', at: day(1) },
       { workId, status: 'done', at: day(5) },
     ]);
+  });
+});
+
+describe('rate', () => {
+  const rating = (value: number): Rating => {
+    const created = createRating(value);
+    if (!created.ok) throw new Error(`${value} is not a rating`);
+    return created.value;
+  };
+  const rateAs = (userId: string, workId: string, value: number) =>
+    withUser(db, userId, (trx) => rate(trx, { workId, rating: rating(value) }));
+  const ratingsOf = async (userId: string) =>
+    (await libraryFor(userId)).map(({ title, rating }) => ({ title, rating }));
+
+  it('keeps the rating exactly as given: rounding is for display', async () => {
+    const workId = await add('hal', book('works/OL9W', 'Dune'), 'done', day(1));
+    await rateAs('hal', workId, 87.5);
+
+    const ratings = await ratingsOf('hal');
+
+    expect(ratings).toEqual([{ title: 'Dune', rating: 87.5 }]);
+  });
+
+  it('replaces an earlier rating of the same work', async () => {
+    const workId = await add('ivy', book('works/OL10W', 'Dune'), 'done', day(1));
+    await rateAs('ivy', workId, 60);
+    await rateAs('ivy', workId, 95);
+
+    const ratings = await ratingsOf('ivy');
+
+    expect(ratings).toEqual([{ title: 'Dune', rating: 95 }]);
+  });
+
+  it('reports that it rated a work in your library', async () => {
+    const workId = await add('jo', book('works/OL11W', 'Dune'), 'want', day(1));
+
+    const rated = await rateAs('jo', workId, 70);
+
+    expect(rated).toBe(true);
+  });
+
+  it('rates nothing for a work that is only in someone else’s library', async () => {
+    const workId = await add('ada', book('works/OL12W', 'Dune Messiah'), 'want', day(1));
+
+    const rated = await rateAs('kim', workId, 70);
+
+    expect(rated).toBe(false);
+  });
+
+  it('is private: someone else’s rating of the same work is not yours', async () => {
+    const workId = await add('lou', book('works/OL13W', 'Dune'), 'done', day(1));
+    await add('kim', book('works/OL13W', 'Dune'), 'done', day(1));
+    await rateAs('kim', workId, 40);
+
+    const ratings = await ratingsOf('lou');
+
+    expect(ratings).toEqual([{ title: 'Dune', rating: null }]);
+  });
+
+  it('the database refuses a rating outside 0–100, whatever the caller checked', async () => {
+    const workId = await add('jo', book('works/OL14W', 'Dune'), 'want', day(1));
+
+    const rated = withUser(db, 'jo', (trx) => rate(trx, { workId, rating: 101 as Rating }));
+
+    await expect(rated).rejects.toThrow(/ratings_rating_check/);
   });
 });
