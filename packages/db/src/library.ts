@@ -18,6 +18,27 @@ export async function logEntry(db: Transaction<unknown>, { workId, status, at }:
   );
 }
 
+// Appends a status change for a work already in the signed-in user's library, and reports
+// whether it did. The "already in" check runs under row level security, so it sees only this
+// user's entries: a posted work id can't add a work the user never added.
+export async function changeStatus(
+  db: Transaction<unknown>,
+  { workId, status, at }: Entry,
+): Promise<boolean> {
+  const { numAffectedRows } = await sql`
+    insert into entries (work_id, status, at)
+    select ${workId}, ${status}, ${at}
+    where exists (select from entries where work_id = ${workId})`.execute(db);
+  return numAffectedRows === 1n;
+}
+
+// Every status change of the signed-in user, oldest first.
+export async function historyOf(db: Transaction<unknown>): Promise<Entry[]> {
+  const { rows } = await sql<Entry>`
+    select work_id as "workId", status, at from entries order by at, id`.execute(db);
+  return rows;
+}
+
 // The signed-in user's library: each work once, at its latest status, most recent first.
 export async function libraryOf(db: Transaction<unknown>): Promise<LibraryItem[]> {
   const { rows } = await sql<LibraryItem>`

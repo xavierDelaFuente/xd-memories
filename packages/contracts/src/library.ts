@@ -17,3 +17,9 @@ export const AddToLibraryForm = z.object({
   item: z.string().min(1),
   status: z.enum(STATUSES),
 });
+
+// A new status for a work already in the library (BACKLOG 3.7).
+export const ChangeStatusForm = z.object({
+  workId: z.string().min(1),
+  status: z.enum(STATUSES),
+});

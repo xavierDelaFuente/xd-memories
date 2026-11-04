@@ -1,6 +1,6 @@
 import type { Status } from '@xd-memories/domain';
 import { describe, expect, it } from 'vitest';
-import { libraryLabel, STATUS_LABELS } from '../library-view';
+import { historyLabel, libraryLabel, STATUS_LABELS } from '../library-view';
 
 describe('STATUS_LABELS', () => {
   it.each`
@@ -25,5 +25,17 @@ describe('libraryLabel', () => {
     });
 
     expect(label).toBe('Dune (1965) — Frank Herbert · In progress');
+  });
+});
+
+describe('historyLabel', () => {
+  it.each`
+    status    | at                                  | label
+    ${'want'} | ${new Date('2026-11-03T10:00:00Z')} | ${'Want · 3 Nov 2026'}
+    ${'done'} | ${new Date('2026-01-31T23:30:00Z')} | ${'Done · 31 Jan 2026'}
+  `('$label', ({ status, at, label }: { status: Status; at: Date; label: string }) => {
+    const shown = historyLabel({ status, at });
+
+    expect(shown).toBe(label);
   });
 });
