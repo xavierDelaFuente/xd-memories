@@ -50,6 +50,7 @@ describe('migrateToLatest', () => {
       '0004-work-details',
       '0005-entries',
       '0006-ratings',
+      '0007-highlights',
     ]);
   });
 

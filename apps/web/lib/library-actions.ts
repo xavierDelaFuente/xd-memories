@@ -1,7 +1,20 @@
 'use server';
 
-import { AddToLibraryForm, ChangeStatusForm, RateForm } from '@xd-memories/contracts';
-import { changeStatus, logEntry, rate, saveWork, withUser } from '@xd-memories/db';
+import {
+  AddToLibraryForm,
+  ChangeStatusForm,
+  HighlightForm,
+  RateForm,
+} from '@xd-memories/contracts';
+import {
+  changeStatus,
+  highlight,
+  logEntry,
+  rate,
+  saveWork,
+  unhighlight,
+  withUser,
+} from '@xd-memories/db';
 import { createRating } from '@xd-memories/domain';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
@@ -65,4 +78,26 @@ export async function updateRating(form: FormData): Promise<void> {
   const { workId } = parsed.data;
   await withUser(getDb(), session.user.id, (trx) => rate(trx, { workId, rating: rating.value }));
   revalidatePath('/library');
+}
+
+// From /library: show a work on your profile, or stop. highlight checks the work is in this
+// user's library; unhighlight can only remove their own.
+async function changeHighlight(form: FormData, change: typeof highlight) {
+  const session = await currentSession();
+  if (!session) redirect('/sign-in');
+
+  const parsed = HighlightForm.safeParse(Object.fromEntries(form));
+  if (!parsed.success) return;
+  const { workId } = parsed.data;
+  await withUser(getDb(), session.user.id, (trx) => change(trx, workId));
+  revalidatePath('/library');
+  revalidatePath(`/people/${session.user.id}`);
+}
+
+export async function addHighlight(form: FormData): Promise<void> {
+  await changeHighlight(form, highlight);
+}
+
+export async function removeHighlight(form: FormData): Promise<void> {
+  await changeHighlight(form, unhighlight);
 }

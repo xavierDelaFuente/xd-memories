@@ -1,7 +1,16 @@
 import { type CatalogItem, createRating, type Rating } from '@xd-memories/domain';
 import { type Kysely, sql } from 'kysely';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { changeStatus, historyOf, libraryOf, logEntry, rate } from '../library';
+import {
+  changeStatus,
+  highlight,
+  highlightsOf,
+  historyOf,
+  libraryOf,
+  logEntry,
+  rate,
+  unhighlight,
+} from '../library';
 import { migrateToLatest } from '../migrate';
 import { withUser } from '../rls';
 import { saveWork } from '../work-cache';
@@ -31,7 +40,8 @@ beforeAll(async () => {
     insert into users (id, name, email, email_verified)
     select id, id, id || '@example.com', false
     from unnest(array[
-      'ada', 'bea', 'cal', 'dan', 'eve', 'fay', 'gus', 'hal', 'ivy', 'jo', 'kim', 'lou'
+      'ada', 'bea', 'cal', 'dan', 'eve', 'fay', 'gus', 'hal', 'ivy', 'jo', 'kim', 'lou',
+      'max', 'ned', 'oli', 'pam', 'quin'
     ]) as id`.execute(db);
 });
 
@@ -64,6 +74,7 @@ describe('libraryOf', () => {
         status: 'want',
         at: day(1),
         rating: null,
+        highlighted: false,
       },
     ]);
   });
@@ -202,5 +213,82 @@ describe('rate', () => {
     const rated = withUser(db, 'jo', (trx) => rate(trx, { workId, rating: 101 as Rating }));
 
     await expect(rated).rejects.toThrow(/ratings_rating_check/);
+  });
+});
+
+describe('highlights', () => {
+  const highlightAs = (userId: string, workId: string) =>
+    withUser(db, userId, (trx) => highlight(trx, workId));
+  const highlightsSeenBy = (viewerId: string, ownerId: string) =>
+    withUser(db, viewerId, (trx) => highlightsOf(trx, ownerId));
+
+  it('another signed-in user sees a highlighted work, and nothing else of the library', async () => {
+    const workId = await add('max', book('works/OL20W', 'Dune'), 'done', day(1));
+    await highlightAs('max', workId);
+
+    const seen = await highlightsSeenBy('ned', 'max');
+
+    expect(seen).toEqual([
+      { workId, mediaType: 'book', title: 'Dune', creators: ['Frank Herbert'], year: 1965 },
+    ]);
+  });
+
+  it('lists the most recently highlighted first', async () => {
+    const dune = await add('oli', book('works/OL21W', 'Dune'), 'done', day(1));
+    const messiah = await add('oli', book('works/OL22W', 'Dune Messiah'), 'done', day(2));
+    await highlightAs('oli', messiah);
+    await highlightAs('oli', dune);
+
+    const seen = await highlightsSeenBy('oli', 'oli');
+
+    expect(seen.map(({ title }) => title)).toEqual(['Dune', 'Dune Messiah']);
+  });
+
+  it('highlighting a work twice lists it once', async () => {
+    const workId = await add('pam', book('works/OL23W', 'Dune'), 'done', day(1));
+    await highlightAs('pam', workId);
+    await highlightAs('pam', workId);
+
+    const seen = await highlightsSeenBy('pam', 'pam');
+
+    expect(seen.map(({ title }) => title)).toEqual(['Dune']);
+  });
+
+  it('highlights nothing for a work that is only in someone else’s library', async () => {
+    const workId = await add('ada', book('works/OL24W', 'Children of Dune'), 'want', day(1));
+    await highlightAs('quin', workId);
+
+    const seen = await highlightsSeenBy('quin', 'quin');
+
+    expect(seen).toEqual([]);
+  });
+
+  it('unhighlight removes it', async () => {
+    const workId = await add('ned', book('works/OL25W', 'Dune'), 'done', day(1));
+    await highlightAs('ned', workId);
+    await withUser(db, 'ned', (trx) => unhighlight(trx, workId));
+
+    const seen = await highlightsSeenBy('max', 'ned');
+
+    expect(seen).toEqual([]);
+  });
+
+  it('your library marks the works you highlighted', async () => {
+    const workId = await add('pam', book('works/OL26W', 'Heretics of Dune'), 'done', day(3));
+    await highlightAs('pam', workId);
+
+    const library = await libraryFor('pam');
+
+    expect(library.find((item) => item.workId === workId)?.highlighted).toBe(true);
+  });
+
+  it('your library does not mark a work someone else highlighted', async () => {
+    const workId = await add('quin', book('works/OL27W', 'Dune'), 'done', day(1));
+    await add('oli', book('works/OL27W', 'Dune'), 'done', day(1));
+    await highlightAs('oli', workId);
+
+    const library = await libraryFor('quin');
+
+    expect(library.map(({ highlighted }) => highlighted)).toEqual([false]);
   });
 });
