@@ -30,3 +30,6 @@ export const RateForm = z.object({
   workId: z.string().min(1),
   rating: z.string().trim().min(1).pipe(z.coerce.number()),
 });
+
+// Highlight, or stop highlighting, a work already in the library (BACKLOG 3.9).
+export const HighlightForm = z.object({ workId: z.string().min(1) });

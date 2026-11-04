@@ -5,7 +5,12 @@ import { redirect } from 'next/navigation';
 import { currentSession, getDb } from '../../lib/auth';
 import { signOut } from '../../lib/auth-actions';
 import { resultLabel } from '../../lib/catalog-search';
-import { updateRating, updateStatus } from '../../lib/library-actions';
+import {
+  addHighlight,
+  removeHighlight,
+  updateRating,
+  updateStatus,
+} from '../../lib/library-actions';
 import { historyLabel, libraryLabel, STATUS_LABELS } from '../../lib/library-view';
 
 export default async function LibraryPage() {
@@ -19,7 +24,10 @@ export default async function LibraryPage() {
   return (
     <>
       <h1>Library</h1>
-      <p>Signed in as {session.user.email}</p>
+      <p>
+        Signed in as {session.user.email} ·{' '}
+        <Link href={`/people/${session.user.id}`}>Your highlights</Link>
+      </p>
       {library.length === 0 ? (
         <p>
           Nothing here yet. Search <Link href="/catalog/movies">movies</Link>,{' '}
@@ -65,6 +73,18 @@ export default async function LibraryPage() {
                   <button type="submit" aria-label={`Rate ${work}`}>
                     Rate
                   </button>
+                </form>
+                <form action={item.highlighted ? removeHighlight : addHighlight}>
+                  <input type="hidden" name="workId" value={item.workId} />
+                  {item.highlighted ? (
+                    <button type="submit" aria-label={`Remove highlight from ${work}`}>
+                      Remove highlight
+                    </button>
+                  ) : (
+                    <button type="submit" aria-label={`Highlight ${work}`}>
+                      Highlight
+                    </button>
+                  )}
                 </form>
                 <details>
                   <summary>History</summary>

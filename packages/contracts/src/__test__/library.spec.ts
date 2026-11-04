@@ -1,6 +1,12 @@
 import type { CatalogItem } from '@xd-memories/domain';
 import { describe, expect, expectTypeOf, it } from 'vitest';
-import { AddToLibraryForm, CatalogItemShape, ChangeStatusForm, RateForm } from '../library';
+import {
+  AddToLibraryForm,
+  CatalogItemShape,
+  ChangeStatusForm,
+  HighlightForm,
+  RateForm,
+} from '../library';
 
 const dune = {
   ref: { source: 'openlibrary', externalId: 'works/OL893414W' },
@@ -92,6 +98,20 @@ describe('RateForm', () => {
     ${'a missing work'}        | ${{ workId: '', rating: '50' }}
   `('rejects $case', ({ form }: { form: object }) => {
     const parsed = RateForm.safeParse(form);
+
+    expect(parsed.success).toBe(false);
+  });
+});
+
+describe('HighlightForm', () => {
+  it('accepts a work id', () => {
+    const parsed = HighlightForm.safeParse({ workId: 'w1' });
+
+    expect(parsed).toEqual({ success: true, data: { workId: 'w1' } });
+  });
+
+  it('rejects a missing work', () => {
+    const parsed = HighlightForm.safeParse({ workId: '' });
 
     expect(parsed.success).toBe(false);
   });
