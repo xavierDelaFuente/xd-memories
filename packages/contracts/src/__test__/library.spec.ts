@@ -1,6 +1,6 @@
 import type { CatalogItem } from '@xd-memories/domain';
 import { describe, expect, expectTypeOf, it } from 'vitest';
-import { AddToLibraryForm, CatalogItemShape } from '../library';
+import { AddToLibraryForm, CatalogItemShape, ChangeStatusForm } from '../library';
 
 const dune = {
   ref: { source: 'openlibrary', externalId: 'works/OL893414W' },
@@ -45,11 +45,29 @@ describe('AddToLibraryForm', () => {
   });
 
   it.each`
-    case                | form
-    ${'unknown status'} | ${{ item: 'signed', status: 'paused' }}
-    ${'missing item'}   | ${{ item: '', status: 'want' }}
-  `('rejects an $case', ({ form }: { form: object }) => {
+    case                   | form
+    ${'an unknown status'} | ${{ item: 'signed', status: 'paused' }}
+    ${'a missing item'}    | ${{ item: '', status: 'want' }}
+  `('rejects $case', ({ form }: { form: object }) => {
     const parsed = AddToLibraryForm.safeParse(form);
+
+    expect(parsed.success).toBe(false);
+  });
+});
+
+describe('ChangeStatusForm', () => {
+  it('accepts a work id and a status', () => {
+    const parsed = ChangeStatusForm.safeParse({ workId: 'w1', status: 'doing' });
+
+    expect(parsed).toEqual({ success: true, data: { workId: 'w1', status: 'doing' } });
+  });
+
+  it.each`
+    case                   | form
+    ${'an unknown status'} | ${{ workId: 'w1', status: 'paused' }}
+    ${'a missing work'}    | ${{ workId: '', status: 'done' }}
+  `('rejects $case', ({ form }: { form: object }) => {
+    const parsed = ChangeStatusForm.safeParse(form);
 
     expect(parsed.success).toBe(false);
   });

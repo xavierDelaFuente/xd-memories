@@ -1,7 +1,7 @@
 import type { CatalogItem } from '@xd-memories/domain';
 import { type Kysely, sql } from 'kysely';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { libraryOf, logEntry } from '../library';
+import { changeStatus, historyOf, libraryOf, logEntry } from '../library';
 import { migrateToLatest } from '../migrate';
 import { withUser } from '../rls';
 import { saveWork } from '../work-cache';
@@ -30,7 +30,7 @@ beforeAll(async () => {
   await sql`
     insert into users (id, name, email, email_verified)
     select id, id, id || '@example.com', false
-    from unnest(array['ada', 'bea', 'cal', 'dan']) as id`.execute(db);
+    from unnest(array['ada', 'bea', 'cal', 'dan', 'eve', 'fay', 'gus']) as id`.execute(db);
 });
 
 afterAll(async () => {
@@ -90,5 +90,49 @@ describe('libraryOf', () => {
     const library = await libraryFor('dan');
 
     expect(library).toEqual([]);
+  });
+});
+
+describe('changeStatus', () => {
+  const change = (userId: string, workId: string, status: 'want' | 'doing' | 'done', at: Date) =>
+    withUser(db, userId, (trx) => changeStatus(trx, { workId, status, at }));
+
+  it('appends an entry for a work in your library, which then shows the new status', async () => {
+    const workId = await add('eve', book('works/OL5W', 'Dune'), 'want', day(1));
+    await change('eve', workId, 'doing', day(2));
+
+    const library = await libraryFor('eve');
+
+    expect(library.map(({ status }) => status)).toEqual(['doing']);
+  });
+
+  it('reports that it changed a work in your library', async () => {
+    const workId = await add('fay', book('works/OL6W', 'Dune'), 'want', day(1));
+
+    const changed = await change('fay', workId, 'done', day(2));
+
+    expect(changed).toBe(true);
+  });
+
+  it('adds nothing for a work that is only in someone else’s library', async () => {
+    const workId = await add('ada', book('works/OL7W', 'Heretics of Dune'), 'want', day(1));
+
+    const changed = await change('gus', workId, 'done', day(2));
+
+    expect(changed).toBe(false);
+  });
+});
+
+describe('historyOf', () => {
+  it('lists every status change, oldest first', async () => {
+    const workId = await add('fay', book('works/OL8W', 'Chapterhouse: Dune'), 'want', day(1));
+    await withUser(db, 'fay', (trx) => changeStatus(trx, { workId, status: 'done', at: day(5) }));
+
+    const history = await withUser(db, 'fay', (trx) => historyOf(trx));
+
+    expect(history.filter((entry) => entry.workId === workId)).toEqual([
+      { workId, status: 'want', at: day(1) },
+      { workId, status: 'done', at: day(5) },
+    ]);
   });
 });

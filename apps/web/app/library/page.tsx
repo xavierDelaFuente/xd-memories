@@ -1,14 +1,20 @@
-import { libraryOf, withUser } from '@xd-memories/db';
+import { historyOf, libraryOf, withUser } from '@xd-memories/db';
+import { STATUSES } from '@xd-memories/domain';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { currentSession, getDb } from '../../lib/auth';
 import { signOut } from '../../lib/auth-actions';
-import { libraryLabel } from '../../lib/library-view';
+import { resultLabel } from '../../lib/catalog-search';
+import { updateStatus } from '../../lib/library-actions';
+import { historyLabel, libraryLabel, STATUS_LABELS } from '../../lib/library-view';
 
 export default async function LibraryPage() {
   const session = await currentSession();
   if (!session) redirect('/sign-in');
-  const library = await withUser(getDb(), session.user.id, (trx) => libraryOf(trx));
+  const { library, history } = await withUser(getDb(), session.user.id, async (trx) => ({
+    library: await libraryOf(trx),
+    history: await historyOf(trx),
+  }));
 
   return (
     <>
@@ -22,9 +28,43 @@ export default async function LibraryPage() {
         </p>
       ) : (
         <ul aria-label="Your library">
-          {library.map((item) => (
-            <li key={item.workId}>{libraryLabel(item)}</li>
-          ))}
+          {library.map((item) => {
+            const work = resultLabel(item);
+            return (
+              <li key={item.workId}>
+                <h2>{libraryLabel(item)}</h2>
+                <form action={updateStatus}>
+                  <input type="hidden" name="workId" value={item.workId} />
+                  <select
+                    name="status"
+                    aria-label={`Status for ${work}`}
+                    defaultValue={item.status}
+                  >
+                    {STATUSES.map((status) => (
+                      <option key={status} value={status}>
+                        {STATUS_LABELS[status]}
+                      </option>
+                    ))}
+                  </select>
+                  <button type="submit" aria-label={`Update ${work}`}>
+                    Update
+                  </button>
+                </form>
+                <details>
+                  <summary>History</summary>
+                  <ol aria-label={`History of ${work}`}>
+                    {history
+                      .filter((entry) => entry.workId === item.workId)
+                      .map((entry) => (
+                        <li key={`${entry.at.toISOString()}-${entry.status}`}>
+                          {historyLabel(entry)}
+                        </li>
+                      ))}
+                  </ol>
+                </details>
+              </li>
+            );
+          })}
         </ul>
       )}
       <form action={signOut}>

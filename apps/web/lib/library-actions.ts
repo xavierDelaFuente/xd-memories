@@ -1,7 +1,8 @@
 'use server';
 
-import { AddToLibraryForm } from '@xd-memories/contracts';
-import { logEntry, saveWork, withUser } from '@xd-memories/db';
+import { AddToLibraryForm, ChangeStatusForm } from '@xd-memories/contracts';
+import { changeStatus, logEntry, saveWork, withUser } from '@xd-memories/db';
+import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { appSecret, currentSession, getDb } from './auth';
 import { STATUS_LABELS } from './library-view';
@@ -33,4 +34,19 @@ export async function addToLibrary(_: AddState, form: FormData): Promise<AddStat
     await logEntry(trx, { workId, status, at: now });
   });
   return { kind: 'added', message: `Added to your library as ${STATUS_LABELS[status]}.` };
+}
+
+// From /library. A work not in this user's library is left alone (changeStatus checks), so a
+// crafted form changes nothing; the page simply shows the library as it is.
+export async function updateStatus(form: FormData): Promise<void> {
+  const session = await currentSession();
+  if (!session) redirect('/sign-in');
+
+  const parsed = ChangeStatusForm.safeParse(Object.fromEntries(form));
+  if (!parsed.success) return;
+  const { workId, status } = parsed.data;
+  await withUser(getDb(), session.user.id, (trx) =>
+    changeStatus(trx, { workId, status, at: new Date() }),
+  );
+  revalidatePath('/library');
 }
