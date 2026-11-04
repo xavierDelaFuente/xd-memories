@@ -1,4 +1,4 @@
-import type { Status } from '@xd-memories/domain';
+import type { Rating, Status } from '@xd-memories/domain';
 import { describe, expect, it } from 'vitest';
 import { historyLabel, libraryLabel, STATUS_LABELS } from '../library-view';
 
@@ -16,16 +16,27 @@ describe('STATUS_LABELS', () => {
 });
 
 describe('libraryLabel', () => {
+  const dune = { title: 'Dune', creators: ['Frank Herbert'], year: 1965 };
+
   it('reads like the search result, followed by the status', () => {
-    const label = libraryLabel({
-      title: 'Dune',
-      creators: ['Frank Herbert'],
-      year: 1965,
-      status: 'doing',
-    });
+    const label = libraryLabel({ ...dune, status: 'doing', rating: null });
 
     expect(label).toBe('Dune (1965) — Frank Herbert · In progress');
   });
+
+  it.each`
+    rating  | shown
+    ${87.5} | ${'88/100'}
+    ${87.4} | ${'87/100'}
+    ${0}    | ${'0/100'}
+  `(
+    'ends with a rating of $rating, shown rounded as $shown',
+    ({ rating, shown }: { rating: number; shown: string }) => {
+      const label = libraryLabel({ ...dune, status: 'done', rating: rating as Rating });
+
+      expect(label).toBe(`Dune (1965) — Frank Herbert · Done · ${shown}`);
+    },
+  );
 });
 
 describe('historyLabel', () => {

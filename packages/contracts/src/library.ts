@@ -23,3 +23,10 @@ export const ChangeStatusForm = z.object({
   workId: z.string().min(1),
   status: z.enum(STATUSES),
 });
+
+// A personal rating for a work already in the library (BACKLOG 3.8). Read as a number only:
+// whether it is a rating (0–100) is the domain's call, createRating.
+export const RateForm = z.object({
+  workId: z.string().min(1),
+  rating: z.string().trim().min(1).pipe(z.coerce.number()),
+});

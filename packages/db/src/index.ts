@@ -8,6 +8,7 @@ export {
   type LibraryItem,
   libraryOf,
   logEntry,
+  rate,
 } from './library';
 export { migrateToLatest } from './migrate';
 export { withUser } from './rls';

@@ -68,3 +68,14 @@ test('changing a status in your library shows the new one and keeps the history'
     page.getByRole('list', { name: `History of ${DUNE}` }).getByRole('listitem'),
   ).toHaveText([/^Want · /, /^Done · /]);
 });
+
+test('rating a work in your library shows the rating, rounded', async ({ page }) => {
+  await signUp(page);
+  await addDune(page, 'Done');
+  await page.goto('/library');
+  await page.getByRole('spinbutton', { name: `Rating for ${DUNE}` }).fill('87.5');
+
+  await page.getByRole('button', { name: `Rate ${DUNE}` }).click();
+
+  await expect(libraryHeadings(page)).toHaveText([`${DUNE} · Done · 88/100`]);
+});

@@ -5,7 +5,7 @@ import { redirect } from 'next/navigation';
 import { currentSession, getDb } from '../../lib/auth';
 import { signOut } from '../../lib/auth-actions';
 import { resultLabel } from '../../lib/catalog-search';
-import { updateStatus } from '../../lib/library-actions';
+import { updateRating, updateStatus } from '../../lib/library-actions';
 import { historyLabel, libraryLabel, STATUS_LABELS } from '../../lib/library-view';
 
 export default async function LibraryPage() {
@@ -48,6 +48,22 @@ export default async function LibraryPage() {
                   </select>
                   <button type="submit" aria-label={`Update ${work}`}>
                     Update
+                  </button>
+                </form>
+                <form action={updateRating}>
+                  <input type="hidden" name="workId" value={item.workId} />
+                  <input
+                    type="number"
+                    name="rating"
+                    min={0}
+                    max={100}
+                    step="any"
+                    required
+                    aria-label={`Rating for ${work}`}
+                    defaultValue={item.rating ?? ''}
+                  />
+                  <button type="submit" aria-label={`Rate ${work}`}>
+                    Rate
                   </button>
                 </form>
                 <details>

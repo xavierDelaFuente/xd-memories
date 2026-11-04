@@ -1,6 +1,6 @@
 import type { CatalogItem } from '@xd-memories/domain';
 import { describe, expect, expectTypeOf, it } from 'vitest';
-import { AddToLibraryForm, CatalogItemShape, ChangeStatusForm } from '../library';
+import { AddToLibraryForm, CatalogItemShape, ChangeStatusForm, RateForm } from '../library';
 
 const dune = {
   ref: { source: 'openlibrary', externalId: 'works/OL893414W' },
@@ -68,6 +68,30 @@ describe('ChangeStatusForm', () => {
     ${'a missing work'}    | ${{ workId: '', status: 'done' }}
   `('rejects $case', ({ form }: { form: object }) => {
     const parsed = ChangeStatusForm.safeParse(form);
+
+    expect(parsed.success).toBe(false);
+  });
+});
+
+describe('RateForm', () => {
+  it.each`
+    rating    | value
+    ${'87.5'} | ${87.5}
+    ${' 0 '}  | ${0}
+    ${'100'}  | ${100}
+  `('reads "$rating" as $value', ({ rating, value }: { rating: string; value: number }) => {
+    const parsed = RateForm.safeParse({ workId: 'w1', rating });
+
+    expect(parsed).toEqual({ success: true, data: { workId: 'w1', rating: value } });
+  });
+
+  it.each`
+    case                       | form
+    ${'an empty rating'}       | ${{ workId: 'w1', rating: '' }}
+    ${'a rating not a number'} | ${{ workId: 'w1', rating: 'great' }}
+    ${'a missing work'}        | ${{ workId: '', rating: '50' }}
+  `('rejects $case', ({ form }: { form: object }) => {
+    const parsed = RateForm.safeParse(form);
 
     expect(parsed.success).toBe(false);
   });
