@@ -1,10 +1,14 @@
+import type { Mailer } from '@xd-memories/mail';
 import { type BetterAuthOptions, type BetterAuthPlugin, betterAuth } from 'better-auth';
 import type { Kysely } from 'kysely';
+import { DEMO } from './demo';
 
 export type AuthSettings = {
   db: Kysely<unknown>;
   secret: string;
   baseURL: string;
+  // Sends the links that confirm an address and reset a password.
+  mailer: Mailer;
   // The host framework's integration, such as nextCookies() in apps/web.
   plugins?: BetterAuthPlugin[];
 };
@@ -69,13 +73,41 @@ const UNUSED_PATHS = [
   '/refresh-token',
 ];
 
-export function authOptions({ db, secret, baseURL, plugins = [] }: AuthSettings) {
+// Anyone can sign up with any address, so these mails carry nothing a visitor typed: only the link.
+const confirmMail = (url: string) => ({
+  subject: 'Confirm your email for xd-memories',
+  text: `Confirm your email to start using xd-memories:\n\n${url}\n\nThe link works for an hour. If you didn't sign up, ignore this email.`,
+});
+
+const resetMail = (url: string) => ({
+  subject: 'Reset your xd-memories password',
+  text: `Set a new password for xd-memories:\n\n${url}\n\nThe link works once, for an hour. If you didn't ask for it, ignore this email: your password stays as it is.`,
+});
+
+export function authOptions({ db, secret, baseURL, mailer, plugins = [] }: AuthSettings) {
   return {
     database: { db, type: 'postgres' },
     secret,
     baseURL,
-    // Verification and reset arrive with a mailer (BACKLOG 3.13), before anyone else signs up.
-    emailAndPassword: { enabled: true },
+    emailAndPassword: {
+      enabled: true,
+      // No session until the address is confirmed; signing in before that mails a new link.
+      requireEmailVerification: true,
+      sendResetPassword: async ({ user, url }) => {
+        // The shared demo's password is derived, never set (demo.ts); its address takes no mail.
+        if (user.id === DEMO.id) return;
+        await mailer.send({ to: user.email, ...resetMail(url) });
+      },
+      // Whoever had the old password, such as on a lost laptop, is signed out.
+      revokeSessionsOnPasswordReset: true,
+    },
+    emailVerification: {
+      sendVerificationEmail: async ({ user, url }) => {
+        await mailer.send({ to: user.email, ...confirmMail(url) });
+      },
+      sendOnSignIn: true,
+      autoSignInAfterVerification: true,
+    },
     disabledPaths: UNUSED_PATHS,
     plugins,
     ...SCHEMA,

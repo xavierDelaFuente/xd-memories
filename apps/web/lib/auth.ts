@@ -1,4 +1,5 @@
 import { connect, createAuth } from '@xd-memories/db';
+import { smtpMailer } from '@xd-memories/mail';
 import { nextCookies } from 'better-auth/next-js';
 import { headers } from 'next/headers';
 
@@ -25,6 +26,7 @@ export function getAuth() {
     db: getDb(),
     secret: appSecret(),
     baseURL: required('BETTER_AUTH_URL'),
+    mailer: smtpMailer({ url: required('SMTP_URL'), from: required('MAIL_FROM') }),
     // Lets server actions set the session cookie.
     plugins: [nextCookies()],
   });

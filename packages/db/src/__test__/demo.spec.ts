@@ -1,4 +1,5 @@
 import { createRating } from '@xd-memories/domain';
+import type { Mail } from '@xd-memories/mail';
 import { type Kysely, sql, type Transaction } from 'kysely';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { createAuth } from '../auth';
@@ -115,11 +116,18 @@ describe('the seeded demo library', () => {
   });
 });
 
+const outbox: Mail[] = [];
+const auth = () =>
+  createAuth({
+    db,
+    secret: SECRET,
+    baseURL: 'http://localhost:3000',
+    mailer: { send: async (mail) => void outbox.push(mail) },
+  });
+
 describe('signing in to the demo', () => {
   const signIn = (password: string) =>
-    createAuth({ db, secret: SECRET, baseURL: 'http://localhost:3000' }).api.signInEmail({
-      body: { email: DEMO.email, password },
-    });
+    auth().api.signInEmail({ body: { email: DEMO.email, password } });
 
   it('works with the password derived from the app secret', async () => {
     const session = await signIn(demoPassword(SECRET));
@@ -132,6 +140,17 @@ describe('signing in to the demo', () => {
 
     await expect(session).rejects.toThrow();
   });
+});
+
+// Its address is .invalid, so a mail could never arrive; none is even attempted.
+it('asking to reset the demo password mails nothing', async () => {
+  await auth().api.requestPasswordReset({
+    body: { email: DEMO.email, redirectTo: '/reset-password' },
+  });
+
+  const mailed = outbox.filter(({ to }) => to === DEMO.email);
+
+  expect(mailed).toEqual([]);
 });
 
 describe('the demo is read-only, whatever the app sends', () => {

@@ -17,6 +17,25 @@ export async function signUp(_: AuthFormState, form: FormData): Promise<AuthForm
         name: text(form, 'name'),
         email: text(form, 'email'),
         password: text(form, 'password'),
+        // Where the mailed confirmation link lands, signed in.
+        callbackURL: '/library',
+      },
+      headers: await headers(),
+    });
+  } catch (error) {
+    return { error: messageForAuthError(error) };
+  }
+  redirect('/sign-up/sent');
+}
+
+export async function signIn(_: AuthFormState, form: FormData): Promise<AuthFormState> {
+  try {
+    await getAuth().api.signInEmail({
+      body: {
+        email: text(form, 'email'),
+        password: text(form, 'password'),
+        // Before the address is confirmed, sign-in mails a new link; it lands here.
+        callbackURL: '/library',
       },
       headers: await headers(),
     });
@@ -26,16 +45,30 @@ export async function signUp(_: AuthFormState, form: FormData): Promise<AuthForm
   redirect('/library');
 }
 
-export async function signIn(_: AuthFormState, form: FormData): Promise<AuthFormState> {
+// Mails a reset link if an account uses the address; the answer is the same either way.
+export async function requestReset(_: AuthFormState, form: FormData): Promise<AuthFormState> {
   try {
-    await getAuth().api.signInEmail({
-      body: { email: text(form, 'email'), password: text(form, 'password') },
+    await getAuth().api.requestPasswordReset({
+      body: { email: text(form, 'email'), redirectTo: '/reset-password' },
       headers: await headers(),
     });
   } catch (error) {
     return { error: messageForAuthError(error) };
   }
-  redirect('/library');
+  redirect('/forgot-password/sent');
+}
+
+// The token comes from the mailed link, through the reset page.
+export async function resetPassword(_: AuthFormState, form: FormData): Promise<AuthFormState> {
+  try {
+    await getAuth().api.resetPassword({
+      body: { token: text(form, 'token'), newPassword: text(form, 'password') },
+      headers: await headers(),
+    });
+  } catch (error) {
+    return { error: messageForAuthError(error) };
+  }
+  redirect('/sign-in?password=changed');
 }
 
 export async function signOut(): Promise<void> {

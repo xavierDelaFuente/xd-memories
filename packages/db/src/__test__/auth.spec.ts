@@ -1,3 +1,4 @@
+import type { Mail } from '@xd-memories/mail';
 import { getMigrations } from 'better-auth/db/migration';
 import { type Kysely, sql } from 'kysely';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
@@ -9,11 +10,42 @@ import { startPostgres, type TestDatabase } from './postgres';
 let database: TestDatabase;
 let db: Kysely<unknown>;
 
+// Every mail auth sends, kept here instead of delivered (smtpMailer has its own tests).
+const outbox: Mail[] = [];
+
 const settings = () => ({
   db,
   secret: 'test-secret-that-is-at-least-32-characters',
   baseURL: 'http://localhost:3000',
+  mailer: { send: async (mail: Mail) => void outbox.push(mail) },
 });
+
+const mailsTo = (email: string) => outbox.filter(({ to }) => to === email);
+
+// The link in the latest mail to this address.
+const linkMailedTo = (email: string) => {
+  const link = mailsTo(email)
+    .at(-1)
+    ?.text.match(/https?:\/\/\S+/)?.[0];
+  if (link === undefined) throw new Error(`no link mailed to ${email}`);
+  return link;
+};
+
+const PASSWORD = 'correct horse battery';
+
+const signUp = (email: string, password = PASSWORD) =>
+  createAuth(settings()).api.signUpEmail({ body: { email, password, name: 'Ada' } });
+
+const signIn = (email: string, password = PASSWORD) =>
+  createAuth(settings()).api.signInEmail({ body: { email, password } });
+
+// What a click on the link does: Better Auth handles it and redirects.
+const follow = (link: string) => createAuth(settings()).handler(new Request(link));
+
+const signUpConfirmed = async (email: string) => {
+  await signUp(email);
+  await follow(linkMailedTo(email));
+};
 
 beforeAll(async () => {
   database = await startPostgres();
@@ -48,9 +80,6 @@ it('the host app can add plugins, such as Next.js cookie handling', () => {
 });
 
 describe('email + password', () => {
-  const signUp = (email: string, password = 'correct horse battery') =>
-    createAuth(settings()).api.signUpEmail({ body: { email, password, name: 'Ada' } });
-
   it('signing up creates a user', async () => {
     await signUp('ada@example.com');
 
@@ -70,24 +99,177 @@ describe('email + password', () => {
   });
 
   it('signing in with the right password starts a session', async () => {
-    await signUp('session@example.com');
+    await signUpConfirmed('session@example.com');
 
-    const session = await createAuth(settings()).api.signInEmail({
-      body: { email: 'session@example.com', password: 'correct horse battery' },
-    });
+    const session = await signIn('session@example.com');
 
     expect(session.token).toEqual(expect.any(String));
   });
 
   it('signing in with a wrong password is refused', async () => {
-    await signUp('wrong@example.com');
+    await signUpConfirmed('wrong@example.com');
 
-    const act = () =>
-      createAuth(settings()).api.signInEmail({
-        body: { email: 'wrong@example.com', password: 'not the password' },
-      });
+    const act = () => signIn('wrong@example.com', 'not the password');
 
     await expect(act()).rejects.toThrow(/invalid email or password/i);
+  });
+});
+
+describe('email verification', () => {
+  it('signing up starts no session', async () => {
+    const signedUp = await signUp('pending@example.com');
+
+    expect(signedUp.token).toBeNull();
+  });
+
+  it('signing up mails a link to confirm the address', async () => {
+    await signUp('confirm@example.com');
+
+    const [mail] = mailsTo('confirm@example.com');
+
+    expect(mail?.subject).toBe('Confirm your email for xd-memories');
+    expect(linkMailedTo('confirm@example.com')).toMatch(
+      /^http:\/\/localhost:3000\/api\/auth\/verify-email\?token=/,
+    );
+  });
+
+  // Anyone can type any address into sign-up, so the mail carries nothing they typed.
+  it('the mail carries nothing the sign-up form sent but the address', async () => {
+    await createAuth(settings()).api.signUpEmail({
+      body: { email: 'name@example.com', password: PASSWORD, name: 'Visit evil.example' },
+    });
+
+    const [mail] = mailsTo('name@example.com');
+
+    expect(mail?.text).not.toContain('evil.example');
+  });
+
+  it('signing in before confirming is refused', async () => {
+    await signUp('early@example.com');
+
+    const act = () => signIn('early@example.com');
+
+    await expect(act()).rejects.toThrow(/email not verified/i);
+  });
+
+  it('signing in before confirming mails a new link', async () => {
+    await signUp('again@example.com');
+    await signIn('again@example.com').catch(() => undefined);
+
+    const mails = mailsTo('again@example.com');
+
+    expect(mails).toHaveLength(2);
+  });
+
+  it('following the link signs you in', async () => {
+    await signUp('link@example.com');
+
+    const response = await follow(linkMailedTo('link@example.com'));
+
+    expect(response.headers.get('set-cookie')).toMatch(/session_token=/);
+  });
+
+  it('after following the link, signing in works', async () => {
+    await signUpConfirmed('confirmed@example.com');
+
+    const session = await signIn('confirmed@example.com');
+
+    expect(session.token).toEqual(expect.any(String));
+  });
+
+  it('signing up with a taken address answers the same and creates no second account', async () => {
+    await signUp('taken@example.com');
+
+    const second = await signUp('taken@example.com', 'another password');
+    const { rows } = await sql`select id from users where email = 'taken@example.com'`.execute(db);
+
+    expect(second.token).toBeNull();
+    expect(rows).toHaveLength(1);
+  });
+});
+
+describe('password reset', () => {
+  const requestReset = (email: string) =>
+    createAuth(settings()).api.requestPasswordReset({
+      body: { email, redirectTo: '/reset-password' },
+    });
+
+  // The mailed link checks the token, then redirects to the app's reset page with it.
+  const tokenMailedTo = async (email: string) => {
+    const response = await follow(linkMailedTo(email));
+    const token = new URL(
+      response.headers.get('location') ?? '',
+      'http://localhost:3000',
+    ).searchParams.get('token');
+    if (token === null) throw new Error(`no reset token for ${email}`);
+    return token;
+  };
+
+  const resetPassword = async (token: string, newPassword = 'a brand new password') =>
+    createAuth(settings()).api.resetPassword({ body: { token, newPassword } });
+
+  it('asking for a reset mails a link that leads to the reset page', async () => {
+    await signUpConfirmed('forgot@example.com');
+    await requestReset('forgot@example.com');
+
+    const response = await follow(linkMailedTo('forgot@example.com'));
+
+    expect(mailsTo('forgot@example.com').at(-1)?.subject).toBe('Reset your xd-memories password');
+    expect(response.headers.get('location')).toMatch(
+      /^http:\/\/localhost:3000\/reset-password\?token=/,
+    );
+  });
+
+  it('an unknown address gets the same answer, and no mail', async () => {
+    const answer = await requestReset('nobody@example.com');
+
+    expect(answer.status).toBe(true);
+    expect(mailsTo('nobody@example.com')).toEqual([]);
+  });
+
+  it('the new password works', async () => {
+    await signUpConfirmed('new@example.com');
+    await requestReset('new@example.com');
+    await resetPassword(await tokenMailedTo('new@example.com'));
+
+    const session = await signIn('new@example.com', 'a brand new password');
+
+    expect(session.token).toEqual(expect.any(String));
+  });
+
+  it('the old password stops working', async () => {
+    await signUpConfirmed('old@example.com');
+    await requestReset('old@example.com');
+    await resetPassword(await tokenMailedTo('old@example.com'));
+
+    const act = () => signIn('old@example.com');
+
+    await expect(act()).rejects.toThrow(/invalid email or password/i);
+  });
+
+  it('a link works once', async () => {
+    await signUpConfirmed('once@example.com');
+    await requestReset('once@example.com');
+    const token = await tokenMailedTo('once@example.com');
+    await resetPassword(token);
+
+    const act = () => resetPassword(token, 'yet another password');
+
+    await expect(act()).rejects.toThrow(/invalid token/i);
+  });
+
+  // Whoever had the old password, such as on a lost laptop, is signed out.
+  it('resetting ends every session of the account', async () => {
+    await signUpConfirmed('sessions@example.com');
+    await signIn('sessions@example.com');
+    await requestReset('sessions@example.com');
+    await resetPassword(await tokenMailedTo('sessions@example.com'));
+
+    const { rows } = await sql`
+      select s.id from sessions s join users u on u.id = s.user_id
+      where u.email = 'sessions@example.com'`.execute(db);
+
+    expect(rows).toEqual([]);
   });
 });
 
@@ -103,7 +285,7 @@ describe('request code can never read auth data', () => {
   );
 });
 
-// The app uses sign-up, sign-in, sign-out and the session; 3.13 adds verification and reset.
+// The app uses sign-up, sign-in, sign-out, the session, email verification and password reset.
 // Every other endpoint that changes an account or lists sessions is off: on the shared demo
 // account, one visitor could otherwise rename it, list other visitors' sessions or end them.
 describe('auth endpoints the app does not use are off', () => {

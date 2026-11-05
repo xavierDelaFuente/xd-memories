@@ -1,4 +1,4 @@
-# Postgres for E2E runs, locally and in CI: docker compose up -d --wait
+# Postgres and a mail catcher for E2E runs, locally and in CI: docker compose up -d --wait
 # Same major version as Neon. Throwaway data: no volume, so docker compose down wipes it.
 services:
   postgres:
@@ -11,6 +11,18 @@ services:
       - "5433:5432"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -d xd_memories_e2e"]
+      interval: 2s
+      timeout: 2s
+      retries: 15
+  # Catches every mail the app sends (sign-up confirmation, password reset); nothing is delivered.
+  # Inbox at http://localhost:8025, which E2E reads links from.
+  mailpit:
+    image: axllent/mailpit:v1.31
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    healthcheck:
+      test: ["CMD", "/mailpit", "readyz"]
       interval: 2s
       timeout: 2s
       retries: 15

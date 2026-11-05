@@ -10,7 +10,7 @@ export default async function SignUpPage() {
   return (
     <>
       <h1>Create your account</h1>
-      <AuthForm action={signUp} submit="Create account" isSignUp />
+      <AuthForm action={signUp} submit="Create account" name email password="new-password" />
       <p>
         Already have an account? <Link href="/sign-in">Sign in</Link>
       </p>
