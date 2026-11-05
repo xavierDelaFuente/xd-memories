@@ -7,8 +7,21 @@ import { beforeAll, describe, expect, it } from 'vitest';
 
 // Server-only values: none may reach a browser. Every variable .env.example lists is in exactly
 // one of these two lists, so a new variable must be classified before this test passes.
-const SECRETS = ['DATABASE_URL', 'BETTER_AUTH_SECRET', 'TMDB_API_TOKEN', 'GROQ_API_KEY'] as const;
-const NOT_SECRET = ['BETTER_AUTH_URL', 'OLLAMA_BASE_URL', 'RECOMMENDER', 'MUSICBRAINZ_USER_AGENT'];
+// SMTP_URL holds the Gmail app password.
+const SECRETS = [
+  'DATABASE_URL',
+  'BETTER_AUTH_SECRET',
+  'SMTP_URL',
+  'TMDB_API_TOKEN',
+  'GROQ_API_KEY',
+] as const;
+const NOT_SECRET = [
+  'BETTER_AUTH_URL',
+  'MAIL_FROM',
+  'OLLAMA_BASE_URL',
+  'RECOMMENDER',
+  'MUSICBRAINZ_USER_AGENT',
+];
 
 const WEB = join(import.meta.dirname, '..');
 const NEXT_DIR = join(WEB, '.next');

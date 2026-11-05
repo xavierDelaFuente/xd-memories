@@ -15,6 +15,7 @@
     "@xd-memories/contracts": "workspace:*",
     "@xd-memories/db": "workspace:*",
     "@xd-memories/domain": "workspace:*",
+    "@xd-memories/mail": "workspace:*",
     "@xd-memories/sources": "workspace:*",
     "better-auth": "1.7.15",
     "next": "^16.4.3",

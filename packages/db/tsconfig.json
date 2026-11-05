@@ -9,6 +9,9 @@
   "references": [
     {
       "path": "../../packages/domain"
+    },
+    {
+      "path": "../../packages/mail"
     }
   ]
 }

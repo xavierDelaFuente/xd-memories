@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@xd-memories/domain": "workspace:*",
+    "@xd-memories/mail": "workspace:*",
     "better-auth": "1.7.15",
     "kysely": "^0.29.7",
     "pg": "^8.23.1"

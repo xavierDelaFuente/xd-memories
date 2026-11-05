@@ -4,13 +4,13 @@ import { messageForAuthError } from '../auth-errors';
 
 describe('messageForAuthError', () => {
   it.each`
-    code                                       | message
-    ${'INVALID_EMAIL_OR_PASSWORD'}             | ${'Wrong email or password.'}
-    ${'USER_ALREADY_EXISTS'}                   | ${'An account with this email already exists.'}
-    ${'USER_ALREADY_EXISTS_USE_ANOTHER_EMAIL'} | ${'An account with this email already exists.'}
-    ${'INVALID_EMAIL'}                         | ${'Enter a valid email address.'}
-    ${'PASSWORD_TOO_SHORT'}                    | ${'Use at least 8 characters for the password.'}
-    ${'PASSWORD_TOO_LONG'}                     | ${'Use at most 128 characters for the password.'}
+    code                           | message
+    ${'INVALID_EMAIL_OR_PASSWORD'} | ${'Wrong email or password.'}
+    ${'EMAIL_NOT_VERIFIED'}        | ${"Confirm your email first: we've sent you a new link."}
+    ${'INVALID_TOKEN'}             | ${'This link has expired or was already used. Ask for a new one.'}
+    ${'INVALID_EMAIL'}             | ${'Enter a valid email address.'}
+    ${'PASSWORD_TOO_SHORT'}        | ${'Use at least 8 characters for the password.'}
+    ${'PASSWORD_TOO_LONG'}         | ${'Use at most 128 characters for the password.'}
   `(
     'Better Auth $code reads "$message"',
     ({ code, message }: { code: string; message: string }) => {
