@@ -1,8 +1,9 @@
 'use server';
 
+import { DEMO, demoPassword } from '@xd-memories/db';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
-import { getAuth } from './auth';
+import { appSecret, getAuth } from './auth';
 import { messageForAuthError } from './auth-errors';
 
 export type AuthFormState = { error: string | null };
@@ -40,4 +41,14 @@ export async function signIn(_: AuthFormState, form: FormData): Promise<AuthForm
 export async function signOut(): Promise<void> {
   await getAuth().api.signOut({ headers: await headers() });
   redirect('/sign-in');
+}
+
+// "Try the demo": signs in to the read-only demo account. Its password derives from the app
+// secret, so only the server knows it (packages/db demo.ts).
+export async function tryDemo(): Promise<void> {
+  await getAuth().api.signInEmail({
+    body: { email: DEMO.email, password: demoPassword(appSecret()) },
+    headers: await headers(),
+  });
+  redirect('/library');
 }

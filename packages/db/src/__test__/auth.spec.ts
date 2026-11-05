@@ -102,3 +102,45 @@ describe('request code can never read auth data', () => {
     },
   );
 });
+
+// The app uses sign-up, sign-in, sign-out and the session; 3.13 adds verification and reset.
+// Every other endpoint that changes an account or lists sessions is off: on the shared demo
+// account, one visitor could otherwise rename it, list other visitors' sessions or end them.
+describe('auth endpoints the app does not use are off', () => {
+  it.each([
+    '/update-user',
+    '/change-email',
+    '/change-password',
+    '/delete-user',
+    '/list-sessions',
+    '/revoke-session',
+    '/revoke-sessions',
+    '/revoke-other-sessions',
+    '/update-session',
+    '/list-accounts',
+    '/account-info',
+    '/link-social',
+    '/unlink-account',
+    '/get-access-token',
+    '/refresh-token',
+  ])('%s is not found, by GET or POST', async (path) => {
+    const auth = createAuth(settings());
+
+    const statuses = await Promise.all(
+      ['GET', 'POST'].map(async (method) => {
+        const request = new Request(`http://localhost:3000/api/auth${path}`, { method });
+        return (await auth.handler(request)).status;
+      }),
+    );
+
+    expect(statuses).toEqual([404, 404]);
+  });
+
+  it('a session can still be read', async () => {
+    const response = await createAuth(settings()).handler(
+      new Request('http://localhost:3000/api/auth/get-session'),
+    );
+
+    expect(response.status).toBe(200);
+  });
+});

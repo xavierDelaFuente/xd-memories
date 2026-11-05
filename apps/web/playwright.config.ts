@@ -7,7 +7,8 @@ const E2E_DATABASE_URL = 'postgres://postgres:postgres@localhost:5433/xd_memorie
 export default defineConfig({
   testDir: './e2e',
   webServer: {
-    command: 'pnpm --filter @xd-memories/db migrate && pnpm build && pnpm start',
+    command:
+      'pnpm --filter @xd-memories/db migrate && pnpm --filter @xd-memories/db seed-demo && pnpm build && pnpm start',
     port: 3000,
     reuseExistingServer: !process.env.CI,
     // Set here, so a DATABASE_URL in the root .env (Neon) is never touched by E2E runs.

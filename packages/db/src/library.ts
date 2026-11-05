@@ -92,6 +92,14 @@ export async function highlightsOf(db: Transaction<unknown>, userId: string): Pr
   return rows;
 }
 
+// Whether the signed-in user may only read (the demo). The database refuses their writes anyway;
+// this lets the app hide controls that would fail.
+export async function isReadOnly(db: Transaction<unknown>): Promise<boolean> {
+  const { rows } = await sql<{ readOnly: boolean }>`
+    select app.is_read_only() as "readOnly"`.execute(db);
+  return rows.some(({ readOnly }) => readOnly);
+}
+
 // Every status change of the signed-in user, oldest first.
 export async function historyOf(db: Transaction<unknown>): Promise<Entry[]> {
   const { rows } = await sql<Entry>`

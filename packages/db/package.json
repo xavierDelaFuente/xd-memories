@@ -8,7 +8,8 @@
   "scripts": {
     "test": "vitest run",
     "type-check": "tsc -b",
-    "migrate": "tsx --env-file-if-exists=../../.env scripts/migrate.ts"
+    "migrate": "tsx --env-file-if-exists=../../.env scripts/migrate.ts",
+    "seed-demo": "tsx --env-file-if-exists=../../.env scripts/seed-demo.ts"
   },
   "dependencies": {
     "@xd-memories/domain": "workspace:*",

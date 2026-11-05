@@ -2,12 +2,14 @@
 
 export { type AuthSettings, createAuth } from './auth';
 export { connect } from './connect';
+export { DEMO, demoPassword, seedDemo } from './demo';
 export {
   changeStatus,
   type Highlight,
   highlight,
   highlightsOf,
   historyOf,
+  isReadOnly,
   type LibraryItem,
   libraryOf,
   logEntry,
