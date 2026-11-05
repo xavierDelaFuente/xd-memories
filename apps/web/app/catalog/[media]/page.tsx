@@ -1,6 +1,7 @@
+import { isReadOnly, withUser } from '@xd-memories/db';
 import { notFound } from 'next/navigation';
 import { AddToLibrary } from '../../../lib/add-to-library';
-import { appSecret, currentSession } from '../../../lib/auth';
+import { appSecret, currentSession, getDb } from '../../../lib/auth';
 import { messageFor, resultLabel, searchCatalog } from '../../../lib/catalog-search';
 import { catalogSource } from '../../../lib/catalog-source';
 import { signItem } from '../../../lib/signed-item';
@@ -16,7 +17,11 @@ export default async function CatalogPage({ params, searchParams }: Props) {
   const view = await searchCatalog({ media, q }, catalogSource());
   if (view.kind === 'not-found') notFound();
   // Signed in, each result can be added: it goes to the browser signed, so it comes back as it left.
-  const signing = (await currentSession()) ? { secret: appSecret(), now: new Date() } : null;
+  // Not in the read-only demo, where adding would fail.
+  const session = await currentSession();
+  const canAdd =
+    session !== null && !(await withUser(getDb(), session.user.id, (trx) => isReadOnly(trx)));
+  const signing = canAdd ? { secret: appSecret(), now: new Date() } : null;
 
   const usesTmdb = view.mediaType === 'movie' || view.mediaType === 'series';
 

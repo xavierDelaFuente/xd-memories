@@ -47,6 +47,28 @@ const SCHEMA = {
   },
 } satisfies Partial<BetterAuthOptions>;
 
+// Endpoints the app has no use for, each of which changes an account or exposes its sessions.
+// Off for everyone: on the shared demo account (demo.ts) any visitor could otherwise rename it,
+// list other visitors' sessions (IP addresses, browsers) or end them. Turn one back on only with
+// a page that needs it, and a guard for read-only users.
+const UNUSED_PATHS = [
+  '/update-user',
+  '/change-email',
+  '/change-password',
+  '/delete-user',
+  '/list-sessions',
+  '/revoke-session',
+  '/revoke-sessions',
+  '/revoke-other-sessions',
+  '/update-session',
+  '/list-accounts',
+  '/account-info',
+  '/link-social',
+  '/unlink-account',
+  '/get-access-token',
+  '/refresh-token',
+];
+
 export function authOptions({ db, secret, baseURL, plugins = [] }: AuthSettings) {
   return {
     database: { db, type: 'postgres' },
@@ -54,6 +76,7 @@ export function authOptions({ db, secret, baseURL, plugins = [] }: AuthSettings)
     baseURL,
     // Verification and reset arrive with a mailer (BACKLOG 3.13), before anyone else signs up.
     emailAndPassword: { enabled: true },
+    disabledPaths: UNUSED_PATHS,
     plugins,
     ...SCHEMA,
   } satisfies BetterAuthOptions;

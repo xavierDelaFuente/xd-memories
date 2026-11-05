@@ -52,6 +52,7 @@ describe('migrateToLatest', () => {
       '0006-ratings',
       '0007-highlights',
       '0008-progress',
+      '0009-read-only-users',
     ]);
   });
 
