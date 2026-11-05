@@ -7,6 +7,7 @@ import * as workDetails from './migrations/0004-work-details';
 import * as entries from './migrations/0005-entries';
 import * as ratings from './migrations/0006-ratings';
 import * as highlights from './migrations/0007-highlights';
+import * as progress from './migrations/0008-progress';
 
 // Listed in code, not read from a folder: migrations are type-checked and need no file paths at runtime.
 // Names sort in apply order; never rename or edit one that has shipped — add a new one.
@@ -18,6 +19,7 @@ const MIGRATIONS: Record<string, Migration> = {
   '0005-entries': entries,
   '0006-ratings': ratings,
   '0007-highlights': highlights,
+  '0008-progress': progress,
 };
 
 // A failed migration is a deploy error, not a domain outcome, so it throws.

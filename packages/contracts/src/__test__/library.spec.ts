@@ -6,6 +6,7 @@ import {
   ChangeStatusForm,
   HighlightForm,
   RateForm,
+  SeasonForm,
 } from '../library';
 
 const dune = {
@@ -112,6 +113,31 @@ describe('HighlightForm', () => {
 
   it('rejects a missing work', () => {
     const parsed = HighlightForm.safeParse({ workId: '' });
+
+    expect(parsed.success).toBe(false);
+  });
+});
+
+describe('SeasonForm', () => {
+  it.each`
+    season   | value
+    ${'2'}   | ${2}
+    ${' 1 '} | ${1}
+  `('reads "$season" as $value', ({ season, value }: { season: string; value: number }) => {
+    const parsed = SeasonForm.safeParse({ workId: 'w1', season });
+
+    expect(parsed).toEqual({ success: true, data: { workId: 'w1', season: value } });
+  });
+
+  it.each`
+    case                       | form
+    ${'an empty season'}       | ${{ workId: 'w1', season: '' }}
+    ${'season zero'}           | ${{ workId: 'w1', season: '0' }}
+    ${'a part of a season'}    | ${{ workId: 'w1', season: '1.5' }}
+    ${'a season not a number'} | ${{ workId: 'w1', season: 'two' }}
+    ${'a missing work'}        | ${{ workId: '', season: '1' }}
+  `('rejects $case', ({ form }: { form: object }) => {
+    const parsed = SeasonForm.safeParse(form);
 
     expect(parsed.success).toBe(false);
   });

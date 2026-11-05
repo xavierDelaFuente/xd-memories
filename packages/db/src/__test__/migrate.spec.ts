@@ -51,6 +51,7 @@ describe('migrateToLatest', () => {
       '0005-entries',
       '0006-ratings',
       '0007-highlights',
+      '0008-progress',
     ]);
   });
 

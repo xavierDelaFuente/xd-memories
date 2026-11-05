@@ -5,12 +5,14 @@ import {
   ChangeStatusForm,
   HighlightForm,
   RateForm,
+  SeasonForm,
 } from '@xd-memories/contracts';
 import {
   changeStatus,
   highlight,
   logEntry,
   rate,
+  reachSeason,
   saveWork,
   unhighlight,
   withUser,
@@ -77,6 +79,18 @@ export async function updateRating(form: FormData): Promise<void> {
   if (!rating.ok) return;
   const { workId } = parsed.data;
   await withUser(getDb(), session.user.id, (trx) => rate(trx, { workId, rating: rating.value }));
+  revalidatePath('/library');
+}
+
+// From /library, like updateStatus: reachSeason checks the work is a series in this user's library.
+export async function updateSeason(form: FormData): Promise<void> {
+  const session = await currentSession();
+  if (!session) redirect('/sign-in');
+
+  const parsed = SeasonForm.safeParse(Object.fromEntries(form));
+  if (!parsed.success) return;
+  const { workId, season } = parsed.data;
+  await withUser(getDb(), session.user.id, (trx) => reachSeason(trx, { workId, season }));
   revalidatePath('/library');
 }
 

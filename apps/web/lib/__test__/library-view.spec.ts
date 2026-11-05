@@ -16,12 +16,20 @@ describe('STATUS_LABELS', () => {
 });
 
 describe('libraryLabel', () => {
-  const dune = { title: 'Dune', creators: ['Frank Herbert'], year: 1965 };
+  const dune = { title: 'Dune', creators: ['Frank Herbert'], year: 1965, season: null };
 
   it('reads like the search result, followed by the status', () => {
     const label = libraryLabel({ ...dune, status: 'doing', rating: null });
 
     expect(label).toBe('Dune (1965) — Frank Herbert · In progress');
+  });
+
+  it('a series shows the season reached after its status, before any rating', () => {
+    const severance = { title: 'Severance', creators: [], year: 2022 };
+
+    const label = libraryLabel({ ...severance, status: 'doing', season: 2, rating: 90 as Rating });
+
+    expect(label).toBe('Severance (2022) · In progress · Season 2 · 90/100');
   });
 
   it.each`

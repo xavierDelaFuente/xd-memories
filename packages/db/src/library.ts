@@ -11,6 +11,7 @@ export type LibraryItem = {
   at: Date;
   rating: Rating | null;
   highlighted: boolean;
+  season: number | null;
 };
 
 // What others see of a highlighted work: the work alone, never its status, rating or history.
@@ -48,6 +49,21 @@ export async function rate(
     select ${workId}, ${rating}
     where exists (select from entries where work_id = ${workId})
     on conflict (user_id, work_id) do update set rating = excluded.rating`.execute(db);
+  return numAffectedRows === 1n;
+}
+
+// Records the season reached in a series already in the signed-in user's library, replacing any
+// season recorded before, and reports whether it did. Only a series has seasons.
+export async function reachSeason(
+  db: Transaction<unknown>,
+  { workId, season }: { workId: WorkId; season: number },
+): Promise<boolean> {
+  const { numAffectedRows } = await sql`
+    insert into progress (work_id, season)
+    select ${workId}, ${season}
+    where exists (select from entries where work_id = ${workId})
+      and exists (select from works where id = ${workId} and media_type = 'series')
+    on conflict (user_id, work_id) do update set season = excluded.season`.execute(db);
   return numAffectedRows === 1n;
 }
 
@@ -89,9 +105,11 @@ export async function libraryOf(db: Transaction<unknown>): Promise<LibraryItem[]
     select * from (
       select distinct on (e.work_id)
         e.work_id as "workId", w.media_type as "mediaType", w.title, w.creators, w.year,
-        e.status, e.at, r.rating, h.user_id is not null as highlighted
+        e.status, e.at, r.rating, h.user_id is not null as highlighted,
+        p.season
       from entries e join works w on w.id = e.work_id
       left join ratings r on r.work_id = e.work_id
+      left join progress p on p.work_id = e.work_id
       -- Highlights are readable by everyone, so this one join names the user.
       left join highlights h on h.work_id = e.work_id and h.user_id = app.user_id()
       order by e.work_id, e.at desc

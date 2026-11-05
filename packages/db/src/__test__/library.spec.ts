@@ -9,6 +9,7 @@ import {
   libraryOf,
   logEntry,
   rate,
+  reachSeason,
   unhighlight,
 } from '../library';
 import { migrateToLatest } from '../migrate';
@@ -41,7 +42,8 @@ beforeAll(async () => {
     select id, id, id || '@example.com', false
     from unnest(array[
       'ada', 'bea', 'cal', 'dan', 'eve', 'fay', 'gus', 'hal', 'ivy', 'jo', 'kim', 'lou',
-      'max', 'ned', 'oli', 'pam', 'quin'
+      'max', 'ned', 'oli', 'pam', 'quin',
+      'rae', 'sam', 'tom', 'uma', 'vic'
     ]) as id`.execute(db);
 });
 
@@ -75,6 +77,7 @@ describe('libraryOf', () => {
         at: day(1),
         rating: null,
         highlighted: false,
+        season: null,
       },
     ]);
   });
@@ -290,5 +293,78 @@ describe('highlights', () => {
     const library = await libraryFor('quin');
 
     expect(library.map(({ highlighted }) => highlighted)).toEqual([false]);
+  });
+});
+
+describe('reachSeason', () => {
+  const series = (externalId: string, title: string): CatalogItem => ({
+    ...book(externalId, title),
+    ref: { source: 'tmdb', externalId },
+    mediaType: 'series',
+  });
+  const reach = (userId: string, workId: string, season: number) =>
+    withUser(db, userId, (trx) => reachSeason(trx, { workId, season }));
+  const seasonsOf = async (userId: string) =>
+    (await libraryFor(userId)).map(({ title, season }) => ({ title, season }));
+
+  it('your library shows the season you reached', async () => {
+    const workId = await add('rae', series('tv/1', 'Severance'), 'doing', day(1));
+    await reach('rae', workId, 2);
+
+    const seasons = await seasonsOf('rae');
+
+    expect(seasons).toEqual([{ title: 'Severance', season: 2 }]);
+  });
+
+  it('replaces the season reached before', async () => {
+    const workId = await add('sam', series('tv/2', 'Severance'), 'doing', day(1));
+    await reach('sam', workId, 1);
+    await reach('sam', workId, 3);
+
+    const seasons = await seasonsOf('sam');
+
+    expect(seasons).toEqual([{ title: 'Severance', season: 3 }]);
+  });
+
+  it('reports that it recorded a season for a series in your library', async () => {
+    const workId = await add('tom', series('tv/3', 'Severance'), 'doing', day(1));
+
+    const recorded = await reach('tom', workId, 1);
+
+    expect(recorded).toBe(true);
+  });
+
+  it('records nothing for a work that is not a series', async () => {
+    const workId = await add('uma', book('works/OL30W', 'Dune'), 'doing', day(1));
+
+    const recorded = await reach('uma', workId, 1);
+
+    expect(recorded).toBe(false);
+  });
+
+  it('records nothing for a series that is only in someone else’s library', async () => {
+    const workId = await add('rae', series('tv/4', 'The Expanse'), 'doing', day(1));
+
+    const recorded = await reach('vic', workId, 1);
+
+    expect(recorded).toBe(false);
+  });
+
+  it('is private: someone else’s season of the same series is not yours', async () => {
+    const workId = await add('vic', series('tv/5', 'Severance'), 'doing', day(1));
+    await add('tom', series('tv/5', 'Severance'), 'doing', day(1));
+    await reach('tom', workId, 4);
+
+    const seasons = await seasonsOf('vic');
+
+    expect(seasons).toEqual([{ title: 'Severance', season: null }]);
+  });
+
+  it('the database refuses a season before the first, whatever the caller checked', async () => {
+    const workId = await add('uma', series('tv/6', 'Severance'), 'doing', day(1));
+
+    const recorded = reach('uma', workId, 0);
+
+    await expect(recorded).rejects.toThrow(/progress_season_check/);
   });
 });
