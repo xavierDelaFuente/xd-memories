@@ -12,6 +12,10 @@
     "e2e": "playwright test"
   },
   "dependencies": {
+    "@asnewyla/button": "0.2.1",
+    "@asnewyla/input": "0.2.1",
+    "@asnewyla/layout": "0.3.0",
+    "@asnewyla/tokens": "0.5.0",
     "@xd-memories/contracts": "workspace:*",
     "@xd-memories/db": "workspace:*",
     "@xd-memories/domain": "workspace:*",
