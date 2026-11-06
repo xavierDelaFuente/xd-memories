@@ -25,7 +25,9 @@ Candidate to evaluate: Hardcover API (book series positions) — check terms and
 | Letterboxd                       | File — account export ZIP                                                      |                                                      |
 | Trakt                            | OAuth API                                                                      | Already aggregates many platforms                    |
 | Last.fm                          | API (username + key)                                                           | Full scrobble history                                |
+| Deezer                           | Personal-data request (Excel, listening history)                               | API closed to new apps; no ARL token (see below)     |
 | Prime Video, Apple Music, Kindle | Personal-data request only                                                     | Guide the user; parse when the file arrives          |
 
-Rule: never ask for a platform password. Every importer: raw rows stored → parsed → matched →
-review queue. Re-running an import is idempotent.
+Rule: never ask for a platform password, nor a session token that stands in for one (such as
+Deezer's ARL cookie). Every importer: raw rows stored → parsed → matched → review queue.
+Re-running an import is idempotent.

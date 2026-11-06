@@ -54,3 +54,27 @@ Integration tests (`I`) run against Postgres in Testcontainers — Docker must b
 - 3.11 Secrets (`I`): the built client bundle contains none of the server secret values
 - 3.12 Demo (`E`): "Try the demo" signs in to a seeded, read-only demo library — the showcase path for visitors
 - 3.13 Email verification + password reset (`I`): before anyone else signs up; Gmail SMTP (app password, €0) behind a `Mailer` port, so Resend + a domain can replace it
+
+## Phase 4 — Imports (job queue + worker, file importers, match review)
+
+One importer end to end first (Goodreads: ISBNs make matching checkable), then the others reuse the
+path. Every import: file → raw rows stored → parsed → matched by the worker → applied or reviewed.
+Never a platform password (PROJECT: Platform sync). Fixtures are synthetic files with each
+platform's real header and shape — never a real person's export.
+
+- 4.1 Match score (`U`): pure, in domain: an identical external id (such as an ISBN's work) is a sure match; otherwise title (case, accents, punctuation and a leading "The" ignored), creator and year each add to a 0–1 score; `decide` gives matched (one candidate over the threshold, clear of the next) · review (close or weak candidates) · unmatched (none)
+- 4.2 Goodreads parse (`U`, synthetic fixture): a library export parses into rows: shelf to-read · currently-reading · read → want · doing · done (custom shelves ignored); My Rating 1–5 → 0–100 (1.3), 0 = unrated; Date Added and Date Read → entry dates; ISBNs unwrapped from `="…"`; a file without the Goodreads header is a typed error
+- 4.3 Open Library by ISBN (`U`, recorded fixture): an ISBN resolves through its edition to the work (`works/…`), so the row matches the ref search already saves; an unknown ISBN is NotFound; same typed failures as 2.7
+- 4.4 Job queue (`I`): a `jobs` table; a worker claims one job at a time (`for update skip locked`), so two workers never run the same job; a claimed job left unfinished for 15 min can be claimed again; a failing job records its error and stops after 3 attempts; a done job never runs again
+- 4.5 Import storage + RLS (`I`): `imports` (platform, file SHA-256, state) and `import_rows` (raw row, parsed row, match state, candidates, chosen work); uploading the same file twice is one import; user A can neither read nor write B's imports; the read-only demo cannot import
+- 4.6 Worker matches an import (`I`): `apps/worker` drains a match job: each pending row gets candidates from the catalog source (fake in tests), a score (4.1) and a state; resumable — stopped half-way and run again, it continues without re-querying matched rows; stays within each source's rate limit (2.8)
+- 4.7 Apply (`I`): applying a matched row saves the work (3.4) and logs its history (want at Date Added, done at Date Read) and rating; applying it again adds nothing (each entry references its import row, unique)
+- 4.8 Upload (`E`): `/import` → Goodreads → upload the CSV → "Matching 3 books: this can take a few minutes" → the import page fills in; over 5 MB or not a CSV is refused with a message; the job starts through a `JobRunner` port — GitHub `workflow_dispatch` in production, in-process for dev and E2E
+- 4.9 Review (`E`): the import page summarises "N added · N to review · N not found"; a row to review shows its candidates, pick one or skip; a not-found row can be searched by hand (the catalog search); nothing is applied until matched or picked
+- 4.10 Delete an import (`I`): deleting an import removes its file record and raw rows; entries already applied stay in the library
+- 4.11 Letterboxd (`U`, synthetic fixture): an export ZIP's diary, watched and ratings files → movies; each diary line is a done entry (a re-watch is a second one); half stars 0.5–5 → 0–100; a ZIP entry over 5 MB unpacked is refused; matched by TMDB search on title + year
+- 4.12 Netflix (`U`, synthetic fixture): viewing activity rows "Title: Season 2: Episode" → a series, doing, at the highest season seen; rows without a season → a movie, done; a title in another language than the catalog's goes to review
+- 4.13 Spotify (`U`, synthetic fixture): extended streaming history JSON → albums by artist + album; an album counts as heard once enough distinct tracks played (Open Question 10); matched by MusicBrainz search on artist + album
+- 4.14 Deezer (`U`, synthetic fixture): the personal-data export (requested from Deezer, an Excel file) → its listening history → albums by the 4.13 rule; matched by MusicBrainz search on artist + album; the format is undocumented, so sheet and column names are read from a real export before the fixture is written; an .xlsx is a ZIP, so the 4.11 unpacked-size limit applies
+- 4.15 Last.fm (`U`, recorded fixture): a username's scrobbles, paged, → the same album rule as 4.13; the API key stays on the server; added to the source-health check (2.10)
+- 4.16 Trakt (`I`): OAuth connect; the token stored encrypted, never shown; history → movies and series by their TMDB ids (exact matches, no review); disconnecting deletes the token
