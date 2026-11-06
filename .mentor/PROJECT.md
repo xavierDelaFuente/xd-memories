@@ -129,6 +129,7 @@ rejected — nothing is published). `ExternalRef.sourceVersion` is stored with t
 7. Consume `@asnewyla/*` instead of Tailwind? That would need an ALTERNATIVES entry (watchlog's was never proven).
 8. Spoiler policy for the model and for community descriptions.
 9. "Where to watch" (TMDB watch providers, JustWatch attribution) — in scope, or a future phase?
+10. Spotify, Deezer and Last.fm history: when has an album been heard? Proposed: half its tracks played, at least 3.
 
 ## Reference docs
 
