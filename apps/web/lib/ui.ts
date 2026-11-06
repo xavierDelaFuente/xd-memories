@@ -5,4 +5,4 @@
 // in client components; re-exported from here, they become client references.
 export { Button } from '@asnewyla/button';
 export { Input } from '@asnewyla/input';
-export { Stack } from '@asnewyla/layout';
+export { Group, Stack } from '@asnewyla/layout';

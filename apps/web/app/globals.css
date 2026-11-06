@@ -57,6 +57,21 @@ a {
   margin: 0;
 }
 
+/* Full width where a thumb taps it; its own width once the column is wide. */
+@media (min-width: 40rem) {
+  .form-submit {
+    align-self: start;
+  }
+}
+
 .form-status {
   color: var(--xd-color-text-muted);
+}
+
+footer {
+  box-sizing: border-box;
+  max-width: 40rem;
+  margin: 0 auto;
+  padding: var(--xd-space-xl);
+  border-top: 1px solid var(--xd-color-border);
 }

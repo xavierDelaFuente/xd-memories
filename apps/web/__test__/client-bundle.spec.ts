@@ -36,7 +36,8 @@ const filesUnder = (dir: string): string[] =>
     .filter((entry) => entry.isFile())
     .map((entry) => join(entry.parentPath, entry.name));
 
-// What a browser can download: the static assets, and the prerendered pages and RSC payloads.
+// What a browser can download: the static assets, and the prerendered pages and RSC payloads
+// (none today: the layout reads the colour-mode cookie, so every page renders per request).
 const SERVED_PAGE = new Set(['.html', '.rsc', '.body', '.meta']);
 const clientFiles = () => [
   ...filesUnder(join(NEXT_DIR, 'static')),
@@ -59,8 +60,8 @@ const servedContaining = (value: string) =>
   served.filter(({ text }) => text.includes(value)).map(({ file }) => file);
 
 describe('the built client bundle', () => {
-  it('is what the scan reads: the home page is in it', () => {
-    const files = servedContaining('xd-memories');
+  it('is what the scan reads: the auth form, a client component, is in it', () => {
+    const files = servedContaining('form-alert');
 
     expect(files).not.toEqual([]);
   });

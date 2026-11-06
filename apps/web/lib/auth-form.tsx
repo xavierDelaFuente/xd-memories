@@ -39,7 +39,7 @@ export function AuthForm({ action, submit, name, email, password, token }: Props
             {state.error}
           </p>
         )}
-        <Button type="submit" disabled={pending}>
+        <Button type="submit" className="form-submit" disabled={pending}>
           {submit}
         </Button>
       </Stack>
