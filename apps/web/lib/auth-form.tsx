@@ -2,6 +2,7 @@
 
 import { useActionState } from 'react';
 import type { AuthFormState } from './auth-actions';
+import { Button, Input, Stack } from './ui';
 
 type Props = {
   action: (state: AuthFormState, form: FormData) => Promise<AuthFormState>;
@@ -20,29 +21,28 @@ export function AuthForm({ action, submit, name, email, password, token }: Props
 
   return (
     <form action={formAction}>
-      {token !== undefined && <input type="hidden" name="token" value={token} />}
-      {name && (
-        <>
-          <label htmlFor="name">Name</label>
-          <input id="name" name="name" autoComplete="name" required />
-        </>
-      )}
-      {email && (
-        <>
-          <label htmlFor="email">Email</label>
-          <input id="email" name="email" type="email" autoComplete="email" required />
-        </>
-      )}
-      {password !== undefined && (
-        <>
-          <label htmlFor="password">Password</label>
-          <input id="password" name="password" type="password" autoComplete={password} required />
-        </>
-      )}
-      {state.error !== null && <p role="alert">{state.error}</p>}
-      <button type="submit" disabled={pending}>
-        {submit}
-      </button>
+      <Stack gap="lg">
+        {token !== undefined && <input type="hidden" name="token" value={token} />}
+        {name && <Input label="Name" name="name" autoComplete="name" required />}
+        {email && <Input label="Email" name="email" type="email" autoComplete="email" required />}
+        {password !== undefined && (
+          <Input
+            label="Password"
+            name="password"
+            type="password"
+            autoComplete={password}
+            required
+          />
+        )}
+        {state.error !== null && (
+          <p className="form-alert" role="alert">
+            {state.error}
+          </p>
+        )}
+        <Button type="submit" className="form-submit" disabled={pending}>
+          {submit}
+        </Button>
+      </Stack>
     </form>
   );
 }

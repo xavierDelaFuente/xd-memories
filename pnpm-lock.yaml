@@ -26,6 +26,18 @@ importers:
 
   apps/web:
     dependencies:
+      '@asnewyla/button':
+        specifier: 0.2.1
+        version: 0.2.1(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+      '@asnewyla/input':
+        specifier: 0.2.1
+        version: 0.2.1(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+      '@asnewyla/layout':
+        specifier: 0.3.0
+        version: 0.3.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+      '@asnewyla/tokens':
+        specifier: 0.5.0
+        version: 0.5.0
       '@xd-memories/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts
@@ -63,9 +75,6 @@ importers:
       '@types/react-dom':
         specifier: ^19.3.0
         version: 19.3.0(@types/react@19.3.0)
-      tailwindcss:
-        specifier: ^4.3.3
-        version: 4.3.3
 
   apps/worker:
     devDependencies:
@@ -151,6 +160,46 @@ importers:
         version: 4.23.15
 
 packages:
+
+  '@asnewyla/button@0.2.1':
+    resolution: {integrity: sha512-QR8l8G6qed22ag8bgcITurtvJw6SBS4Y4VzFdOIYc2JTMXW2VIJI9uS9ztroqi/QmrtUAbnMCRmHcwKXWjQU1Q==}
+    peerDependencies:
+      '@testing-library/react': ^16.0.0
+      '@testing-library/user-event': ^14.5.0
+      react: ^18.0.0 || ^19.0.0
+      react-dom: ^18.0.0 || ^19.0.0
+    peerDependenciesMeta:
+      '@testing-library/react':
+        optional: true
+      '@testing-library/user-event':
+        optional: true
+
+  '@asnewyla/input@0.2.1':
+    resolution: {integrity: sha512-gm7CwHaIYPsXZ0LHpv6PSKreMrsFRgbWQ9tNBx5KaHTckKQp0CLVbz5e+rgN+LlvUoAbkclW5Oiic/fg8yAALQ==}
+    peerDependencies:
+      react: ^18.0.0 || ^19.0.0
+      react-dom: ^18.0.0 || ^19.0.0
+
+  '@asnewyla/layout@0.3.0':
+    resolution: {integrity: sha512-1759TwYf6XWtgHZ37OuGduk2X1Lj1kw3BYKQAKRl8J9306KkBfWb2TB7u6vlbQSKAWvh0qwoX5nW5S02bAbROg==}
+    peerDependencies:
+      react: ^18.0.0 || ^19.0.0
+      react-dom: ^18.0.0 || ^19.0.0
+
+  '@asnewyla/tokens@0.5.0':
+    resolution: {integrity: sha512-cXaCzlNnrEw2tUdseDO5Uh2eSeowm3QrD1COF5PkySolwVLhYqmK3BgjlWWiZkR/uVGZht7EhasEkTgT9qctWw==}
+
+  '@asnewyla/unstyled-button@0.2.0':
+    resolution: {integrity: sha512-H2gbCcwl9NhBPdHcZbPOfCq71dfsAHHKUPzDS40C3qmOV4d75F8etP65LDnxaCEVOJghI/5Vm3jXBPboG/mPFA==}
+    peerDependencies:
+      react: ^18.0.0 || ^19.0.0
+      react-dom: ^18.0.0 || ^19.0.0
+
+  '@asnewyla/unstyled-input@0.2.0':
+    resolution: {integrity: sha512-78TWiSlTqMBQ72XQdl3wUkzKGFE8UZmnaCZfkS67bbLG4tmHsbiyqNBccdngNZ/cBgQlWcKLdNdU1pj5nZ9+tA==}
+    peerDependencies:
+      react: ^18.0.0 || ^19.0.0
+      react-dom: ^18.0.0 || ^19.0.0
 
   '@babel/helper-string-parser@7.29.11':
     resolution: {integrity: sha512-snZbO7MEDOof+hvNa97EjEY7qD7h2kwvQr5AJC3ZhQudKW5dnej6k3kP9NQV88hJwaS8vDqRLFo9rivLEhle2g==}
@@ -1885,9 +1934,6 @@ packages:
       babel-plugin-macros:
         optional: true
 
-  tailwindcss@4.3.3:
-    resolution: {integrity: sha512-gOhV3P7ufE62QDGg1zVaTgCR+EtPv92k2nIhVcVKcLmxT1sUBsQGhnZj175j+MqRt4zLF7ic+sCYjfhxMxj7YQ==}
-
   tar-fs@2.1.5:
     resolution: {integrity: sha512-OboTd8mmMhZDNPV+UjQcK9yKAatXu2aJ+r1w4im1Otd4M4fl2hwvdoXUxIYHFTHWK/3y3FarBP70v3vwmGlOxw==}
 
@@ -2094,6 +2140,35 @@ packages:
     resolution: {integrity: sha512-g8W2D2kU6a8untc053fX1uVBKzM7yqAxW/3zwk83+6RyF2+SKOuV+c0wBDhUwzV1PaGapmZH+rmcUzPf+3CGwg==}
 
 snapshots:
+
+  '@asnewyla/button@0.2.1(react-dom@19.3.1(react@19.3.1))(react@19.3.1)':
+    dependencies:
+      '@asnewyla/unstyled-button': 0.2.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+      react: 19.3.1
+      react-dom: 19.3.1(react@19.3.1)
+
+  '@asnewyla/input@0.2.1(react-dom@19.3.1(react@19.3.1))(react@19.3.1)':
+    dependencies:
+      '@asnewyla/unstyled-input': 0.2.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+      react: 19.3.1
+      react-dom: 19.3.1(react@19.3.1)
+
+  '@asnewyla/layout@0.3.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)':
+    dependencies:
+      react: 19.3.1
+      react-dom: 19.3.1(react@19.3.1)
+
+  '@asnewyla/tokens@0.5.0': {}
+
+  '@asnewyla/unstyled-button@0.2.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)':
+    dependencies:
+      react: 19.3.1
+      react-dom: 19.3.1(react@19.3.1)
+
+  '@asnewyla/unstyled-input@0.2.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)':
+    dependencies:
+      react: 19.3.1
+      react-dom: 19.3.1(react@19.3.1)
 
   '@babel/helper-string-parser@7.29.11': {}
 
@@ -3488,8 +3563,6 @@ snapshots:
     dependencies:
       client-only: 0.0.1
       react: 19.3.1
-
-  tailwindcss@4.3.3: {}
 
   tar-fs@2.1.5:
     dependencies:

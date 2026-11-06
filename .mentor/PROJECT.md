@@ -12,7 +12,7 @@ Supersedes watchlog (abandoned before Phase 0). Its decisions were re-evaluated,
 ## Stack
 
 TypeScript strict · pnpm workspaces · Next.js App Router (web, Vercel Hobby) · Node (worker) ·
-Neon Postgres · Better Auth · Kysely (typed SQL) · zod · Tailwind (CODEX app default) ·
+Neon Postgres · Better Auth · Kysely (typed SQL) · zod · `@asnewyla/*` design system ·
 Biome · Vitest + Testing Library + Testcontainers + Playwright · GitHub Actions ·
 Groq (hosted LLM) + Ollama (local LLM) behind one `Recommender` port · PWA manifest.
 
@@ -62,7 +62,7 @@ they resolve to current (CODEX: check versions before recommending).
 | Multi-tenancy       | Postgres RLS on `app.user_id()` (set per transaction with `set local`) for every user-owned table                                                                                              | An app bug cannot leak another library. Carried from watchlog                                                                                                            |
 | Secrets             | Server only. A test asserts none reach the client bundle                                                                                                                                       | TMDB, Groq and OAuth secrets                                                                                                                                             |
 | E2E                 | Playwright, one flow per feature                                                                                                                                                               | CODEX budget. watchlog's Cypress choice not carried                                                                                                                      |
-| Styling             | Tailwind (CODEX app default)                                                                                                                                                                   | See Open Question 7                                                                                                                                                      |
+| Styling             | `@asnewyla/*`, my design system: terra theme, system font, light/dark/system                                                                                                                   | ALTERNATIVES 2026-11-06 (Open Question 7)                                                                                                                                |
 | Mobile              | Responsive web + PWA now; native (Expo) later reusing `packages/*`                                                                                                                             | Cheapest path to a phone                                                                                                                                                 |
 
 ## Constraints
@@ -126,7 +126,7 @@ rejected — nothing is published). `ExternalRef.sourceVersion` is stored with t
 4. Moderation as a solo dev: report button + manual queue — enough while non-commercial?
 5. Minimum `n` before a collaborative signal is shown. Proposed: 5 shared users per pair.
 6. ~~Supabase pausing vs Neon~~ — decided 2026-10-30: Neon + Better Auth (see Architecture Decisions).
-7. Consume `@asnewyla/*` instead of Tailwind? That would need an ALTERNATIVES entry (watchlog's was never proven).
+7. ~~Consume `@asnewyla/*` instead of Tailwind?~~ — decided 2026-11-06: yes, after a spike (ALTERNATIVES).
 8. Spoiler policy for the model and for community descriptions.
 9. "Where to watch" (TMDB watch providers, JustWatch attribution) — in scope, or a future phase?
 10. Spotify, Deezer and Last.fm history: when has an album been heard? Proposed: half its tracks played, at least 3.

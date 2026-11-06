@@ -1,0 +1,76 @@
+/* The app shell only: components bring their own styles (@asnewyla/*), and every value here is
+   a design token, so the theme on <html> (layout.tsx) restyles it all. */
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+}
+
+/* Site-wide settings, such as the colour scheme: out of the reading column, at the edge. */
+header {
+  display: flex;
+  justify-content: end;
+  padding: var(--xd-space-md) var(--xd-space-xl);
+}
+
+/* One rhythm for every page: what sits directly in main is spaced by the gap, not by margins. */
+main {
+  box-sizing: border-box;
+  max-width: 40rem;
+  margin: 0 auto;
+  padding: var(--xd-space-xl) var(--xd-space-xl) var(--xd-space-3xl);
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  gap: var(--xd-space-xl);
+}
+
+main > * {
+  margin: 0;
+}
+
+/* A form fills the column; its own Stack spaces the fields. */
+main > form {
+  align-self: stretch;
+}
+
+main:focus {
+  outline: none;
+}
+
+h1 {
+  font-size: 1.75rem;
+  font-weight: var(--xd-font-weight-bold);
+}
+
+a {
+  color: var(--xd-color-primary);
+}
+
+/* Visible only when focused: the first stop for keyboard users. */
+.skip-link {
+  position: absolute;
+  left: var(--xd-space-xl);
+  top: calc(-1 * var(--xd-space-3xl));
+}
+
+.skip-link:focus {
+  top: var(--xd-space-xl);
+}
+
+/* A form-level message, such as a wrong password. */
+.form-alert {
+  color: var(--xd-color-destructive);
+  margin: 0;
+}
+
+/* Full width where a thumb taps it; its own width once the column is wide. */
+@media (min-width: 40rem) {
+  .form-submit {
+    align-self: start;
+  }
+}
+
+.form-status {
+  color: var(--xd-color-text-muted);
+}

@@ -56,10 +56,18 @@ its entry is **deleted** from this file. A reversed decision gets a fresh entry 
 **Verdict**: pending — Phase 0
 **Generalise**: any single-maintainer repo; reinstate 1 approval as soon as a second contributor exists
 
+### 2026-11-06 · xd-memories · My design system instead of Tailwind
+
+**CODEX said**: Application → Tailwind (iteration speed matters more than bundle purity).
+**I did**: `@asnewyla/*`, my published design system (namespaced CSS, token variables, themes on `<html>`); the app's own CSS is only the page shell, on the same tokens.
+**Because**: One look across my apps, components already tested for accessibility (labels wired to inputs), a fix lands once for every app. A spike proved it with Next.js 16 server rendering, through a `'use client'` re-export (`apps/web/lib/ui.ts`) until the packages mark themselves.
+**Verdict**: pending — Phase 3 look-and-feel (3.14–3.19)
+**Generalise**: my projects, when the design system has the components needed; Tailwind for a one-off it doesn't cover
+
 ---
 
 ## Cross-project observations
 
-**Styling by project type** — _pending: xd-memories starts on the CODEX Tailwind default_
+**Styling by project type** — _pending: xd-memories moved from the Tailwind default to `@asnewyla/*` (2026-11-06)_
 **Testing depth by scale** — _pending second project_
 **Monorepo vs single package, in hindsight** — _xd-tactics and xd-memories both landed on apps/+packages/ via the deployable-units tree_
