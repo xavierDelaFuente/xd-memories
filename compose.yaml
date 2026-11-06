@@ -1,5 +1,7 @@
-# Postgres and a mail catcher for E2E runs, locally and in CI: docker compose up -d --wait
-# Same major version as Neon. Throwaway data: no volume, so docker compose down wipes it.
+# Postgres and a mail catcher for pnpm dev and E2E runs, locally and in CI:
+# docker compose up -d --wait
+# Same major version as Neon. Two databases: xd_memories_dev for pnpm dev (.env.example), and
+# xd_memories_e2e for Playwright. Throwaway data: no volume, so docker compose down wipes both.
 services:
   postgres:
     image: postgres:17-alpine
@@ -7,6 +9,8 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: xd_memories_e2e
+    volumes:
+      - ./compose/postgres-init.sql:/docker-entrypoint-initdb.d/postgres-init.sql:ro
     ports:
       - "5433:5432"
     healthcheck:
