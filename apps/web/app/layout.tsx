@@ -29,12 +29,12 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
         <a className="skip-link" href="#main">
           Skip to content
         </a>
+        <header>
+          <ModeToggle mode={mode} />
+        </header>
         <main id="main" tabIndex={-1}>
           {children}
         </main>
-        <footer>
-          <ModeToggle mode={mode} />
-        </footer>
       </body>
     </html>
   );

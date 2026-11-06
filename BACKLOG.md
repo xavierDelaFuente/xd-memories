@@ -55,8 +55,8 @@ Integration tests (`I`) run against Postgres in Testcontainers — Docker must b
 - 3.12 Demo (`E`): "Try the demo" signs in to a seeded, read-only demo library — the showcase path for visitors
 - 3.13 Email verification + password reset (`I`): before anyone else signs up; Gmail SMTP (app password, €0) behind a `Mailer` port, so Resend + a domain can replace it
 - 3.14 Design system (`E`): `@asnewyla/*` with the terra theme set on `<html>` in the server-rendered layout, so the first paint is themed; a page shell on design tokens; the auth pages and home styled; submit buttons full width on a phone, their own width on wider screens
-- 3.15 Light / dark (`E`): System · Light · Dark in the footer; the choice is a cookie the layout reads, so it holds on every page and visit with no flash, and works before JavaScript loads; System drops the cookie
-- 3.16 Header (`E`): the app name, Catalog and Library links (Sign in when signed out), the current page marked (`aria-current`); collapses on a phone without hiding a link
+- 3.15 Light / dark (`E`): System · Light · Dark at the right of the header, a site-wide setting rather than part of a page; the choice is a cookie the layout reads, so it holds on every page and visit with no flash, and works before JavaScript loads; System drops the cookie
+- 3.16 Header navigation (`E`): next to the colour-scheme choice, the app name, Catalog and Library links (Sign in when signed out), the current page marked (`aria-current`); collapses on a phone without hiding a link
 - 3.17 Library page styled (`E`): each entry's status, rating, season and highlight as design-system controls (`select`, and `radio-group` if it reads better); its E2E tests pass unchanged
 - 3.18 Catalog styled (`E`): search field, media choice and results as a list with the Add control; empty and error states readable
 - 3.19 Profile styled (`E`): `/people/[id]` highlights styled like the library entries

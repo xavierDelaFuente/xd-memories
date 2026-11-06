@@ -6,12 +6,19 @@ body {
   min-height: 100dvh;
 }
 
+/* Site-wide settings, such as the colour scheme: out of the reading column, at the edge. */
+header {
+  display: flex;
+  justify-content: end;
+  padding: var(--xd-space-md) var(--xd-space-xl);
+}
+
 /* One rhythm for every page: what sits directly in main is spaced by the gap, not by margins. */
 main {
   box-sizing: border-box;
   max-width: 40rem;
   margin: 0 auto;
-  padding: var(--xd-space-3xl) var(--xd-space-xl);
+  padding: var(--xd-space-xl) var(--xd-space-xl) var(--xd-space-3xl);
   display: flex;
   flex-direction: column;
   align-items: start;
@@ -66,12 +73,4 @@ a {
 
 .form-status {
   color: var(--xd-color-text-muted);
-}
-
-footer {
-  box-sizing: border-box;
-  max-width: 40rem;
-  margin: 0 auto;
-  padding: var(--xd-space-xl);
-  border-top: 1px solid var(--xd-color-border);
 }
