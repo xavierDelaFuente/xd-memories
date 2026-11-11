@@ -8,9 +8,12 @@ import '@asnewyla/alert/styles.css';
 import './globals.css';
 import type { Metadata, Viewport } from 'next';
 import { cookies } from 'next/headers';
+import Link from 'next/link';
 import type { ReactNode } from 'react';
+import { currentSession } from '../lib/auth';
 import { MODE_COOKIE, modeFrom } from '../lib/color-mode';
 import { ModeToggle } from '../lib/mode-toggle';
+import { NavLinks } from '../lib/nav-links';
 
 export const metadata: Metadata = {
   title: 'xd-memories',
@@ -24,6 +27,7 @@ export const viewport: Viewport = { themeColor: '#F7F5F1' };
 // in an effect, after the first paint. Without a chosen mode, the system's light or dark applies.
 export default async function RootLayout({ children }: { children: ReactNode }) {
   const mode = modeFrom((await cookies()).get(MODE_COOKIE)?.value);
+  const signedIn = (await currentSession()) !== null;
 
   return (
     <html lang="en" data-theme="terra" data-mode={mode === 'system' ? undefined : mode}>
@@ -32,6 +36,10 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
           Skip to content
         </a>
         <header>
+          <Link href="/" className="brand">
+            xd-memories
+          </Link>
+          <NavLinks signedIn={signedIn} />
           <ModeToggle mode={mode} />
         </header>
         <main id="main" tabIndex={-1}>
