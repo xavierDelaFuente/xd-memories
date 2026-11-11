@@ -60,8 +60,8 @@ const servedContaining = (value: string) =>
   served.filter(({ text }) => text.includes(value)).map(({ file }) => file);
 
 describe('the built client bundle', () => {
-  it('is what the scan reads: the auth form, a client component, is in it', () => {
-    const files = servedContaining('form-alert');
+  it('is what the scan reads: the Add to library control, a client component, is in it', () => {
+    const files = servedContaining('Status for ');
 
     expect(files).not.toEqual([]);
   });

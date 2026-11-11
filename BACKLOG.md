@@ -58,7 +58,7 @@ Integration tests (`I`) run against Postgres in Testcontainers — Docker must b
 - 3.15 Light / dark (`E`): System · Light · Dark at the right of the header, a site-wide setting rather than part of a page; the choice is a cookie the layout reads, so it holds on every page and visit with no flash, and works before JavaScript loads; System drops the cookie
 - 3.16 Header navigation (`E`): next to the colour-scheme choice, the app name, Catalog and Library links (Sign in when signed out), the current page marked (`aria-current`); collapses on a phone without hiding a link
 - 3.17 Library page styled (`E`): each entry's status, rating, season and highlight as design-system controls (`select`, and `radio-group` if it reads better); its E2E tests pass unchanged
-- 3.18 Catalog styled (`E`): search field, media choice and results as a list with the Add control; empty and error states readable
+- 3.18 Catalog styled (`E`): search field, media choice and results as a list with the Add control; empty state readable; the search error and the Add control's messages as `Alert`
 - 3.19 Profile styled (`E`): `/people/[id]` highlights styled like the library entries
 
 ## Phase 4 — Imports (job queue + worker, file importers, match review)

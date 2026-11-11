@@ -12,3 +12,12 @@ test('home page renders the app name and skips to content by keyboard', async ({
   await page.keyboard.press('Enter');
   await expect(page.getByRole('main')).toBeFocused();
 });
+
+// Terra names Plus Jakarta Sans; the app keeps the system font (globals.css).
+test('text is in the system font', async ({ page }) => {
+  await page.goto('/');
+
+  const font = await page.evaluate(() => getComputedStyle(document.body).fontFamily);
+
+  expect(font).toBe('system-ui, sans-serif');
+});

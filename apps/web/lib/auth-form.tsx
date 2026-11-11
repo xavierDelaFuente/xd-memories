@@ -1,8 +1,11 @@
 'use client';
 
+import { Alert } from '@asnewyla/alert';
+import { Button } from '@asnewyla/button';
+import { Input } from '@asnewyla/input';
+import { Stack } from '@asnewyla/layout';
 import { useActionState } from 'react';
 import type { AuthFormState } from './auth-actions';
-import { Button, Input, Stack } from './ui';
 
 type Props = {
   action: (state: AuthFormState, form: FormData) => Promise<AuthFormState>;
@@ -34,11 +37,7 @@ export function AuthForm({ action, submit, name, email, password, token }: Props
             required
           />
         )}
-        {state.error !== null && (
-          <p className="form-alert" role="alert">
-            {state.error}
-          </p>
-        )}
+        {state.error !== null && <Alert tone="error">{state.error}</Alert>}
         <Button type="submit" className="form-submit" disabled={pending}>
           {submit}
         </Button>

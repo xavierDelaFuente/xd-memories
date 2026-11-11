@@ -1,6 +1,6 @@
+import { Button } from '@asnewyla/button';
 import Link from 'next/link';
 import { tryDemo } from '../lib/auth-actions';
-import { Button } from '../lib/ui';
 
 export default function Home() {
   return (
