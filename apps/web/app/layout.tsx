@@ -3,6 +3,8 @@ import '@asnewyla/tokens/theme-terra.css';
 import '@asnewyla/button/styles.css';
 import '@asnewyla/input/styles.css';
 import '@asnewyla/layout/styles.css';
+import '@asnewyla/toggle-group/styles.css';
+import '@asnewyla/alert/styles.css';
 import './globals.css';
 import type { Metadata, Viewport } from 'next';
 import { cookies } from 'next/headers';

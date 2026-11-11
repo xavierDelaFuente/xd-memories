@@ -1,6 +1,13 @@
 /* The app shell only: components bring their own styles (@asnewyla/*), and every value here is
    a design token, so the theme on <html> (layout.tsx) restyles it all. */
 
+/* The system font: terra names Plus Jakarta Sans, which the app doesn't load. Set here so a
+   copy installed on the visitor's machine isn't picked up instead. */
+[data-theme="terra"] {
+  --xd-font-family: system-ui, sans-serif;
+  --xd-font-family-mono: ui-monospace, monospace;
+}
+
 body {
   margin: 0;
   min-height: 100dvh;
@@ -58,19 +65,9 @@ a {
   top: var(--xd-space-xl);
 }
 
-/* A form-level message, such as a wrong password. */
-.form-alert {
-  color: var(--xd-color-destructive);
-  margin: 0;
-}
-
 /* Full width where a thumb taps it; its own width once the column is wide. */
 @media (min-width: 40rem) {
   .form-submit {
     align-self: start;
   }
-}
-
-.form-status {
-  color: var(--xd-color-text-muted);
 }

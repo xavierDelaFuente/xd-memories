@@ -1,28 +1,21 @@
+import { ToggleGroup, ToggleGroupItem } from '@asnewyla/toggle-group';
 import { MODES, type Mode } from './color-mode';
 import { chooseMode } from './color-mode-action';
-import { Button, Group } from './ui';
 
 const LABELS: Record<Mode, string> = { system: 'System', light: 'Light', dark: 'Dark' };
 
-// A plain form, so the choice works before JavaScript loads.
+// A plain form whose items submit mode=<value>, so the choice works before JavaScript loads.
+// Given only `value`, the group shows the saved mode and the server moves it.
 export function ModeToggle({ mode }: { mode: Mode }) {
   return (
     <form action={chooseMode}>
-      <Group gap="sm" role="group" aria-label="Colour scheme">
+      <ToggleGroup aria-label="Colour scheme" name="mode" value={mode} size="sm">
         {MODES.map((option) => (
-          <Button
-            key={option}
-            type="submit"
-            name="mode"
-            value={option}
-            size="sm"
-            variant={option === mode ? 'primary' : 'secondary'}
-            aria-pressed={option === mode}
-          >
+          <ToggleGroupItem key={option} type="submit" value={option}>
             {LABELS[option]}
-          </Button>
+          </ToggleGroupItem>
         ))}
-      </Group>
+      </ToggleGroup>
     </form>
   );
 }

@@ -1,3 +1,4 @@
+import { Alert } from '@asnewyla/alert';
 import Link from 'next/link';
 import { resetPassword } from '../../lib/auth-actions';
 import { messageForAuthCode } from '../../lib/auth-errors';
@@ -14,9 +15,9 @@ export default async function ResetPasswordPage({ searchParams }: Props) {
     return (
       <>
         <h1>Reset your password</h1>
-        <p role="alert">
+        <Alert tone="error">
           {messageForAuthCode(typeof error === 'string' ? error : 'INVALID_TOKEN')}
-        </p>
+        </Alert>
         <p>
           <Link href="/forgot-password">Ask for a new link</Link>
         </p>

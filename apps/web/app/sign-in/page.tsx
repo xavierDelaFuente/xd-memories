@@ -1,3 +1,4 @@
+import { Alert } from '@asnewyla/alert';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { currentSession } from '../../lib/auth';
@@ -15,7 +16,7 @@ export default async function SignInPage({ searchParams }: Props) {
     <>
       <h1>Sign in</h1>
       {password === 'changed' && (
-        <p role="status">Your password is changed. Sign in with the new one.</p>
+        <Alert tone="success">Your password is changed. Sign in with the new one.</Alert>
       )}
       <AuthForm action={signIn} submit="Sign in" email password="current-password" />
       <p>
