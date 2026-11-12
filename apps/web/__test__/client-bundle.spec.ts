@@ -61,7 +61,7 @@ const servedContaining = (value: string) =>
 
 describe('the built client bundle', () => {
   it('is what the scan reads: the Add to library control, a client component, is in it', () => {
-    const files = servedContaining('Status for ');
+    const files = servedContaining('Add as');
 
     expect(files).not.toEqual([]);
   });

@@ -1,6 +1,11 @@
-import { type CatalogSource, inMemoryCatalog, type SourceError } from '@xd-memories/domain';
+import {
+  type CatalogSource,
+  inMemoryCatalog,
+  type MediaType,
+  type SourceError,
+} from '@xd-memories/domain';
 import { describe, expect, it } from 'vitest';
-import { messageFor, resultLabel, searchCatalog } from '../catalog-search';
+import { mediaLinks, messageFor, resultLabel, searchCatalog } from '../catalog-search';
 
 const matrix = {
   ref: { source: 'fixture', externalId: 'm1' },
@@ -155,4 +160,50 @@ describe('resultLabel', () => {
       expect(result).toBe(label);
     },
   );
+});
+
+describe('mediaLinks', () => {
+  it('offers every media, in a fixed order', () => {
+    const links = mediaLinks('book', null);
+
+    expect(links.map(({ label }) => label)).toEqual(['Movies', 'Series', 'Books', 'Albums']);
+  });
+
+  it.each`
+    mediaType   | current
+    ${'movie'}  | ${'Movies'}
+    ${'series'} | ${'Series'}
+    ${'book'}   | ${'Books'}
+    ${'album'}  | ${'Albums'}
+  `(
+    'searching $mediaType, the current link is $current',
+    ({ mediaType, current }: { mediaType: MediaType; current: string }) => {
+      const links = mediaLinks(mediaType, null);
+
+      expect(links.filter((link) => link.current).map(({ label }) => label)).toEqual([current]);
+    },
+  );
+
+  it('without a query, each link opens its empty search', () => {
+    const links = mediaLinks('movie', null);
+
+    expect(links.map(({ href }) => href)).toEqual([
+      '/catalog/movies',
+      '/catalog/series',
+      '/catalog/books',
+      '/catalog/albums',
+    ]);
+  });
+
+  // Searched "dune" in movies, the books link finds the novel.
+  it('with a query, each link searches it again, encoded', () => {
+    const links = mediaLinks('movie', 'ok computer & co');
+
+    expect(links.map(({ href }) => href)).toEqual([
+      '/catalog/movies?q=ok%20computer%20%26%20co',
+      '/catalog/series?q=ok%20computer%20%26%20co',
+      '/catalog/books?q=ok%20computer%20%26%20co',
+      '/catalog/albums?q=ok%20computer%20%26%20co',
+    ]);
+  });
 });
