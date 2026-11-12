@@ -13,6 +13,9 @@ const addDune = async (page: Page, status: string) => {
 const libraryHeadings = (page: Page) =>
   page.getByRole('list', { name: 'Your library' }).getByRole('heading', { level: 2 });
 
+const statusOf = (page: Page, work: string, status: string) =>
+  page.getByRole('group', { name: `Status for ${work}` }).getByRole('button', { name: status });
+
 test('adding a search result lists it in your library, at its status', async ({ page }) => {
   await signUp(page);
   await page.goto('/catalog/books?q=dune');
@@ -58,15 +61,29 @@ test('changing a status in your library shows the new one and keeps the history'
   await signUp(page);
   await addDune(page, 'Want');
   await page.goto('/library');
-  await page.getByRole('combobox', { name: `Status for ${DUNE}` }).selectOption('Done');
 
-  await page.getByRole('button', { name: `Update ${DUNE}` }).click();
+  await statusOf(page, DUNE, 'Done').click();
 
   await expect(libraryHeadings(page)).toHaveText([`${DUNE} · Done`]);
+  await expect(statusOf(page, DUNE, 'Done')).toHaveAttribute('aria-pressed', 'true');
   await page.getByText('History').click();
   await expect(
     page.getByRole('list', { name: `History of ${DUNE}` }).getByRole('listitem'),
   ).toHaveText([/^Want · /, /^Done · /]);
+});
+
+// The pressed status doesn't submit: a stray tap would otherwise log it again, like a re-read.
+test('pressing the current status again adds nothing to the history', async ({ page }) => {
+  await signUp(page);
+  await addDune(page, 'Want');
+  await page.goto('/library');
+
+  await statusOf(page, DUNE, 'Want').click();
+
+  await page.getByText('History').click();
+  await expect(
+    page.getByRole('list', { name: `History of ${DUNE}` }).getByRole('listitem'),
+  ).toHaveText([/^Want · /]);
 });
 
 test('rating a work in your library shows the rating, rounded', async ({ page }) => {

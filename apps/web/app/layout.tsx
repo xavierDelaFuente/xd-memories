@@ -5,6 +5,7 @@ import '@asnewyla/input/styles.css';
 import '@asnewyla/layout/styles.css';
 import '@asnewyla/toggle-group/styles.css';
 import '@asnewyla/alert/styles.css';
+import '@asnewyla/card/styles.css';
 import './globals.css';
 import type { Metadata, Viewport } from 'next';
 import { cookies } from 'next/headers';

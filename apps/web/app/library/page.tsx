@@ -1,3 +1,8 @@
+import { Alert } from '@asnewyla/alert';
+import { Button } from '@asnewyla/button';
+import { Card } from '@asnewyla/card';
+import { Input } from '@asnewyla/input';
+import { ToggleGroup, ToggleGroupItem } from '@asnewyla/toggle-group';
 import { historyOf, isReadOnly, libraryOf, withUser } from '@xd-memories/db';
 import { STATUSES } from '@xd-memories/domain';
 import Link from 'next/link';
@@ -31,10 +36,10 @@ export default async function LibraryPage() {
         <Link href={`/people/${session.user.id}`}>Your highlights</Link>
       </p>
       {readOnly && (
-        <p>
+        <Alert tone="info" announce={false}>
           This is the demo library: look around, nothing can be changed.{' '}
           <Link href="/sign-up">Create an account</Link> to keep your own.
-        </p>
+        </Alert>
       )}
       {library.length === 0 ? (
         <p>
@@ -43,97 +48,131 @@ export default async function LibraryPage() {
           <Link href="/catalog/albums">albums</Link> to add something.
         </p>
       ) : (
-        <ul aria-label="Your library">
+        <ul aria-label="Your library" className="library">
           {library.map((item) => {
             const work = resultLabel(item);
             return (
               <li key={item.workId}>
-                <h2>{libraryLabel(item)}</h2>
-                {!readOnly && (
-                  <>
-                    <form action={updateStatus}>
-                      <input type="hidden" name="workId" value={item.workId} />
-                      <select
-                        name="status"
-                        aria-label={`Status for ${work}`}
-                        defaultValue={item.status}
-                      >
-                        {STATUSES.map((status) => (
-                          <option key={status} value={status}>
-                            {STATUS_LABELS[status]}
-                          </option>
-                        ))}
-                      </select>
-                      <button type="submit" aria-label={`Update ${work}`}>
-                        Update
-                      </button>
-                    </form>
-                    {item.mediaType === 'series' && (
-                      <form action={updateSeason}>
+                <Card padding="md" radius="md" className="entry">
+                  <h2>{libraryLabel(item)}</h2>
+                  {!readOnly && (
+                    <>
+                      {/* The current status doesn't submit: a stray tap would log it again, which
+                          the history reads as a re-read. */}
+                      <form action={updateStatus}>
                         <input type="hidden" name="workId" value={item.workId} />
-                        <input
-                          type="number"
-                          name="season"
-                          min={1}
-                          step={1}
-                          required
-                          aria-label={`Season reached in ${work}`}
-                          defaultValue={item.season ?? ''}
-                        />
-                        <button type="submit" aria-label={`Save season for ${work}`}>
-                          Save season
-                        </button>
+                        <ToggleGroup
+                          aria-label={`Status for ${work}`}
+                          name="status"
+                          value={item.status}
+                          size="sm"
+                        >
+                          {STATUSES.map((status) => (
+                            <ToggleGroupItem
+                              key={status}
+                              value={status}
+                              type={status === item.status ? 'button' : 'submit'}
+                            >
+                              {STATUS_LABELS[status]}
+                            </ToggleGroupItem>
+                          ))}
+                        </ToggleGroup>
                       </form>
-                    )}
-                    <form action={updateRating}>
-                      <input type="hidden" name="workId" value={item.workId} />
-                      <input
-                        type="number"
-                        name="rating"
-                        min={0}
-                        max={100}
-                        step="any"
-                        required
-                        aria-label={`Rating for ${work}`}
-                        defaultValue={item.rating ?? ''}
-                      />
-                      <button type="submit" aria-label={`Rate ${work}`}>
-                        Rate
-                      </button>
-                    </form>
-                    <form action={item.highlighted ? removeHighlight : addHighlight}>
-                      <input type="hidden" name="workId" value={item.workId} />
-                      {item.highlighted ? (
-                        <button type="submit" aria-label={`Remove highlight from ${work}`}>
-                          Remove highlight
-                        </button>
-                      ) : (
-                        <button type="submit" aria-label={`Highlight ${work}`}>
-                          Highlight
-                        </button>
-                      )}
-                    </form>
-                  </>
-                )}
-                <details>
-                  <summary>History</summary>
-                  <ol aria-label={`History of ${work}`}>
-                    {history
-                      .filter((entry) => entry.workId === item.workId)
-                      .map((entry) => (
-                        <li key={`${entry.at.toISOString()}-${entry.status}`}>
-                          {historyLabel(entry)}
-                        </li>
-                      ))}
-                  </ol>
-                </details>
+                      <div className="entry-fields">
+                        {item.mediaType === 'series' && (
+                          <form action={updateSeason} className="entry-field">
+                            <input type="hidden" name="workId" value={item.workId} />
+                            <Input
+                              label="Season"
+                              className="number-field"
+                              type="number"
+                              name="season"
+                              min={1}
+                              step={1}
+                              required
+                              aria-label={`Season reached in ${work}`}
+                              defaultValue={item.season === null ? '' : String(item.season)}
+                            />
+                            <Button
+                              type="submit"
+                              size="sm"
+                              variant="outline"
+                              aria-label={`Save season for ${work}`}
+                            >
+                              Save season
+                            </Button>
+                          </form>
+                        )}
+                        <form action={updateRating} className="entry-field">
+                          <input type="hidden" name="workId" value={item.workId} />
+                          <Input
+                            label="Rating"
+                            className="number-field"
+                            type="number"
+                            name="rating"
+                            min={0}
+                            max={100}
+                            step="any"
+                            required
+                            aria-label={`Rating for ${work}`}
+                            defaultValue={item.rating === null ? '' : String(item.rating)}
+                          />
+                          <Button
+                            type="submit"
+                            size="sm"
+                            variant="outline"
+                            aria-label={`Rate ${work}`}
+                          >
+                            Rate
+                          </Button>
+                        </form>
+                      </div>
+                      <form action={item.highlighted ? removeHighlight : addHighlight}>
+                        <input type="hidden" name="workId" value={item.workId} />
+                        {item.highlighted ? (
+                          <Button
+                            type="submit"
+                            size="sm"
+                            variant="outline"
+                            aria-label={`Remove highlight from ${work}`}
+                          >
+                            Remove highlight
+                          </Button>
+                        ) : (
+                          <Button
+                            type="submit"
+                            size="sm"
+                            variant="outline"
+                            aria-label={`Highlight ${work}`}
+                          >
+                            Highlight
+                          </Button>
+                        )}
+                      </form>
+                    </>
+                  )}
+                  <details>
+                    <summary>History</summary>
+                    <ol aria-label={`History of ${work}`}>
+                      {history
+                        .filter((entry) => entry.workId === item.workId)
+                        .map((entry) => (
+                          <li key={`${entry.at.toISOString()}-${entry.status}`}>
+                            {historyLabel(entry)}
+                          </li>
+                        ))}
+                    </ol>
+                  </details>
+                </Card>
               </li>
             );
           })}
         </ul>
       )}
       <form action={signOut}>
-        <button type="submit">Sign out</button>
+        <Button type="submit" variant="outline">
+          Sign out
+        </Button>
       </form>
     </>
   );
