@@ -37,5 +37,5 @@ test('in the demo, search results offer no Add', async ({ page }) => {
   await page.goto('/catalog/books?q=dune');
 
   await expect(page.getByRole('list', { name: 'Results' })).toBeVisible();
-  await expect(page.getByRole('button', { name: /^Add / })).toHaveCount(0);
+  await expect(page.getByRole('group', { name: /^Add / })).toHaveCount(0);
 });

@@ -8,8 +8,10 @@ test('a highlight is visible to another signed-in user, without the rest of the 
 }) => {
   await signUp(page);
   await page.goto('/catalog/books?q=dune');
-  await page.getByRole('combobox', { name: `Status for ${DUNE}` }).selectOption('Done');
-  await page.getByRole('button', { name: `Add ${DUNE}` }).click();
+  await page
+    .getByRole('group', { name: `Add ${DUNE}` })
+    .getByRole('button', { name: 'Done' })
+    .click();
   await expect(page.getByRole('status')).toHaveText('Added to your library as Done.');
   await page.goto('/library');
   await page.getByRole('spinbutton', { name: `Rating for ${DUNE}` }).fill('90');

@@ -1,6 +1,7 @@
 import '@asnewyla/tokens/tokens.css';
 import '@asnewyla/tokens/theme-terra.css';
 import '@asnewyla/button/styles.css';
+import '@asnewyla/button-group/styles.css';
 import '@asnewyla/input/styles.css';
 import '@asnewyla/layout/styles.css';
 import '@asnewyla/toggle-group/styles.css';
