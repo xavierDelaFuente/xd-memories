@@ -32,6 +32,9 @@ importers:
       '@asnewyla/button':
         specifier: 0.3.0
         version: 0.3.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+      '@asnewyla/card':
+        specifier: 0.2.2
+        version: 0.2.2(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@asnewyla/input':
         specifier: 0.2.2
         version: 0.2.2(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
@@ -178,6 +181,25 @@ packages:
 
   '@asnewyla/button@0.3.0':
     resolution: {integrity: sha512-//DwtZe7RHlKW4IPY3UTObJZmQ1F8EcdN5Nm96LzN3FeY8NLYT/EyGTto2t0ZGsM1ywRVjiR8C+lJUl2BljRgg==}
+    peerDependencies:
+      '@testing-library/react': ^16.0.0
+      '@testing-library/user-event': ^14.5.0
+      react: ^18.0.0 || ^19.0.0
+      react-dom: ^18.0.0 || ^19.0.0
+    peerDependenciesMeta:
+      '@testing-library/react':
+        optional: true
+      '@testing-library/user-event':
+        optional: true
+
+  '@asnewyla/card@0.2.2':
+    resolution: {integrity: sha512-Ca3laJNEFc4JFtvFOTiiCL+fSuubFWAPOELnrm2coxl6qduM5vRNA4MHzG0wuZcqIBt5COWmNip2EOTjZCwU8A==}
+    peerDependencies:
+      react: ^18.0.0 || ^19.0.0
+      react-dom: ^18.0.0 || ^19.0.0
+
+  '@asnewyla/image@0.2.1':
+    resolution: {integrity: sha512-q4uruSzx3qSlm6O/TPqP/4Hss4iUk04Av6lCugEDULpyN6HrlB+pOKIfCJSvih6glQnh9XcH/GPMI9Oa5gNP7Q==}
     peerDependencies:
       '@testing-library/react': ^16.0.0
       '@testing-library/user-event': ^14.5.0
@@ -2190,6 +2212,20 @@ snapshots:
   '@asnewyla/button@0.3.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)':
     dependencies:
       '@asnewyla/unstyled-button': 0.2.1(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+      react: 19.3.1
+      react-dom: 19.3.1(react@19.3.1)
+
+  '@asnewyla/card@0.2.2(react-dom@19.3.1(react@19.3.1))(react@19.3.1)':
+    dependencies:
+      '@asnewyla/image': 0.2.1(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+      react: 19.3.1
+      react-dom: 19.3.1(react@19.3.1)
+    transitivePeerDependencies:
+      - '@testing-library/react'
+      - '@testing-library/user-event'
+
+  '@asnewyla/image@0.2.1(react-dom@19.3.1(react@19.3.1))(react@19.3.1)':
+    dependencies:
       react: 19.3.1
       react-dom: 19.3.1(react@19.3.1)
 

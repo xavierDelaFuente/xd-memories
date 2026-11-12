@@ -26,8 +26,9 @@ test('the demo library says it is read-only and offers nothing to change', async
     page.getByText('This is the demo library: look around, nothing can be changed.'),
   ).toBeVisible();
   await expect(
-    page.getByRole('button', { name: /^(Update|Rate|Save season|Highlight|Remove highlight) / }),
+    page.getByRole('button', { name: /^(Rate|Save season|Highlight|Remove highlight) / }),
   ).toHaveCount(0);
+  await expect(page.getByRole('group', { name: /^Status for / })).toHaveCount(0);
 });
 
 test('in the demo, search results offer no Add', async ({ page }) => {

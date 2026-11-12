@@ -57,7 +57,7 @@ Integration tests (`I`) run against Postgres in Testcontainers — Docker must b
 - 3.14 Design system (`E`): `@asnewyla/*` with the terra theme set on `<html>` in the server-rendered layout, so the first paint is themed; a page shell on design tokens; the auth pages and home styled; submit buttons full width on a phone, their own width on wider screens
 - 3.15 Light / dark (`E`): System · Light · Dark at the right of the header, a site-wide setting rather than part of a page; the choice is a cookie the layout reads, so it holds on every page and visit with no flash, and works before JavaScript loads; System drops the cookie
 - 3.16 Header navigation (`E`): next to the colour-scheme choice, the app name, Catalog and Library links (Sign in when signed out), the current page marked (`aria-current`); collapses on a phone without hiding a link
-- 3.17 Library page styled (`E`): each entry's status, rating, season and highlight as design-system controls (`select`, and `radio-group` if it reads better); its E2E tests pass unchanged
+- 3.17 Library page styled (`E`): one card per work; the status a toggle group (one tap, works without JavaScript; the current status does not submit, so a stray tap logs nothing), season and rating as labelled number fields, highlight as a button; its E2E tests keep their names
 - 3.18 Catalog styled (`E`): search field, media choice and results as a list with the Add control; empty state readable; the search error and the Add control's messages as `Alert`
 - 3.19 Profile styled (`E`): `/people/[id]` highlights styled like the library entries
 

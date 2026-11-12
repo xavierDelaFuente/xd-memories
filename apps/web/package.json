@@ -14,6 +14,7 @@
   "dependencies": {
     "@asnewyla/alert": "0.2.0",
     "@asnewyla/button": "0.3.0",
+    "@asnewyla/card": "0.2.2",
     "@asnewyla/input": "0.2.2",
     "@asnewyla/layout": "0.3.0",
     "@asnewyla/theme": "0.3.0",
