@@ -68,10 +68,10 @@ Later screens arrive with their phase (see `docs/PHASES.md` → Screens); nothin
 
 - 3.20 Screens v1 theme (`E`): the SCREENS.md tokens as a theme in `@asnewyla/theme` (light + derived dark), set on `<html>` in place of terra; text and control pairs pass WCAG AA in both schemes; existing E2E tests pass unchanged
 - 3.21 Fonts (`E`): Newsreader, Geist and Geist Mono self-hosted through `next/font` (no font CDN request at runtime, no layout shift); page and work titles serif, counts · years · sources mono
-- 3.22 Media dot (`U`): each media type maps to its dot colour and a text label; no type renders a dot without its label
-- 3.23 App shell (`E`): desktop sidebar (wordmark, For you · Library, Movies · Series · Books · Music into the catalog) and a mobile bottom tab bar; only shipped sections appear (Journey, Ask, Sync arrive with their phases); current section `aria-current`; colour scheme and sign-in stay reachable; the 3.16 E2E tests keep their names
+- 3.22 Media dot (`U`): each media type maps to its dot colour and a text label; no type renders a dot without its label; `doing` reads per media (Reading · Watching · Listening) where one media is shown, "In progress" where they're mixed
+- 3.23 App shell (`E`): desktop sidebar (wordmark, For you · Library, the four media into the catalog from `mediaLinks`) and a mobile bottom tab bar; on desktop the sidebar replaces the catalog's media tabs (3.18), on a phone they become chips; switching media still keeps the query; only shipped sections appear (Journey, Ask, Sync arrive with their phases); current section `aria-current`; colour scheme and sign-in stay reachable; the 3.16 and 3.18 E2E tests keep their names
 - 3.24 Library as screen 1i (`E`): media chips and status tabs with counts; each row shows its dot, title, metadata, rating and highlight
-- 3.25 Title detail (`E`): `/works/[id]` as screen 1c: cover, sources with attribution, status toggle, rating, dates from the entries, highlight; "Part of" (Phase 5) and "Related" (Phase 7) absent until then, not empty
+- 3.25 Covers + title detail (`U` + `E`): `CatalogItem` gains a cover URL parsed per source (TMDB poster, Open Library cover id, Cover Art Archive), `null` when absent, recorded fixtures updated; results become a cover grid (1b) keeping the one-tap Add group (3.18); `/works/[id]` as screen 1c: cover, sources with attribution, status toggle, rating, dates from the entries, highlight; "Part of" (Phase 5) and "Related" (Phase 7) absent until then, not empty
 - 3.26 For you, first cut (`E`): signed-in home shows Continue (works in progress, latest entry first) as screen 1a/1h; sections from later phases absent, not empty
 
 ## Phase 4 — Imports (job queue + worker, file importers, match review)

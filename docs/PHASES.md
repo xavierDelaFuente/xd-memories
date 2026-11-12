@@ -41,19 +41,19 @@
 
 ## Phase plan
 
-| #   | Phase              | Brief origin                 | Ships                                               | Screens (v1)              |
-| --- | ------------------ | ---------------------------- | --------------------------------------------------- | ------------------------- |
-| 0   | Repo & gate        | —                            | CI, preview deploys, one green E2E                  | —                         |
-| 1   | Domain core        | —                            | Pure types + rules, in-memory fakes                 | —                         |
-| 2   | Catalog            | Data 1                       | Per-media browse/search/filter, add to library      | 1b search (filters later) |
+| #   | Phase              | Brief origin                 | Ships                                               | Screens (v1)                         |
+| --- | ------------------ | ---------------------------- | --------------------------------------------------- | ------------------------------------ |
+| 0   | Repo & gate        | —                            | CI, preview deploys, one green E2E                  | —                                    |
+| 1   | Domain core        | —                            | Pure types + rules, in-memory fakes                 | —                                    |
+| 2   | Catalog            | Data 1                       | Per-media browse/search/filter, add to library      | 1b search (filters later)            |
 | 3   | Library            | Data 4 (ratings, highlights) | Status, progress, ratings, auth                     | theme, shell, 1i, 1c, 1a/1h Continue |
-| 4   | Imports            | Data 3                       | File + OAuth importers, match review                | 1g, sync nudge on 1a      |
-| 5   | Series & orders    | LLM "reading order", as data | Author page, named orderings                        | 1d, "Part of" on 1c, sagas on 1a |
-| 6   | Community catalog  | Data 2                       | Create works + creators, dedupe, history            | 1j, community label on 1b |
-| 7   | Groups & links     | Data 4 (link/group)          | Cross-media groups, related-from-groups             | "Related" on 1c, groups on 1a |
-| 8   | Recommendations v1 | Data 4 (ask)                 | Deterministic ranker, "ask" with filters            | 1b filters, 1a suggestions |
-| 9   | LLM recommender    | LLM 1 + 2                    | Profile tool, clarifying question, citations, evals | 1e, 1k                    |
-| 10  | Journey            | LLM 2 (roadmap)              | Threads-over-time map, road ahead                   | 1f                        |
+| 4   | Imports            | Data 3                       | File + OAuth importers, match review                | 1g, sync nudge on 1a                 |
+| 5   | Series & orders    | LLM "reading order", as data | Author page, named orderings                        | 1d, "Part of" on 1c, sagas on 1a     |
+| 6   | Community catalog  | Data 2                       | Create works + creators, dedupe, history            | 1j, community label on 1b            |
+| 7   | Groups & links     | Data 4 (link/group)          | Cross-media groups, related-from-groups             | "Related" on 1c, groups on 1a        |
+| 8   | Recommendations v1 | Data 4 (ask)                 | Deterministic ranker, "ask" with filters            | 1b filters, 1a suggestions           |
+| 9   | LLM recommender    | LLM 1 + 2                    | Profile tool, clarifying question, citations, evals | 1e, 1k                               |
+| 10  | Journey            | LLM 2 (roadmap)              | Threads-over-time map, road ahead                   | 1f                                   |
 
 Each phase ends usable. Phase 2 is the first a human can use; Phase 4 the first that saves real time.
 
