@@ -47,7 +47,10 @@ jobs:
       - uses: actions/setup-node@v7
         with: { node-version: lts/*, cache: pnpm }
       - run: pnpm install --frozen-lockfile
-      - run: pnpm --filter @xd-memories/web exec playwright install --with-deps chromium
+      # The browser only, from Playwright's CDN. No --with-deps: the runner image already has the
+      # libraries Chromium needs, and --with-deps adds extra fonts through apt, which fails whenever
+      # the Ubuntu mirrors are unreachable from the runner.
+      - run: pnpm --filter @xd-memories/web exec playwright install chromium
       # Same Postgres as local E2E runs (compose.yaml); migrations run as Playwright starts the app.
       - run: docker compose up -d --wait
       - run: pnpm e2e
