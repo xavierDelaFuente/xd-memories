@@ -61,12 +61,26 @@ Integration tests (`I`) run against Postgres in Testcontainers — Docker must b
 - 3.18 Catalog styled (`E`): search field, media choice and results as a list with the Add control; empty state readable; the search error and the Add control's messages as `Alert`
 - 3.19 Profile styled (`E`): `/people/[id]` highlights styled like the library entries
 
+### Screens v1 baseline
+
+The look of `docs/design/SCREENS.md` (`screens-v1.html`), for the screens Phase 3 data can fill.
+Later screens arrive with their phase (see `docs/PHASES.md` → Screens); nothing here waits for the LLM.
+
+- 3.20 Screens v1 theme (`E`): the SCREENS.md tokens as a theme in `@asnewyla/theme` (light + derived dark), set on `<html>` in place of terra; text and control pairs pass WCAG AA in both schemes; existing E2E tests pass unchanged
+- 3.21 Fonts (`E`): Newsreader, Geist and Geist Mono self-hosted through `next/font` (no font CDN request at runtime, no layout shift); page and work titles serif, counts · years · sources mono
+- 3.22 Media dot (`U`): each media type maps to its dot colour and a text label; no type renders a dot without its label
+- 3.23 App shell (`E`): desktop sidebar (wordmark, For you · Library, Movies · Series · Books · Music into the catalog) and a mobile bottom tab bar; only shipped sections appear (Journey, Ask, Sync arrive with their phases); current section `aria-current`; colour scheme and sign-in stay reachable; the 3.16 E2E tests keep their names
+- 3.24 Library as screen 1i (`E`): media chips and status tabs with counts; each row shows its dot, title, metadata, rating and highlight
+- 3.25 Title detail (`E`): `/works/[id]` as screen 1c: cover, sources with attribution, status toggle, rating, dates from the entries, highlight; "Part of" (Phase 5) and "Related" (Phase 7) absent until then, not empty
+- 3.26 For you, first cut (`E`): signed-in home shows Continue (works in progress, latest entry first) as screen 1a/1h; sections from later phases absent, not empty
+
 ## Phase 4 — Imports (job queue + worker, file importers, match review)
 
 One importer end to end first (Goodreads: ISBNs make matching checkable), then the others reuse the
 path. Every import: file → raw rows stored → parsed → matched by the worker → applied or reviewed.
 Never a platform password (PROJECT: Platform sync). Fixtures are synthetic files with each
 platform's real header and shape — never a real person's export.
+The upload, import and review pages (4.8, 4.9) follow screen 1g; the sync nudge on For you (1a) lands with 4.8.
 
 - 4.1 Match score (`U`): pure, in domain: an identical external id (such as an ISBN's work) is a sure match; otherwise title (case, accents, punctuation and a leading "The" ignored), creator and year each add to a 0–1 score; `decide` gives matched (one candidate over the threshold, clear of the next) · review (close or weak candidates) · unmatched (none)
 - 4.2 Goodreads parse (`U`, synthetic fixture): a library export parses into rows: shelf to-read · currently-reading · read → want · doing · done (custom shelves ignored); My Rating 1–5 → 0–100 (1.3), 0 = unrated; Date Added and Date Read → entry dates; ISBNs unwrapped from `="…"`; a file without the Goodreads header is a typed error
