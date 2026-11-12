@@ -48,7 +48,7 @@ export default async function LibraryPage() {
           <Link href="/catalog/albums">albums</Link> to add something.
         </p>
       ) : (
-        <ul aria-label="Your library" className="library">
+        <ul aria-label="Your library" className="card-list">
           {library.map((item) => {
             const work = resultLabel(item);
             return (

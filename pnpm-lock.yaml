@@ -32,6 +32,9 @@ importers:
       '@asnewyla/button':
         specifier: 0.3.0
         version: 0.3.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+      '@asnewyla/button-group':
+        specifier: 0.2.0
+        version: 0.2.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       '@asnewyla/card':
         specifier: 0.2.2
         version: 0.2.2(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
@@ -175,6 +178,12 @@ packages:
 
   '@asnewyla/alert@0.2.0':
     resolution: {integrity: sha512-j0/LoG7JFflo6VvJh7Ed83ISPi2u3MjM5c94XqFKtJlLKKwtCumOR4aeNA64S3Ggp2yiY+UxRkriFaUdy35Y+w==}
+    peerDependencies:
+      react: ^18.0.0 || ^19.0.0
+      react-dom: ^18.0.0 || ^19.0.0
+
+  '@asnewyla/button-group@0.2.0':
+    resolution: {integrity: sha512-mTBD1vTbYJAqJY4TNOwExGGw+hkohh1hY81RAB/O0ttJqbdvi6tvWvxOrzmrQWoAvAU5uLI2CvNfC9qUcSTx4Q==}
     peerDependencies:
       react: ^18.0.0 || ^19.0.0
       react-dom: ^18.0.0 || ^19.0.0
@@ -2208,6 +2217,15 @@ snapshots:
     dependencies:
       react: 19.3.1
       react-dom: 19.3.1(react@19.3.1)
+
+  '@asnewyla/button-group@0.2.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)':
+    dependencies:
+      '@asnewyla/button': 0.3.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+      react: 19.3.1
+      react-dom: 19.3.1(react@19.3.1)
+    transitivePeerDependencies:
+      - '@testing-library/react'
+      - '@testing-library/user-event'
 
   '@asnewyla/button@0.3.0(react-dom@19.3.1(react@19.3.1))(react@19.3.1)':
     dependencies:

@@ -5,10 +5,13 @@ const DUNE = 'Dune (1965) — Frank Herbert';
 
 const addDune = async (page: Page, status: string) => {
   await page.goto('/catalog/books?q=dune');
-  await page.getByRole('combobox', { name: `Status for ${DUNE}` }).selectOption(status);
-  await page.getByRole('button', { name: `Add ${DUNE}` }).click();
+  await addAs(page, DUNE, status).click();
   await expect(page.getByRole('status')).toHaveText(`Added to your library as ${status}.`);
 };
+
+// Each result is added in one tap, at the status pressed.
+const addAs = (page: Page, work: string, status: string) =>
+  page.getByRole('group', { name: `Add ${work}` }).getByRole('button', { name: status });
 
 const libraryHeadings = (page: Page) =>
   page.getByRole('list', { name: 'Your library' }).getByRole('heading', { level: 2 });
@@ -19,9 +22,8 @@ const statusOf = (page: Page, work: string, status: string) =>
 test('adding a search result lists it in your library, at its status', async ({ page }) => {
   await signUp(page);
   await page.goto('/catalog/books?q=dune');
-  await page.getByRole('combobox', { name: `Status for ${DUNE}` }).selectOption('Done');
 
-  await page.getByRole('button', { name: `Add ${DUNE}` }).click();
+  await addAs(page, DUNE, 'Done').click();
 
   await expect(page.getByRole('status')).toHaveText('Added to your library as Done.');
   await page.goto('/library');
@@ -39,7 +41,7 @@ test('a search result edited in the browser is not added', async ({ page }) => {
       input.value = `x${input.value}`;
     });
 
-  await page.getByRole('button', { name: `Add ${DUNE}` }).click();
+  await addAs(page, DUNE, 'Want').click();
 
   await expect(page.getByRole('main').getByRole('alert')).toHaveText(
     'This result can’t be added. Search again and retry.',
@@ -52,7 +54,7 @@ test('signed out, search results offer no Add', async ({ page }) => {
   await page.goto('/catalog/books?q=dune');
 
   await expect(page.getByRole('list', { name: 'Results' })).toBeVisible();
-  await expect(page.getByRole('button', { name: /^Add / })).toHaveCount(0);
+  await expect(page.getByRole('group', { name: /^Add / })).toHaveCount(0);
 });
 
 test('changing a status in your library shows the new one and keeps the history', async ({
@@ -101,8 +103,7 @@ test('a series in your library records the season reached', async ({ page }) => 
   const ANIMATRIX = 'The Animatrix (2003)';
   await signUp(page);
   await page.goto('/catalog/series?q=animatrix');
-  await page.getByRole('combobox', { name: `Status for ${ANIMATRIX}` }).selectOption('In progress');
-  await page.getByRole('button', { name: `Add ${ANIMATRIX}` }).click();
+  await addAs(page, ANIMATRIX, 'In progress').click();
   await expect(page.getByRole('status')).toHaveText('Added to your library as In progress.');
   await page.goto('/library');
   await page.getByRole('spinbutton', { name: `Season reached in ${ANIMATRIX}` }).fill('1');
