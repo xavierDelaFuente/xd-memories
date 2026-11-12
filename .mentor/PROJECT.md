@@ -98,7 +98,7 @@ Full rationale, reorder notes and future phases: `docs/PHASES.md`.
 
 ## Current State
 
-**Done**: Scaffold (configs, empty packages, mentor files). Screens v1 designed (`xd-memories Screens.dc.html`).
+**Done**: Scaffold (configs, empty packages, mentor files). Screens v1 designed: `docs/design/screens-v1.html`, read through `docs/design/SCREENS.md`.
 Phase 0 — toolchain at current versions (PR #1); `main` ruleset: PR, 0 approvals (see ALTERNATIVES),
 up to date, five required checks, no bypass (PR #2); domain boundary as a Biome override (PR #3);
 walking skeleton — skip link + single `<main>` in the root layout, Playwright E2E in CI (PR #4);
@@ -130,6 +130,9 @@ rejected — nothing is published). `ExternalRef.sourceVersion` is stored with t
 8. Spoiler policy for the model and for community descriptions.
 9. "Where to watch" (TMDB watch providers, JustWatch attribution) — in scope, or a future phase?
 10. Spotify, Deezer and Last.fm history: when has an album been heard? Proposed: half its tracks played, at least 3.
+11. Screens v1 show a **Dropped** status; the domain has want · doing · done. Add `dropped` to the domain (a new `logStatus` value, `U` test first), or leave it out of the screens?
+12. Journey before the LLM: swap Phases 9 and 10? Proposed in `docs/PHASES.md` → Screens v1.
+13. "Albums" (shipped in the catalog, the trackable unit) or "Music" (screens v1) as the section label? Proposed: "Music" for the section and nav, "album" for the item ("Add album"), URL `/catalog/albums` unchanged.
 
 ## Reference docs
 
@@ -137,3 +140,4 @@ rejected — nothing is published). `ExternalRef.sourceVersion` is stored with t
 `docs/DATA_SOURCES.md` — every source, its terms and limits
 `docs/LLM_GROUNDING.md` — tools, citations, refusal, evals
 `BACKLOG.md` — tasks, each with its first failing test
+`docs/design/SCREENS.md` — screens v1: tokens, type, screen → phase inventory
