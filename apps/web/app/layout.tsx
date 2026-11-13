@@ -16,6 +16,7 @@ import { currentSession } from '../lib/auth';
 import { MODE_COOKIE, modeFrom } from '../lib/color-mode';
 import { ModeToggle } from '../lib/mode-toggle';
 import { NavLinks } from '../lib/nav-links';
+import { fontVariables } from './fonts';
 
 export const metadata: Metadata = {
   title: 'xd-memories',
@@ -32,7 +33,12 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
   const signedIn = (await currentSession()) !== null;
 
   return (
-    <html lang="en" data-theme="terra" data-mode={mode === 'system' ? undefined : mode}>
+    <html
+      lang="en"
+      data-theme="terra"
+      data-mode={mode === 'system' ? undefined : mode}
+      className={fontVariables}
+    >
       <body>
         <a className="skip-link" href="#main">
           Skip to content

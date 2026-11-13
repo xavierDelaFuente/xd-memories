@@ -1,11 +1,13 @@
 /* The app shell only: components bring their own styles (@asnewyla/*), and every value here is
    a design token, so the theme on <html> (layout.tsx) restyles it all. */
 
-/* The system font: terra names Plus Jakarta Sans, which the app doesn't load. Set here so a
-   copy installed on the visitor's machine isn't picked up instead. */
+/* The screens v1 type (docs/design/SCREENS.md): Geist for the UI, Geist Mono for counts, years and
+   sources, Newsreader for page and work titles. The variables come from app/fonts.ts; terra's own
+   font names are replaced, so a copy installed on the visitor's machine isn't picked up. */
 [data-theme="terra"] {
-  --xd-font-family: system-ui, sans-serif;
-  --xd-font-family-mono: ui-monospace, monospace;
+  --xd-font-family: var(--font-geist-sans), system-ui, sans-serif;
+  --xd-font-family-mono: var(--font-geist-mono), ui-monospace, monospace;
+  --font-serif: var(--font-newsreader), Georgia, serif;
 }
 
 body {
@@ -14,8 +16,9 @@ body {
 }
 
 h1 {
-  font-size: 1.75rem;
-  font-weight: var(--xd-font-weight-bold);
+  font-family: var(--font-serif);
+  font-size: 1.875rem;
+  font-weight: 400;
 }
 
 a {
@@ -37,7 +40,9 @@ header form {
 }
 
 .brand {
-  font-weight: var(--xd-font-weight-bold);
+  font-family: var(--font-serif);
+  font-size: var(--xd-font-size-lg);
+  font-style: italic;
   color: inherit;
   text-decoration: none;
 }
@@ -125,7 +130,9 @@ main:focus {
 
 .entry h2 {
   margin: 0;
-  font-size: var(--xd-font-size-lg);
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+  font-weight: 400;
 }
 
 .entry-fields {
