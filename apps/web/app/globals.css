@@ -105,7 +105,7 @@ main:focus {
   }
 }
 
-/* A list of cards, one per work: the library and the catalog's results. */
+/* A list of cards, one per work: the library, the catalog's results and a profile's highlights. */
 .card-list {
   display: flex;
   flex-direction: column;
