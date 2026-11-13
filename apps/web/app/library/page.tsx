@@ -42,7 +42,7 @@ export default async function LibraryPage() {
         </Alert>
       )}
       {library.length === 0 ? (
-        <p>
+        <p className="empty">
           Nothing here yet. Search <Link href="/catalog/movies">movies</Link>,{' '}
           <Link href="/catalog/series">series</Link>, <Link href="/catalog/books">books</Link> or{' '}
           <Link href="/catalog/albums">albums</Link> to add something.

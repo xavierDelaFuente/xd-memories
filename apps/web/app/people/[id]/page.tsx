@@ -1,3 +1,4 @@
+import { Card } from '@asnewyla/card';
 import { highlightsOf, withUser } from '@xd-memories/db';
 import { redirect } from 'next/navigation';
 import { currentSession, getDb } from '../../../lib/auth';
@@ -17,12 +18,14 @@ export default async function PersonPage({ params }: Props) {
     <>
       <h1>{id === session.user.id ? 'Your highlights' : 'Highlights'}</h1>
       {highlights.length === 0 ? (
-        <p>No highlights yet.</p>
+        <p className="empty">No highlights yet.</p>
       ) : (
-        <ul aria-label="Highlights">
+        <ul aria-label="Highlights" className="card-list">
           {highlights.map((work) => (
             <li key={work.workId}>
-              <h2>{resultLabel(work)}</h2>
+              <Card padding="md" radius="md" className="entry">
+                <h2>{resultLabel(work)}</h2>
+              </Card>
             </li>
           ))}
         </ul>
