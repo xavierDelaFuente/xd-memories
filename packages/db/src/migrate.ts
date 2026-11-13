@@ -9,6 +9,7 @@ import * as ratings from './migrations/0006-ratings';
 import * as highlights from './migrations/0007-highlights';
 import * as progress from './migrations/0008-progress';
 import * as readOnlyUsers from './migrations/0009-read-only-users';
+import * as droppedStatus from './migrations/0010-dropped-status';
 
 // Listed in code, not read from a folder: migrations are type-checked and need no file paths at runtime.
 // Names sort in apply order; never rename or edit one that has shipped — add a new one.
@@ -22,6 +23,7 @@ const MIGRATIONS: Record<string, Migration> = {
   '0007-highlights': highlights,
   '0008-progress': progress,
   '0009-read-only-users': readOnlyUsers,
+  '0010-dropped-status': droppedStatus,
 };
 
 // A failed migration is a deploy error, not a domain outcome, so it throws.

@@ -1,14 +1,21 @@
 import type { MediaType, Rating, Status } from '@xd-memories/domain';
 import { describe, expect, it } from 'vitest';
-import { historyLabel, libraryLabel, STATUS_LABELS, statusLabel } from '../library-view';
+import {
+  ADD_STATUSES,
+  historyLabel,
+  libraryLabel,
+  STATUS_LABELS,
+  statusLabel,
+} from '../library-view';
 
 // Where works of different media are listed together, "doing" can't name one activity.
 describe('STATUS_LABELS', () => {
   it.each`
-    status     | label
-    ${'want'}  | ${'Want'}
-    ${'doing'} | ${'In progress'}
-    ${'done'}  | ${'Done'}
+    status       | label
+    ${'want'}    | ${'Want'}
+    ${'doing'}   | ${'In progress'}
+    ${'done'}    | ${'Done'}
+    ${'dropped'} | ${'Dropped'}
   `('$status reads "$label"', ({ status, label }: { status: Status; label: string }) => {
     const shown = STATUS_LABELS[status];
 
@@ -19,13 +26,14 @@ describe('STATUS_LABELS', () => {
 // One work, so one media: "doing" reads as what you do with it.
 describe('statusLabel', () => {
   it.each`
-    status     | mediaType   | label
-    ${'doing'} | ${'movie'}  | ${'Watching'}
-    ${'doing'} | ${'series'} | ${'Watching'}
-    ${'doing'} | ${'book'}   | ${'Reading'}
-    ${'doing'} | ${'album'}  | ${'Listening'}
-    ${'want'}  | ${'book'}   | ${'Want'}
-    ${'done'}  | ${'album'}  | ${'Done'}
+    status       | mediaType   | label
+    ${'doing'}   | ${'movie'}  | ${'Watching'}
+    ${'doing'}   | ${'series'} | ${'Watching'}
+    ${'doing'}   | ${'book'}   | ${'Reading'}
+    ${'doing'}   | ${'album'}  | ${'Listening'}
+    ${'want'}    | ${'book'}   | ${'Want'}
+    ${'done'}    | ${'album'}  | ${'Done'}
+    ${'dropped'} | ${'movie'}  | ${'Dropped'}
   `(
     '$status on a $mediaType reads "$label"',
     ({ status, mediaType, label }: { status: Status; mediaType: MediaType; label: string }) => {
@@ -34,6 +42,15 @@ describe('statusLabel', () => {
       expect(shown).toBe(label);
     },
   );
+});
+
+// Nothing starts out given up on: Dropped is set later, from the library.
+describe('ADD_STATUSES', () => {
+  it('offers want, doing and done', () => {
+    const offered = [...ADD_STATUSES];
+
+    expect(offered).toEqual(['want', 'doing', 'done']);
+  });
 });
 
 describe('libraryLabel', () => {

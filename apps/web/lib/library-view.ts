@@ -12,7 +12,11 @@ export const STATUS_LABELS: Record<Status, string> = {
   want: 'Want',
   doing: 'In progress',
   done: 'Done',
+  dropped: 'Dropped',
 };
+
+// Nothing starts out given up on: Dropped is set later, from the library.
+export const ADD_STATUSES = ['want', 'doing', 'done'] as const satisfies readonly Status[];
 
 const DOING: Record<MediaType, string> = {
   movie: 'Watching',
