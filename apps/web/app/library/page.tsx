@@ -17,7 +17,8 @@ import {
   updateSeason,
   updateStatus,
 } from '../../lib/library-actions';
-import { historyLabel, libraryLabel, STATUS_LABELS } from '../../lib/library-view';
+import { historyLabel, libraryLabel, statusLabel } from '../../lib/library-view';
+import { MediaTag } from '../../lib/media-tag';
 
 export default async function LibraryPage() {
   const session = await currentSession();
@@ -54,6 +55,7 @@ export default async function LibraryPage() {
             return (
               <li key={item.workId}>
                 <Card padding="md" radius="md" className="entry">
+                  <MediaTag mediaType={item.mediaType} />
                   <h2>{libraryLabel(item)}</h2>
                   {!readOnly && (
                     <>
@@ -73,7 +75,7 @@ export default async function LibraryPage() {
                               value={status}
                               type={status === item.status ? 'button' : 'submit'}
                             >
-                              {STATUS_LABELS[status]}
+                              {statusLabel(status, item.mediaType)}
                             </ToggleGroupItem>
                           ))}
                         </ToggleGroup>
@@ -158,7 +160,7 @@ export default async function LibraryPage() {
                         .filter((entry) => entry.workId === item.workId)
                         .map((entry) => (
                           <li key={`${entry.at.toISOString()}-${entry.status}`}>
-                            {historyLabel(entry)}
+                            {historyLabel(entry, item.mediaType)}
                           </li>
                         ))}
                     </ol>

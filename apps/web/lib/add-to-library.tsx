@@ -3,14 +3,22 @@
 import { Alert } from '@asnewyla/alert';
 import { Button } from '@asnewyla/button';
 import { ButtonGroup } from '@asnewyla/button-group';
-import { STATUSES } from '@xd-memories/domain';
+import { type MediaType, STATUSES } from '@xd-memories/domain';
 import { useActionState } from 'react';
 import { type AddState, addToLibrary } from './library-actions';
-import { STATUS_LABELS } from './library-view';
+import { statusLabel } from './library-view';
 
 // item is the search result as the server signed it; label is how the result reads.
 // One tap adds it: each status is a submit button, and the one pressed posts its status.
-export function AddToLibrary({ item, label }: { item: string; label: string }) {
+export function AddToLibrary({
+  item,
+  label,
+  mediaType,
+}: {
+  item: string;
+  label: string;
+  mediaType: MediaType;
+}) {
   const [state, action, pending] = useActionState<AddState, FormData>(addToLibrary, {
     kind: 'idle',
   });
@@ -23,7 +31,7 @@ export function AddToLibrary({ item, label }: { item: string; label: string }) {
       <ButtonGroup aria-label={`Add ${label}`} variant="outline" size="sm" disabled={pending}>
         {STATUSES.map((status) => (
           <Button key={status} type="submit" name="status" value={status}>
-            {STATUS_LABELS[status]}
+            {statusLabel(status, mediaType)}
           </Button>
         ))}
       </ButtonGroup>

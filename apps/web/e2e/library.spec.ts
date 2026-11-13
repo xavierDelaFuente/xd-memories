@@ -103,14 +103,14 @@ test('a series in your library records the season reached', async ({ page }) => 
   const ANIMATRIX = 'The Animatrix (2003)';
   await signUp(page);
   await page.goto('/catalog/series?q=animatrix');
-  await addAs(page, ANIMATRIX, 'In progress').click();
-  await expect(page.getByRole('status')).toHaveText('Added to your library as In progress.');
+  await addAs(page, ANIMATRIX, 'Watching').click();
+  await expect(page.getByRole('status')).toHaveText('Added to your library as Watching.');
   await page.goto('/library');
   await page.getByRole('spinbutton', { name: `Season reached in ${ANIMATRIX}` }).fill('1');
 
   await page.getByRole('button', { name: `Save season for ${ANIMATRIX}` }).click();
 
-  await expect(libraryHeadings(page)).toHaveText([`${ANIMATRIX} · In progress · Season 1`]);
+  await expect(libraryHeadings(page)).toHaveText([`${ANIMATRIX} · Watching · Season 1`]);
 });
 
 test('a book in your library has no season to record', async ({ page }) => {
