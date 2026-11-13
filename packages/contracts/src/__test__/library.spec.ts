@@ -45,7 +45,7 @@ describe('CatalogItemShape', () => {
 });
 
 describe('AddToLibraryForm', () => {
-  it.each(['want', 'doing', 'done'])('accepts the status %s', (status) => {
+  it.each(['want', 'doing', 'done', 'dropped'])('accepts the status %s', (status) => {
     const parsed = AddToLibraryForm.safeParse({ item: 'signed', status });
 
     expect(parsed).toEqual({ success: true, data: { item: 'signed', status } });
@@ -63,10 +63,10 @@ describe('AddToLibraryForm', () => {
 });
 
 describe('ChangeStatusForm', () => {
-  it('accepts a work id and a status', () => {
-    const parsed = ChangeStatusForm.safeParse({ workId: 'w1', status: 'doing' });
+  it.each(['want', 'doing', 'done', 'dropped'])('accepts a work id and the status %s', (status) => {
+    const parsed = ChangeStatusForm.safeParse({ workId: 'w1', status });
 
-    expect(parsed).toEqual({ success: true, data: { workId: 'w1', status: 'doing' } });
+    expect(parsed).toEqual({ success: true, data: { workId: 'w1', status } });
   });
 
   it.each`

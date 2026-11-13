@@ -73,6 +73,7 @@ Later screens arrive with their phase (see `docs/PHASES.md` → Screens); nothin
 - 3.24 Library as screen 1i (`E`): media chips and status tabs with counts; each row shows its dot, title, metadata, rating and highlight
 - 3.25 Covers + title detail (`U` + `E`): `CatalogItem` gains a cover URL parsed per source (TMDB poster, Open Library cover id, Cover Art Archive), `null` when absent, recorded fixtures updated; results become a cover grid (1b) keeping the one-tap Add group (3.18); `/works/[id]` as screen 1c: cover, sources with attribution, status toggle, rating, dates from the entries, highlight; "Part of" (Phase 5) and "Related" (Phase 7) absent until then, not empty
 - 3.26 For you, first cut (`E`): signed-in home shows Continue (works in progress, latest entry first) as screen 1a/1h; sections from later phases absent, not empty
+- 3.27 Dropped status (`U` + `I` + `E`, before 3.24): `dropped` after want · doing · done in the domain, the contracts and the `entries` check (migration 0010); the library offers it, the catalog's Add doesn't (nothing starts out given up on); a dropped work can be picked up again, the history keeping both
 
 ## Phase 4 — Imports (job queue + worker, file importers, match review)
 

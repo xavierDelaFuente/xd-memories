@@ -53,6 +53,7 @@ describe('migrateToLatest', () => {
       '0007-highlights',
       '0008-progress',
       '0009-read-only-users',
+      '0010-dropped-status',
     ]);
   });
 

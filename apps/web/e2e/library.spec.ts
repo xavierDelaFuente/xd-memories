@@ -88,6 +88,35 @@ test('pressing the current status again adds nothing to the history', async ({ p
   ).toHaveText([/^Want · /]);
 });
 
+test('a dropped work can be picked up again, and the history keeps both', async ({ page }) => {
+  await signUp(page);
+  await addDune(page, 'Reading');
+  await page.goto('/library');
+  await statusOf(page, DUNE, 'Dropped').click();
+  await expect(libraryHeadings(page)).toHaveText([`${DUNE} · Dropped`]);
+
+  await statusOf(page, DUNE, 'Reading').click();
+
+  await expect(libraryHeadings(page)).toHaveText([`${DUNE} · Reading`]);
+  await page.getByText('History').click();
+  await expect(
+    page.getByRole('list', { name: `History of ${DUNE}` }).getByRole('listitem'),
+  ).toHaveText([/^Reading · /, /^Dropped · /, /^Reading · /]);
+});
+
+// Nothing starts out given up on: Dropped is set from the library.
+test('a search result is added as want, reading or done, never dropped', async ({ page }) => {
+  await signUp(page);
+
+  await page.goto('/catalog/books?q=dune');
+
+  await expect(page.getByRole('group', { name: `Add ${DUNE}` }).getByRole('button')).toHaveText([
+    'Want',
+    'Reading',
+    'Done',
+  ]);
+});
+
 test('rating a work in your library shows the rating, rounded', async ({ page }) => {
   await signUp(page);
   await addDune(page, 'Done');

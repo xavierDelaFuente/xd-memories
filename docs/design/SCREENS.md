@@ -72,7 +72,7 @@ a 3.2x task or is a decision to make:
 | In the app now                                                           | In screens v1                                                                    | Resolved by                                                                                                                                                                         |
 | ------------------------------------------------------------------------ | -------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Terra theme, system font; selected state in `--xd-color-primary` (terra) | Paper neutrals; selected state is ink `#1C1B19` (inverted nav, ink buttons)      | 3.20, 3.21: the theme's primary is ink, so `.media` tabs etc. follow without CSS changes                                                                                            |
-| Media labelled **Albums** (`/catalog/albums`, type `album`)              | **Music**                                                                        | Open Question 13: the section name vs the trackable unit                                                                                                                            |
+| Media labelled **Albums** (`/catalog/albums`, type `album`)              | **Music**                                                                        | Decided (Open Question 13): "Music" for the section and nav, "Album" for the item; renamed in 3.23                                                                                  |
 | Catalog media as underline tabs above the search (3.18)                  | Desktop: media list in the sidebar (1b). Mobile: pill chips (1i)                 | 3.23: on desktop the sidebar replaces the tabs; on a phone they become chips. `mediaLinks` stays the source of both                                                                 |
 | Results as a card list with the title only (`resultLabel`)               | Cover grid with title, creator · year, the status if in library, community label | 3.25 (covers); community label in Phase 6                                                                                                                                           |
 | "Add as" + Want · In progress · Done, one tap each (3.18)                | A single "+ Add" (1b) or "+ Want" (1h, 1d); status chosen on the title page      | Keep the one-tap group: it's tested and needs no extra page. The design's "+ Want" is the same group with only Want shown, for later screens where want is the only sensible status |
@@ -81,8 +81,8 @@ a 3.2x task or is a decision to make:
 
 ## Gaps the screens open
 
-- **Dropped status.** 1c and 1i show Want · Reading · Done · **Dropped**; the domain has
-  want · doing · done. See PROJECT Open Question 11.
+- **Dropped status.** 1c and 1i show Want · Reading · Done · **Dropped**. Decided (Open
+  Question 11): a domain status since 3.27.
 - **Per-media verbs.** "Reading" for books, presumably "Watching" and "Listening" for the others:
   a display label over `doing`, not a new status. Today all media show "In progress".
 - **Sync in the nav** with a review count (desktop only); Browse is a mobile tab but on desktop it

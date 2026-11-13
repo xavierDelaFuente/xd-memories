@@ -1,6 +1,6 @@
 import type { WorkId } from './work';
 
-export const STATUSES = ['want', 'doing', 'done'] as const;
+export const STATUSES = ['want', 'doing', 'done', 'dropped'] as const;
 
 export type Status = (typeof STATUSES)[number];
 
