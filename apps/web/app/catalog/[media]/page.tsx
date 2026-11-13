@@ -64,7 +64,11 @@ export default async function CatalogPage({ params, searchParams }: Props) {
                 <Card padding="md" radius="md" className="entry">
                   <h2>{resultLabel(item)}</h2>
                   {signing && (
-                    <AddToLibrary item={signItem(item, signing)} label={resultLabel(item)} />
+                    <AddToLibrary
+                      item={signItem(item, signing)}
+                      label={resultLabel(item)}
+                      mediaType={item.mediaType}
+                    />
                   )}
                 </Card>
               </li>

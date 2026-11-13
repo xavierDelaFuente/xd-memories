@@ -214,3 +214,18 @@ main:focus {
 .add > .xd-alert {
   flex-basis: 100%;
 }
+
+/* A work's media: a small dot in its colour (lib/media.ts), then the label. */
+.media-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--xd-space-sm);
+  font-size: var(--xd-font-size-sm);
+  color: var(--xd-color-text-muted);
+}
+
+.media-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+}

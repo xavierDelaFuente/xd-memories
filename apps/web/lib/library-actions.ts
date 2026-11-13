@@ -21,7 +21,7 @@ import { createRating } from '@xd-memories/domain';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { appSecret, currentSession, getDb } from './auth';
-import { STATUS_LABELS } from './library-view';
+import { statusLabel } from './library-view';
 import { verifyItem } from './signed-item';
 
 export type AddState =
@@ -49,7 +49,10 @@ export async function addToLibrary(_: AddState, form: FormData): Promise<AddStat
     const workId = await saveWork(trx, verified.value);
     await logEntry(trx, { workId, status, at: now });
   });
-  return { kind: 'added', message: `Added to your library as ${STATUS_LABELS[status]}.` };
+  return {
+    kind: 'added',
+    message: `Added to your library as ${statusLabel(status, verified.value.mediaType)}.`,
+  };
 }
 
 // From /library. A work not in this user's library is left alone (changeStatus checks), so a

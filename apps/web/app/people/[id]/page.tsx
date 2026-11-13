@@ -3,6 +3,7 @@ import { highlightsOf, withUser } from '@xd-memories/db';
 import { redirect } from 'next/navigation';
 import { currentSession, getDb } from '../../../lib/auth';
 import { resultLabel } from '../../../lib/catalog-search';
+import { MediaTag } from '../../../lib/media-tag';
 
 type Props = { params: Promise<{ id: string }> };
 
@@ -24,6 +25,7 @@ export default async function PersonPage({ params }: Props) {
           {highlights.map((work) => (
             <li key={work.workId}>
               <Card padding="md" radius="md" className="entry">
+                <MediaTag mediaType={work.mediaType} />
                 <h2>{resultLabel(work)}</h2>
               </Card>
             </li>
