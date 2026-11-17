@@ -7,8 +7,9 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { AddToLibrary } from '../../../lib/add-to-library';
 import { appSecret, currentSession, getDb } from '../../../lib/auth';
-import { mediaLinks, messageFor, resultLabel, searchCatalog } from '../../../lib/catalog-search';
+import { messageFor, resultLabel, searchCatalog } from '../../../lib/catalog-search';
 import { catalogSource } from '../../../lib/catalog-source';
+import { mediaLinks } from '../../../lib/media-links';
 import { signItem } from '../../../lib/signed-item';
 
 type Props = {

@@ -46,7 +46,7 @@ export default async function LibraryPage() {
         <p className="empty">
           Nothing here yet. Search <Link href="/catalog/movies">movies</Link>,{' '}
           <Link href="/catalog/series">series</Link>, <Link href="/catalog/books">books</Link> or{' '}
-          <Link href="/catalog/albums">albums</Link> to add something.
+          <Link href="/catalog/albums">music</Link> to add something.
         </p>
       ) : (
         <ul aria-label="Your library" className="card-list">

@@ -1,26 +1,12 @@
 import { CatalogSearchQuery } from '@xd-memories/contracts';
 import type { CatalogItem, CatalogSource, MediaType, SourceError } from '@xd-memories/domain';
-import type { NavLink } from './nav';
-
-const SEGMENTS: ReadonlyMap<string, MediaType> = new Map([
-  ['movies', 'movie'],
-  ['series', 'series'],
-  ['books', 'book'],
-  ['albums', 'album'],
-]);
+import { SEGMENTS } from './media-links';
 
 const PLURAL: Record<MediaType, string> = {
   movie: 'movies',
   series: 'series',
   book: 'books',
   album: 'albums',
-};
-
-const LABELS: Record<MediaType, string> = {
-  movie: 'Movies',
-  series: 'Series',
-  book: 'Books',
-  album: 'Albums',
 };
 
 export type SearchView =
@@ -72,14 +58,4 @@ export function resultLabel({
 }: Pick<CatalogItem, 'title' | 'creators' | 'year'>): string {
   const dated = year === null ? title : `${title} (${year})`;
   return creators.length === 0 ? dated : `${dated} — ${creators.join(', ')}`;
-}
-
-// One link per media; switching keeps the query, so a search can be tried in another media.
-export function mediaLinks(current: MediaType, query: string | null): NavLink[] {
-  const search = query === null ? '' : `?q=${encodeURIComponent(query)}`;
-  return [...SEGMENTS].map(([segment, mediaType]) => ({
-    href: `/catalog/${segment}${search}`,
-    label: LABELS[mediaType],
-    current: mediaType === current,
-  }));
 }
