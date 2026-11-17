@@ -26,6 +26,7 @@ const item = (externalId: string, overrides: Partial<CatalogItem> = {}): Catalog
   title: 'Dune',
   creators: ['Frank Herbert'],
   year: 1965,
+  cover: 'https://covers.openlibrary.org/b/id/1-M.jpg',
   sourceVersion: 'search.json',
   raw: { key: `/${externalId}`, title: 'Dune' },
   ...overrides,
@@ -39,10 +40,16 @@ describe('the first save of a catalog item', () => {
     const workId = await save('alice', item('works/OL1W'));
 
     const { rows } = await sql`
-      select media_type, title, creators, year from works where id = ${workId}`.execute(db);
+      select media_type, title, creators, year, cover from works where id = ${workId}`.execute(db);
 
     expect(rows).toEqual([
-      { media_type: 'book', title: 'Dune', creators: ['Frank Herbert'], year: 1965 },
+      {
+        media_type: 'book',
+        title: 'Dune',
+        creators: ['Frank Herbert'],
+        year: 1965,
+        cover: 'https://covers.openlibrary.org/b/id/1-M.jpg',
+      },
     ]);
   });
 
@@ -61,6 +68,14 @@ describe('the first save of a catalog item', () => {
         raw: { key: '/works/OL2W', title: 'Dune' },
       },
     ]);
+  });
+
+  it('a work the source has no cover for is stored without one', async () => {
+    const workId = await save('alice', item('works/OL4W', { cover: null }));
+
+    const { rows } = await sql`select cover from works where id = ${workId}`.execute(db);
+
+    expect(rows).toEqual([{ cover: null }]);
   });
 
   it('a year the source does not know is stored as null', async () => {

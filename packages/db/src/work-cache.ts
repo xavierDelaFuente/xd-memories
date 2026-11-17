@@ -25,8 +25,9 @@ export async function saveWork(db: Transaction<unknown>, item: CatalogItem): Pro
   await sql`savepoint save_work`.execute(db);
   try {
     await sql`
-      insert into works (id, media_type, title, creators, year)
-      values (${workId}, ${item.mediaType}, ${item.title}, ${[...item.creators]}, ${item.year})
+      insert into works (id, media_type, title, creators, year, cover)
+      values (${workId}, ${item.mediaType}, ${item.title}, ${[...item.creators]}, ${item.year},
+              ${item.cover})
     `.execute(db);
     await sql`
       insert into external_refs (source, external_id, work_id, source_version, raw)

@@ -8,6 +8,9 @@ export type CatalogItem = Omit<Work, 'id'> & {
   ref: ExternalRef;
   creators: readonly string[];
   year: number | null;
+  // An https image URL on the source's own host, or null when the source says there is none.
+  // Cover Art Archive can't say in a search, so an album always has one that may not load.
+  cover: string | null;
   // The source's own payload and the API it came from: cache-on-save stores both, so the work
   // can be parsed again later without asking the source.
   sourceVersion: string;

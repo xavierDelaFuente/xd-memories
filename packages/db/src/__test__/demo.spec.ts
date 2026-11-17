@@ -106,6 +106,45 @@ describe('the seeded demo library', () => {
     expect(seen.map(({ title }) => title)).toEqual(['Dune', 'OK Computer']);
   });
 
+  it('shows each work with its cover', async () => {
+    const library = await asDemo(libraryOf);
+
+    expect(library.map(({ title, cover }) => [title, cover])).toEqual([
+      ['Severance', 'https://image.tmdb.org/t/p/w342/pPHpeI2X1qEd1CS1SeyrdhZ4qnT.jpg'],
+      ['Dune', 'https://covers.openlibrary.org/b/id/11481354-M.jpg'],
+      [
+        'OK Computer',
+        'https://coverartarchive.org/release-group/b1392450-e666-3926-a536-22c65f834433/front-250',
+      ],
+      ['The Matrix', 'https://image.tmdb.org/t/p/w342/dXNAPwY7VrqMAo51EKhhCJfaGb5.jpg'],
+    ]);
+  });
+
+  // Works are cached on their first save, which keeps what it stored: a demo work saved before
+  // covers existed would otherwise never show one.
+  it('seeding again gives a demo work saved without a cover its cover', async () => {
+    await sql`update works set cover = null where title = 'Dune'`.execute(db);
+
+    await seedDemo(db, { password: demoPassword(SECRET) });
+
+    const dune = (await asDemo(libraryOf)).find(({ title }) => title === 'Dune');
+    expect(dune?.cover).toBe('https://covers.openlibrary.org/b/id/11481354-M.jpg');
+  });
+
+  // The shared cache is the source's word, not the demo's: a cover a work has stays.
+  it('seeding again leaves a cover a demo work already has', async () => {
+    const refreshed = 'https://image.tmdb.org/t/p/w342/refreshed.jpg';
+    await sql`update works set cover = ${refreshed} where title = 'The Matrix'`.execute(db);
+
+    await seedDemo(db, { password: demoPassword(SECRET) });
+
+    const matrix = (await asDemo(libraryOf)).find(({ title }) => title === 'The Matrix');
+    await sql`
+      update works set cover = 'https://image.tmdb.org/t/p/w342/dXNAPwY7VrqMAo51EKhhCJfaGb5.jpg'
+      where title = 'The Matrix'`.execute(db);
+    expect(matrix?.cover).toBe(refreshed);
+  });
+
   it('is the same after seeding again: a reset, not a second copy', async () => {
     const before = { library: await shownLibrary(), history: await asDemo(historyOf) };
     await seedDemo(db, { password: demoPassword(SECRET) });

@@ -44,7 +44,7 @@ describe('the request', () => {
   it.each`
     param       | value
     ${'q'}      | ${'dune'}
-    ${'fields'} | ${'key,title,author_name,first_publish_year'}
+    ${'fields'} | ${'key,title,author_name,first_publish_year,cover_i'}
     ${'limit'}  | ${'20'}
   `('sends $param=$value', async ({ param, value }: { param: string; value: string }) => {
     const { calls } = await searchWith(json(bookSearch));

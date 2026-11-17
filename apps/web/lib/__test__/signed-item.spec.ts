@@ -13,6 +13,7 @@ const dune: CatalogItem = {
   title: 'Dune',
   creators: ['Frank Herbert'],
   year: 1965,
+  cover: 'https://covers.openlibrary.org/b/id/11481354-M.jpg',
   sourceVersion: 'search.json',
   raw: { key: '/works/OL893414W', title: 'Dune', edition_count: 81 },
 };

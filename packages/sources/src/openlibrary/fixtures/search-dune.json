@@ -1,8 +1,8 @@
 {
-  "numFound": 48304,
+  "numFound": 48295,
   "start": 0,
   "numFoundExact": true,
-  "num_found": 48304,
+  "num_found": 48295,
   "documentation_url": "https://openlibrary.org/dev/docs/api/search",
   "q": "dune",
   "offset": null,
@@ -11,6 +11,7 @@
       "author_name": [
         "Frank Herbert"
       ],
+      "cover_i": 11481354,
       "first_publish_year": 1965,
       "key": "/works/OL893414W",
       "title": "Dune"
@@ -19,6 +20,7 @@
       "author_name": [
         "Frank Herbert"
       ],
+      "cover_i": 980253,
       "first_publish_year": 1969,
       "key": "/works/OL893461W",
       "title": "Dune Messiah"
@@ -27,6 +29,7 @@
       "author_name": [
         "Frank Herbert"
       ],
+      "cover_i": 6976407,
       "first_publish_year": 1976,
       "key": "/works/OL893516W",
       "title": "Children of Dune"
@@ -35,14 +38,7 @@
       "author_name": [
         "Frank Herbert"
       ],
-      "first_publish_year": 1981,
-      "key": "/works/OL893515W",
-      "title": "God Emperor of Dune"
-    },
-    {
-      "author_name": [
-        "Frank Herbert"
-      ],
+      "cover_i": 284530,
       "first_publish_year": 1984,
       "key": "/works/OL893502W",
       "title": "Heretics of Dune"
@@ -51,6 +47,16 @@
       "author_name": [
         "Frank Herbert"
       ],
+      "cover_i": 6711531,
+      "first_publish_year": 1981,
+      "key": "/works/OL893515W",
+      "title": "God Emperor of Dune"
+    },
+    {
+      "author_name": [
+        "Frank Herbert"
+      ],
+      "cover_i": 5536140,
       "first_publish_year": 1985,
       "key": "/works/OL893508W",
       "title": "Chapterhouse Dune"
@@ -59,6 +65,7 @@
       "author_name": [
         "Frank Herbert"
       ],
+      "cover_i": 379932,
       "first_publish_year": 1969,
       "key": "/works/OL893444W",
       "title": "Dune, Dune Messiah, Children of Dune"
@@ -68,6 +75,7 @@
         "Kevin J. Anderson",
         "Brian Herbert"
       ],
+      "cover_i": 524596,
       "first_publish_year": 1994,
       "key": "/works/OL14961045W",
       "title": "Sandworms of Dune"
@@ -76,6 +84,7 @@
       "author_name": [
         "Beatrice Sparks"
       ],
+      "cover_i": 8749018,
       "first_publish_year": 1971,
       "key": "/works/OL264729W",
       "title": "Go Ask Alice"
@@ -85,6 +94,7 @@
         "Brian Herbert",
         "Kevin J. Anderson"
       ],
+      "cover_i": 372916,
       "first_publish_year": 2001,
       "key": "/works/OL19618275W",
       "title": "Dune"
@@ -95,6 +105,7 @@
         "Kevin J. Anderson",
         "Scott Brick"
       ],
+      "cover_i": 8316925,
       "first_publish_year": 2016,
       "key": "/works/OL18149681W",
       "title": "Navigators of Dune"
@@ -104,6 +115,7 @@
         "Kevin J. Anderson",
         "Brian Herbert"
       ],
+      "cover_i": 205510,
       "first_publish_year": 2002,
       "key": "/works/OL14961038W",
       "title": "The Butlerian Jihad"
@@ -113,6 +125,7 @@
         "Kevin J. Anderson",
         "Brian Herbert"
       ],
+      "cover_i": 524595,
       "first_publish_year": 1992,
       "key": "/works/OL522172W",
       "title": "Hunter's Moon & Other American Gothic Tales"
@@ -121,6 +134,7 @@
       "author_name": [
         "Simone de Beauvoir"
       ],
+      "cover_i": 37132,
       "first_publish_year": 1900,
       "key": "/works/OL260382W",
       "title": "Mémoires d'une jeune fille rangée"
@@ -129,6 +143,7 @@
       "author_name": [
         "Agatha Christie"
       ],
+      "cover_i": 12996556,
       "first_publish_year": 1932,
       "key": "/works/OL472165W",
       "title": "Peril at End House"
@@ -137,6 +152,7 @@
       "author_name": [
         "Brian Herbert"
       ],
+      "cover_i": 368228,
       "first_publish_year": 1999,
       "key": "/works/OL5275519W",
       "title": "Dune House Corrino"
@@ -145,6 +161,7 @@
       "author_name": [
         "Raymond E. Feist"
       ],
+      "cover_i": 1005983,
       "first_publish_year": 1994,
       "key": "/works/OL554692W",
       "title": "Shadow of a Dark Queen"
@@ -153,6 +170,7 @@
       "author_name": [
         "Eloisa James"
       ],
+      "cover_i": 239803,
       "first_publish_year": 1999,
       "key": "/works/OL17057W",
       "title": "Potent Pleasures"
@@ -163,6 +181,7 @@
         "Kevin J. Anderson",
         "Brian Herbert"
       ],
+      "cover_i": 374596,
       "first_publish_year": 2001,
       "key": "/works/OL8383295W",
       "title": "House Corrino"
@@ -171,6 +190,7 @@
       "author_name": [
         "Abe Kōbō"
       ],
+      "cover_i": 3285888,
       "first_publish_year": 1962,
       "key": "/works/OL2644757W",
       "title": "砂の女"

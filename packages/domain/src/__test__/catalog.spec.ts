@@ -13,6 +13,7 @@ const item = (externalId: string, mediaType: CatalogItem['mediaType'], title: st
   title,
   creators: [],
   year: null,
+  cover: null,
   sourceVersion: 'fixture',
   raw: {},
 });

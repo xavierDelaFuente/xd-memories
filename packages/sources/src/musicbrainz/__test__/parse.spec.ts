@@ -16,6 +16,8 @@ describe('parseAlbumSearch (recorded MusicBrainz response)', () => {
       title: 'OK Computer',
       creators: ['Radiohead'],
       year: 1997,
+      cover:
+        'https://coverartarchive.org/release-group/b1392450-e666-3926-a536-22c65f834433/front-250',
       sourceVersion: 'ws/2/release-group',
       raw: albumSearch['release-groups'][0],
     });

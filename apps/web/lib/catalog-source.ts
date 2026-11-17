@@ -16,12 +16,14 @@ const fixture = (
   title: string,
   year: number,
   creators: string[] = [],
+  cover: string | null = null,
 ): CatalogItem => ({
   ref: { source: 'fixture', externalId },
   mediaType,
   title,
   creators,
   year,
+  cover,
   sourceVersion: 'fixture',
   raw: { externalId, title },
 });
@@ -34,7 +36,16 @@ const FIXTURES: CatalogItem[] = [
   fixture('s1', 'series', 'The Animatrix', 2003),
   fixture('b1', 'book', 'Dune', 1965, ['Frank Herbert']),
   fixture('b2', 'book', 'Dune Messiah', 1969, ['Frank Herbert']),
-  fixture('a1', 'album', 'OK Computer', 1997, ['Radiohead']),
+  // A cover that never loads (.invalid never resolves), as Cover Art Archive's can be: E2E sees the
+  // placeholder take its place, offline.
+  fixture(
+    'a1',
+    'album',
+    'OK Computer',
+    1997,
+    ['Radiohead'],
+    'https://covers.invalid/ok-computer.jpg',
+  ),
 ];
 
 const userAgent = process.env.MUSICBRAINZ_USER_AGENT ?? 'xd-memories';

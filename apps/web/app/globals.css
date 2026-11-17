@@ -357,7 +357,7 @@ main:focus {
 
 .row {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: 2.5rem minmax(0, 1fr) auto;
   gap: var(--xd-space-xs) var(--xd-space-lg);
   padding: var(--xd-space-lg) 0;
   border-bottom: 1px solid var(--xd-color-border);
@@ -365,7 +365,7 @@ main:focus {
 
 .row h2,
 .row-meta {
-  grid-column: 1;
+  grid-column: 2;
 }
 
 .row h2 {
@@ -384,7 +384,7 @@ main:focus {
 .row-marks {
   margin: 0;
   grid-row: 1 / span 2;
-  grid-column: 2;
+  grid-column: 3;
   display: flex;
   flex-direction: column;
   align-items: end;
@@ -397,7 +397,7 @@ main:focus {
 }
 
 .row details {
-  grid-column: 1 / -1;
+  grid-column: 2 / -1;
   font-size: var(--xd-font-size-sm);
 }
 
@@ -467,4 +467,75 @@ main:focus {
   width: 9px;
   height: 9px;
   border-radius: 50%;
+}
+
+/* A work's cover (lib/cover.tsx): as wide as its place, its shape fixed so the page doesn't jump
+   while it loads. With none, or one that won't load, a striped placeholder of the same shape. */
+.cover {
+  display: block;
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
+  border-radius: var(--xd-radius-sm);
+  background-color: var(--xd-color-surface-hover);
+}
+
+.cover[data-shape="square"] {
+  aspect-ratio: 1;
+}
+
+.cover-empty {
+  background-image: repeating-linear-gradient(
+    135deg,
+    var(--xd-color-border) 0 1px,
+    transparent 1px 10px
+  );
+}
+
+/* Search results as covers (screen 1b): as many columns as fit, two on a phone. Each one is its
+   cover, the title in serif, then who made it and when. */
+.cover-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr));
+  gap: var(--xd-space-2xl) var(--xd-space-lg);
+  align-self: stretch;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cover-grid li {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  gap: var(--xd-space-xs);
+}
+
+.cover-grid .cover {
+  margin-bottom: var(--xd-space-sm);
+}
+
+.cover-grid h2 {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: 1.125rem;
+  font-weight: 400;
+  line-height: 1.25;
+}
+
+.work-meta {
+  margin: 0;
+  font-size: var(--xd-font-size-sm);
+  color: var(--xd-color-text-muted);
+}
+
+.cover-grid .add {
+  margin-top: var(--xd-space-sm);
+}
+
+/* In a library row, the cover beside the title and its line, as tall as it is: a thumbnail. */
+.row > .cover {
+  grid-row: 1 / span 2;
+  grid-column: 1;
+  align-self: start;
 }

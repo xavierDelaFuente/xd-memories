@@ -13,6 +13,7 @@ describe('parseBookSearch (recorded Open Library response)', () => {
       title: 'Dune',
       creators: ['Frank Herbert'],
       year: 1965,
+      cover: 'https://covers.openlibrary.org/b/id/11481354-M.jpg',
       sourceVersion: 'search.json',
       raw: bookSearch.docs[0],
     });
@@ -88,5 +89,16 @@ describe('malformed responses are typed errors, never casts or crashes', () => {
     const result = parseBookSearch(payload);
 
     expect(result).toEqual(invalid);
+  });
+});
+
+// The cover by its id, which Open Library's covers API serves without a rate limit.
+describe('covers', () => {
+  it('a doc with no cover id has no cover', () => {
+    const items = unwrap(
+      parseBookSearch({ docs: [{ key: '/works/OL1W', title: 'Uncovered', author_name: [] }] }),
+    );
+
+    expect(items[0]?.cover).toBeNull();
   });
 });
