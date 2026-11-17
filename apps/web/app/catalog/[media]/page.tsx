@@ -35,7 +35,7 @@ export default async function CatalogPage({ params, searchParams }: Props) {
   return (
     <>
       <h1>Catalog</h1>
-      <nav aria-label="Media" className="media">
+      <nav aria-label="Media" className="media chips">
         <ul>
           {mediaLinks(view.mediaType, query).map(({ href, label, current }) => (
             <li key={href}>

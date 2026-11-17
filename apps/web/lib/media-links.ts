@@ -11,7 +11,7 @@ export const SEGMENTS: ReadonlyMap<string, MediaType> = new Map([
 ]);
 
 // The section is Music; the work stays an album (PROJECT Open Question 13).
-const LABELS: Record<MediaType, string> = {
+export const SECTION_LABELS: Record<MediaType, string> = {
   movie: 'Movies',
   series: 'Series',
   book: 'Books',
@@ -23,7 +23,7 @@ export function mediaLinks(current: MediaType | null, query: string | null): Nav
   const search = query === null ? '' : `?q=${encodeURIComponent(query)}`;
   return [...SEGMENTS].map(([segment, mediaType]) => ({
     href: `/catalog/${segment}${search}`,
-    label: LABELS[mediaType],
+    label: SECTION_LABELS[mediaType],
     current: mediaType === current,
   }));
 }
