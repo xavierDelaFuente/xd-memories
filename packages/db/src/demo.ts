@@ -34,6 +34,7 @@ const LIBRARY: DemoWork[] = [
       title: 'The Matrix',
       creators: [],
       year: 1999,
+      cover: 'https://image.tmdb.org/t/p/w342/dXNAPwY7VrqMAo51EKhhCJfaGb5.jpg',
       sourceVersion: '3/search/movie',
     },
     history: [['want', day(1)]],
@@ -48,6 +49,8 @@ const LIBRARY: DemoWork[] = [
       title: 'OK Computer',
       creators: ['Radiohead'],
       year: 1997,
+      cover:
+        'https://coverartarchive.org/release-group/b1392450-e666-3926-a536-22c65f834433/front-250',
       sourceVersion: 'ws/2/release-group',
     },
     history: [['done', day(3)]],
@@ -61,6 +64,7 @@ const LIBRARY: DemoWork[] = [
       title: 'Dune',
       creators: ['Frank Herbert'],
       year: 1965,
+      cover: 'https://covers.openlibrary.org/b/id/11481354-M.jpg',
       sourceVersion: 'search.json',
     },
     history: [
@@ -78,6 +82,7 @@ const LIBRARY: DemoWork[] = [
       title: 'Severance',
       creators: [],
       year: 2022,
+      cover: 'https://image.tmdb.org/t/p/w342/pPHpeI2X1qEd1CS1SeyrdhZ4qnT.jpg',
       sourceVersion: '3/search/tv',
     },
     history: [['doing', day(15)]],
@@ -110,6 +115,9 @@ export async function seedDemo(db: Kysely<unknown>, { password }: { password: st
     }
     for (const { item, history, rating, season, highlightedAt } of LIBRARY) {
       const workId = await saveWork(trx, { ...item, raw: { seededBy: 'demo' } });
+      // A work cached before covers existed keeps what it stored; a missing cover is filled in.
+      await sql`
+        update works set cover = ${item.cover} where id = ${workId} and cover is null`.execute(trx);
       for (const [status, at] of history) {
         await sql`
           insert into entries (user_id, work_id, status, at)

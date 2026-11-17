@@ -7,6 +7,7 @@ export type LibraryItem = {
   title: string;
   creators: string[];
   year: number | null;
+  cover: string | null;
   status: Status;
   at: Date;
   rating: Rating | null;
@@ -112,7 +113,7 @@ export async function libraryOf(db: Transaction<unknown>): Promise<LibraryItem[]
   const { rows } = await sql<LibraryItem>`
     select * from (
       select distinct on (e.work_id)
-        e.work_id as "workId", w.media_type as "mediaType", w.title, w.creators, w.year,
+        e.work_id as "workId", w.media_type as "mediaType", w.title, w.creators, w.year, w.cover,
         e.status, e.at, r.rating, h.user_id is not null as highlighted,
         p.season
       from entries e join works w on w.id = e.work_id

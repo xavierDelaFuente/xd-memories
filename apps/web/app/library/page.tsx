@@ -9,6 +9,7 @@ import { redirect } from 'next/navigation';
 import { currentSession, getDb } from '../../lib/auth';
 import { signOut } from '../../lib/auth-actions';
 import { resultLabel } from '../../lib/catalog-search';
+import { Cover } from '../../lib/cover';
 import {
   addHighlight,
   removeHighlight,
@@ -95,6 +96,7 @@ export default async function LibraryPage({ searchParams }: Props) {
                 const meta = rowMeta(item);
                 return (
                   <li key={item.workId} className="row">
+                    <Cover src={item.cover} mediaType={item.mediaType} />
                     <h2>{item.title}</h2>
                     <p className="row-meta">
                       <MediaTag mediaType={item.mediaType} />

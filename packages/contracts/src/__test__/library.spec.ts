@@ -15,6 +15,7 @@ const dune = {
   title: 'Dune',
   creators: ['Frank Herbert'],
   year: 1965,
+  cover: 'https://covers.openlibrary.org/b/id/11481354-M.jpg',
   sourceVersion: 'search.json',
   raw: { key: '/works/OL893414W', title: 'Dune' },
 };
@@ -33,10 +34,21 @@ describe('CatalogItemShape', () => {
     ${'year with decimals'} | ${{ year: 1965.5 }}
     ${'no source version'}  | ${{ sourceVersion: '' }}
     ${'ref without an id'}  | ${{ ref: { source: 'openlibrary', externalId: '' } }}
+    ${'cover over http'}    | ${{ cover: 'http://covers.openlibrary.org/b/id/1-M.jpg' }}
+    ${'script as a cover'}  | ${{ cover: 'javascript:alert(1)' }}
+    ${'cover not a URL'}    | ${{ cover: 'dune.jpg' }}
+    ${'missing cover'}      | ${{ cover: undefined }}
   `('rejects a $case', ({ change }: { change: object }) => {
     const parsed = CatalogItemShape.safeParse({ ...dune, ...change });
 
     expect(parsed.success).toBe(false);
+  });
+
+  // The cover ends up as an image's address: https only, or none at all.
+  it('accepts an item with no cover', () => {
+    const parsed = CatalogItemShape.safeParse({ ...dune, cover: null });
+
+    expect(parsed).toEqual({ success: true, data: { ...dune, cover: null } });
   });
 
   it('infers the domain CatalogItem', () => {

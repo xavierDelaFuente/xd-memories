@@ -14,6 +14,7 @@ describe('parseMovieSearch (recorded TMDB response)', () => {
       title: 'The Matrix',
       creators: [],
       year: 1999,
+      cover: 'https://image.tmdb.org/t/p/w342/dXNAPwY7VrqMAo51EKhhCJfaGb5.jpg',
       sourceVersion: '3/search/movie',
       raw: movieSearch.results[0],
     });
@@ -46,6 +47,7 @@ describe('parseTvSearch (recorded TMDB response)', () => {
       title: 'Threat Matrix',
       creators: [],
       year: 2003,
+      cover: 'https://image.tmdb.org/t/p/w342/xOeA42Rc9EiIe0dGnwywLqYKetG.jpg',
       sourceVersion: '3/search/tv',
       raw: tvSearch.results[0],
     });
@@ -117,5 +119,14 @@ describe('malformed responses are typed errors, never casts or crashes', () => {
     const result = parseTvSearch({ results: [{ id: 711, title: 'Threat Matrix' }] });
 
     expect(result).toEqual(invalid);
+  });
+});
+
+// The poster at a width that suits a cover grid; TMDB's own image host, as its terms ask.
+describe('covers', () => {
+  it('a result with no poster has no cover', () => {
+    const items = unwrap(parseTvSearch(tvSearch));
+
+    expect(items.find((item) => item.ref.externalId === 'tv/31636')?.cover).toBeNull();
   });
 });

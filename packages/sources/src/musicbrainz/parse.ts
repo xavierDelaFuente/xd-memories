@@ -27,6 +27,9 @@ export function parseAlbumSearch(json: unknown): Result<CatalogItem[], SourceErr
         title: group.title,
         creators: group['artist-credit'].map((credit) => credit.name),
         year: yearOf(group['first-release-date']),
+        // Search can't say whether Cover Art Archive has a front; the page shows a placeholder when
+        // this doesn't load.
+        cover: `https://coverartarchive.org/release-group/${group.id}/front-250`,
         sourceVersion: 'ws/2/release-group',
         raw,
       }),

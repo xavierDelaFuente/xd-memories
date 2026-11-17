@@ -37,7 +37,7 @@ const sources: Record<string, Recording[]> = {
   openlibrary: [
     {
       file: 'src/openlibrary/fixtures/search-dune.json',
-      url: `${openLibrary}?q=dune&fields=key,title,author_name,first_publish_year&limit=20`,
+      url: `${openLibrary}?q=dune&fields=key,title,author_name,first_publish_year,cover_i&limit=20`,
       headers: openLibraryHeaders,
     },
   ],

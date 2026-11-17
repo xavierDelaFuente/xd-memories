@@ -26,6 +26,7 @@ const book = (externalId: string, title: string): CatalogItem => ({
   title,
   creators: ['Frank Herbert'],
   year: 1965,
+  cover: 'https://covers.openlibrary.org/b/id/1-M.jpg',
   sourceVersion: 'search.json',
   raw: {},
 });
@@ -73,6 +74,7 @@ describe('libraryOf', () => {
         title: 'Dune',
         creators: ['Frank Herbert'],
         year: 1965,
+        cover: 'https://covers.openlibrary.org/b/id/1-M.jpg',
         status: 'want',
         at: day(1),
         rating: null,

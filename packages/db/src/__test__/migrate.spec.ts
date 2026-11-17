@@ -54,6 +54,7 @@ describe('migrateToLatest', () => {
       '0008-progress',
       '0009-read-only-users',
       '0010-dropped-status',
+      '0011-covers',
     ]);
   });
 
@@ -67,7 +68,7 @@ describe('migrateToLatest', () => {
 describe('0001-catalog', () => {
   it.each`
     table              | columns
-    ${'works'}         | ${['created_at', 'creators', 'id', 'media_type', 'title', 'year']}
+    ${'works'}         | ${['cover', 'created_at', 'creators', 'id', 'media_type', 'title', 'year']}
     ${'external_refs'} | ${['external_id', 'fetched_at', 'raw', 'source', 'source_version', 'work_id']}
   `('creates $table', async ({ table, columns }: { table: string; columns: string[] }) => {
     const actual = await columnsOf(table);
@@ -138,6 +139,30 @@ describe('0004-work-details', () => {
     const act = () =>
       sql`insert into works (id, media_type, title, year)
           values (${`w-year-${year}`}, 'movie', 'X', ${year})`.execute(db);
+
+    await expect(act()).rejects.toThrow(/check constraint/);
+  });
+});
+
+describe('0011-covers', () => {
+  it('a work without a cover has none', async () => {
+    await work('w-no-cover');
+
+    const { rows } = await sql`select cover from works where id = 'w-no-cover'`.execute(db);
+
+    expect(rows).toEqual([{ cover: null }]);
+  });
+
+  // It ends up as an image's address: https only, so never a script or a mixed-content request.
+  it.each`
+    cover
+    ${'http://covers.openlibrary.org/b/id/1-M.jpg'}
+    ${'javascript:alert(1)'}
+    ${'covers.openlibrary.org/b/id/1-M.jpg'}
+  `('a cover of $cover is rejected', async ({ cover }: { cover: string }) => {
+    const act = () =>
+      sql`insert into works (id, media_type, title, cover)
+          values (${`w-cover-${cover}`}, 'book', 'X', ${cover})`.execute(db);
 
     await expect(act()).rejects.toThrow(/check constraint/);
   });

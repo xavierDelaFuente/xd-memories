@@ -72,7 +72,7 @@ test('a search result edited in the browser is not added', async ({ page }) => {
   await page.goto('/catalog/books?q=dune');
   await page
     .getByRole('listitem')
-    .filter({ hasText: DUNE })
+    .filter({ has: page.getByRole('group', { name: `Add ${DUNE}` }) })
     .locator('input[name="item"]')
     .evaluate((input: HTMLInputElement) => {
       input.value = `x${input.value}`;

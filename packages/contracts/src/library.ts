@@ -8,6 +8,8 @@ export const CatalogItemShape = z.object({
   title: z.string().trim().min(1),
   creators: z.array(z.string()),
   year: z.int().nullable(),
+  // It ends up as an image's address: https only, so never a script or a mixed-content request.
+  cover: z.url({ protocol: /^https$/ }).nullable(),
   sourceVersion: z.string().min(1),
   raw: z.unknown(),
 });

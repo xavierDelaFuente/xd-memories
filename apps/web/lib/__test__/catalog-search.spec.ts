@@ -8,6 +8,7 @@ const matrix = {
   title: 'The Matrix',
   creators: [],
   year: 1999,
+  cover: null,
   sourceVersion: 'fixture',
   raw: {},
 };
@@ -17,6 +18,7 @@ const animatrix = {
   title: 'The Animatrix',
   creators: [],
   year: 2003,
+  cover: null,
   sourceVersion: 'fixture',
   raw: {},
 };
