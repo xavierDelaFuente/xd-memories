@@ -1,19 +1,13 @@
-import type { MediaType, Rating, Status } from '@xd-memories/domain';
+import type { MediaType, Status } from '@xd-memories/domain';
 import { describe, expect, it } from 'vitest';
-import {
-  ADD_STATUSES,
-  historyLabel,
-  libraryLabel,
-  STATUS_LABELS,
-  statusLabel,
-} from '../library-view';
+import { ADD_STATUSES, historyLabel, STATUS_LABELS, statusLabel } from '../library-view';
 
 // Where works of different media are listed together, "doing" can't name one activity.
 describe('STATUS_LABELS', () => {
   it.each`
     status       | label
     ${'want'}    | ${'Want'}
-    ${'doing'}   | ${'In progress'}
+    ${'doing'}   | ${'Active'}
     ${'done'}    | ${'Done'}
     ${'dropped'} | ${'Dropped'}
   `('$status reads "$label"', ({ status, label }: { status: Status; label: string }) => {
@@ -51,49 +45,6 @@ describe('ADD_STATUSES', () => {
 
     expect(offered).toEqual(['want', 'doing', 'done']);
   });
-});
-
-describe('libraryLabel', () => {
-  const dune = {
-    title: 'Dune',
-    creators: ['Frank Herbert'],
-    year: 1965,
-    mediaType: 'book' as const,
-    season: null,
-  };
-
-  it('reads like the search result, followed by the status for its media', () => {
-    const label = libraryLabel({ ...dune, status: 'doing', rating: null });
-
-    expect(label).toBe('Dune (1965) — Frank Herbert · Reading');
-  });
-
-  it('a series shows the season reached after its status, before any rating', () => {
-    const severance = {
-      title: 'Severance',
-      creators: [],
-      year: 2022,
-      mediaType: 'series' as const,
-    };
-
-    const label = libraryLabel({ ...severance, status: 'doing', season: 2, rating: 90 as Rating });
-
-    expect(label).toBe('Severance (2022) · Watching · Season 2 · 90/100');
-  });
-
-  it.each`
-    rating  | shown
-    ${87.5} | ${'88/100'}
-    ${87.4} | ${'87/100'}
-    ${0}    | ${'0/100'}
-  `(
-    'ends with a rating of $rating, shown rounded as $shown',
-    ({ rating, shown }: { rating: number; shown: string }) => {
-      const label = libraryLabel({ ...dune, status: 'done', rating: rating as Rating });
-
-      expect(label).toBe(`Dune (1965) — Frank Herbert · Done · ${shown}`);
-    },
-  );
 });
 
 describe('historyLabel', () => {

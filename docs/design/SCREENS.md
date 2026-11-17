@@ -76,7 +76,7 @@ a 3.2x task or is a decision to make:
 | Catalog media as underline tabs above the search (3.18)                  | Desktop: media list in the sidebar (1b). Mobile: pill chips (1i)                 | Done in 3.23: on desktop the sidebar replaces the tabs; on a phone they are chips. `mediaLinks` is the source of both                                                               |
 | Results as a card list with the title only (`resultLabel`)               | Cover grid with title, creator · year, the status if in library, community label | 3.25 (covers); community label in Phase 6                                                                                                                                           |
 | "Add as" + Want · In progress · Done, one tap each (3.18)                | A single "+ Add" (1b) or "+ Want" (1h, 1d); status chosen on the title page      | Keep the one-tap group: it's tested and needs no extra page. The design's "+ Want" is the same group with only Want shown, for later screens where want is the only sensible status |
-| `doing` labelled **In progress**                                         | **Reading** on a book (presumably Watching / Listening for the others)           | 3.22: per-media verb as a display label; "In progress" stays where the media is mixed (library "Active" tab)                                                                        |
+| `doing` labelled **In progress**                                         | **Reading** on a book (presumably Watching / Listening for the others)           | 3.22: per-media verb as a display label; where the media is mixed (the library's tabs across all media) it reads "Active", as 1i has it (3.24)                                      |
 | No cover on `CatalogItem`                                                | Covers on 1b, 1c, 1i, 1j                                                         | 3.25                                                                                                                                                                                |
 
 ## Gaps the screens open
@@ -84,6 +84,6 @@ a 3.2x task or is a decision to make:
 - **Dropped status.** 1c and 1i show Want · Reading · Done · **Dropped**. Decided (Open
   Question 11): a domain status since 3.27.
 - **Per-media verbs.** "Reading" for books, presumably "Watching" and "Listening" for the others:
-  a display label over `doing`, not a new status. Today all media show "In progress".
+  a display label over `doing`, not a new status. Done in 3.22; across media it reads "Active" (3.24).
 - **Sync in the nav** with a review count (desktop only); Browse is a mobile tab but on desktop it
   is the media list.
