@@ -3,13 +3,9 @@ import { expect, test } from '@playwright/test';
 test('searching movies by keyboard lists matching results and credits TMDB', async ({ page }) => {
   await page.goto('/catalog/movies');
 
-  // Skip link, then past the header into the page: the media first, then the search.
+  // Skip link, past the sidebar (it lists the media), and the search is the first stop.
   await page.keyboard.press('Tab');
   await page.keyboard.press('Enter');
-  for (const media of ['Movies', 'Series', 'Books', 'Albums']) {
-    await page.keyboard.press('Tab');
-    await expect(page.getByRole('link', { name: media, exact: true })).toBeFocused();
-  }
   await page.keyboard.press('Tab');
   const search = page.getByRole('searchbox', { name: 'Search movies' });
   await expect(search).toBeFocused();

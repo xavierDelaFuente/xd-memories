@@ -9,10 +9,10 @@ export function NavLinks({ signedIn }: { signedIn: boolean }) {
   const pathname = usePathname();
 
   return (
-    <nav aria-label="Main">
+    <nav aria-label="Main" className="main-nav">
       <ul>
-        {navLinks(signedIn, pathname).map(({ href, label, current }) => (
-          <li key={href}>
+        {navLinks(signedIn, pathname).map(({ href, label, current, phoneOnly }) => (
+          <li key={href} className={phoneOnly ? 'phone-only' : undefined}>
             <Link href={href} aria-current={current ? 'page' : undefined}>
               {label}
             </Link>

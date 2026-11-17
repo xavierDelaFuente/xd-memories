@@ -16,6 +16,7 @@ import { currentSession } from '../lib/auth';
 import { MODE_COOKIE, modeFrom } from '../lib/color-mode';
 import { ModeToggle } from '../lib/mode-toggle';
 import { NavLinks } from '../lib/nav-links';
+import { SidebarMedia } from '../lib/sidebar-media';
 import { fontVariables } from './fonts';
 
 export const metadata: Metadata = {
@@ -48,6 +49,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
             xd-memories
           </Link>
           <NavLinks signedIn={signedIn} />
+          <SidebarMedia />
           <ModeToggle mode={mode} />
         </header>
         <main id="main" tabIndex={-1}>

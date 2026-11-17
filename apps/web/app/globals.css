@@ -25,11 +25,12 @@ a {
   color: var(--xd-color-primary);
 }
 
-/* The app name and sections on the left; site-wide settings, such as the colour scheme, at the
-   right edge. On a narrow screen it wraps onto a second row: nothing is hidden behind a menu. */
+/* The app shell (screens v1). On a phone: a top bar with the app name and the colour scheme, the
+   sections as a tab bar along the bottom. From 64rem: a sidebar with the app name, the sections,
+   the media straight into the catalog, and the colour scheme at its foot. Nothing hides behind a
+   menu at either size. */
 header {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
   gap: var(--xd-space-md) var(--xd-space-xl);
   padding: var(--xd-space-md) var(--xd-space-xl);
@@ -49,7 +50,6 @@ header form {
 
 header nav ul {
   display: flex;
-  gap: var(--xd-space-lg);
   margin: 0;
   padding: 0;
   list-style: none;
@@ -63,8 +63,125 @@ header nav a {
 header nav a:hover,
 header nav a[aria-current="page"] {
   color: var(--xd-color-primary);
-  text-decoration: underline;
-  text-underline-offset: 0.3em;
+}
+
+/* The tab bar: fixed to the bottom, every tab a 48px target; the page keeps room for it. */
+body {
+  padding-bottom: calc(3rem + env(safe-area-inset-bottom));
+}
+
+.main-nav {
+  position: fixed;
+  inset: auto 0 0;
+  z-index: 1;
+  padding-bottom: env(safe-area-inset-bottom);
+  background-color: var(--xd-color-surface);
+  border-top: 1px solid var(--xd-color-border);
+}
+
+.main-nav li {
+  flex: 1;
+}
+
+.main-nav a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 3rem;
+}
+
+.main-nav a[aria-current="page"] {
+  font-weight: var(--xd-font-weight-semibold);
+}
+
+/* On a phone the catalog shows its own media chips. */
+.sidebar-media {
+  display: none;
+}
+
+.sidebar-label {
+  margin: 0 0 var(--xd-space-sm);
+  padding: 0 var(--xd-space-md);
+  font-size: var(--xd-font-size-sm);
+  color: var(--xd-color-text-muted);
+}
+
+@media (min-width: 64rem) {
+  body {
+    display: grid;
+    grid-template-columns: 15rem minmax(0, 1fr);
+    padding-bottom: 0;
+  }
+
+  header {
+    position: sticky;
+    top: 0;
+    box-sizing: border-box;
+    height: 100dvh;
+    overflow-y: auto;
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--xd-space-xl);
+    padding: var(--xd-space-xl) var(--xd-space-md);
+    background-color: var(--xd-color-surface-hover);
+    border-right: 1px solid var(--xd-color-border);
+  }
+
+  .brand {
+    padding: 0 var(--xd-space-md);
+  }
+
+  header form {
+    margin: auto 0 0;
+  }
+
+  .main-nav {
+    position: static;
+    padding: 0;
+    background-color: transparent;
+    border-top: 0;
+  }
+
+  .main-nav .phone-only {
+    display: none;
+  }
+
+  .sidebar-media {
+    display: block;
+  }
+
+  header nav ul {
+    flex-direction: column;
+    gap: var(--xd-space-xs);
+  }
+
+  .main-nav li {
+    flex: none;
+  }
+
+  .main-nav a,
+  .sidebar-media a {
+    display: block;
+    min-height: 0;
+    padding: var(--xd-space-sm) var(--xd-space-md);
+    border-radius: var(--xd-radius-md);
+  }
+
+  .main-nav a:hover,
+  .sidebar-media a:hover {
+    background-color: var(--xd-color-surface);
+  }
+
+  .main-nav a[aria-current="page"],
+  .sidebar-media a[aria-current="page"] {
+    font-weight: var(--xd-font-weight-semibold);
+    background-color: var(--xd-color-surface);
+  }
+
+  /* The sidebar lists the media; the catalog's own chips would repeat it. */
+  main .media {
+    display: none;
+  }
 }
 
 /* One rhythm for every page: what sits directly in main is spaced by the gap, not by margins. */
@@ -153,30 +270,34 @@ main:focus {
   width: 6rem;
 }
 
-/* The catalog: the media as tabs over the search, which is one row: the field, then its button. */
+/* The catalog on a phone: the media as chips over the search, which is one row: the field, then
+   its button. On a wider screen the sidebar lists the media instead. */
 .media ul {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--xd-space-lg);
+  gap: var(--xd-space-sm);
   margin: 0;
   padding: 0;
   list-style: none;
-  border-bottom: 1px solid var(--xd-color-border);
 }
 
 .media a {
   display: block;
-  padding: var(--xd-space-sm) 0;
-  color: var(--xd-color-text-muted);
+  padding: var(--xd-space-sm) var(--xd-space-lg);
+  color: inherit;
   text-decoration: none;
-  border-bottom: 2px solid transparent;
-  margin-bottom: -1px;
+  border: 1px solid var(--xd-color-border-strong);
+  border-radius: var(--xd-radius-full);
 }
 
-.media a:hover,
+.media a:hover {
+  background-color: var(--xd-color-surface-hover);
+}
+
 .media a[aria-current="page"] {
-  color: var(--xd-color-primary);
-  border-bottom-color: currentColor;
+  color: var(--xd-color-surface);
+  background-color: var(--xd-color-text);
+  border-color: var(--xd-color-text);
 }
 
 .media,
