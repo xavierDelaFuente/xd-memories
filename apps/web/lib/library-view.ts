@@ -27,3 +27,24 @@ const DAY = new Intl.DateTimeFormat('en-GB', { dateStyle: 'medium', timeZone: 'U
 
 export const historyLabel = ({ status, at }: Pick<Entry, 'status' | 'at'>, mediaType: MediaType) =>
   `${statusLabel(status, mediaType)} · ${DAY.format(at)}`;
+
+// How a go at a work ends.
+const ENDS: Partial<Record<Status, string>> = { done: 'finished', dropped: 'dropped' };
+
+// A work's dates, from its history (oldest first): when the latest go at it started, and how it
+// ended, if it has; for a work never started or ended, when it was added. Earlier goes are in the
+// history itself.
+export function datesLabel(history: readonly Pick<Entry, 'status' | 'at'>[]): string {
+  let started: Date | undefined;
+  let ended: string | undefined;
+  for (const { status, at } of history) {
+    const end = ENDS[status];
+    if (status === 'doing') [started, ended] = [at, undefined];
+    else if (end !== undefined) ended = `${end} ${DAY.format(at)}`;
+  }
+  const parts = [...(started ? [`started ${DAY.format(started)}`] : []), ...(ended ? [ended] : [])];
+  const [first] = history;
+  if (parts.length === 0) return first === undefined ? '' : `Added ${DAY.format(first.at)}`;
+  const label = parts.join(' · ');
+  return label.charAt(0).toUpperCase() + label.slice(1);
+}

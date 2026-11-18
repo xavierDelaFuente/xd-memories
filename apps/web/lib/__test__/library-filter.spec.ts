@@ -4,6 +4,7 @@ import {
   type LibraryFilter,
   libraryFilter,
   libraryMediaLinks,
+  mediaShelf,
   ratingLabel,
   rowMeta,
   shownItems,
@@ -218,4 +219,22 @@ describe('ratingLabel', () => {
 
     expect(shown).toBe(label);
   });
+});
+
+// From a work's page, back to the library at its media.
+describe('mediaShelf', () => {
+  it.each`
+    mediaType   | label       | href
+    ${'movie'}  | ${'Movies'} | ${'/library?media=movies'}
+    ${'series'} | ${'Series'} | ${'/library?media=series'}
+    ${'book'}   | ${'Books'}  | ${'/library?media=books'}
+    ${'album'}  | ${'Music'}  | ${'/library?media=albums'}
+  `(
+    'a $mediaType is shelved under $label',
+    ({ mediaType, label, href }: { mediaType: MediaType; label: string; href: string }) => {
+      const shelf = mediaShelf(mediaType);
+
+      expect(shelf).toEqual({ label, href });
+    },
+  );
 });

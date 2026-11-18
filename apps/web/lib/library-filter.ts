@@ -62,6 +62,12 @@ export function libraryMediaLinks({ media }: LibraryFilter): NavLink[] {
   ];
 }
 
+// The library at one media, as a work's page links back to it.
+export const mediaShelf = (mediaType: MediaType) => ({
+  label: SECTION_LABELS[mediaType],
+  href: href({ media: segmentOf(mediaType) }),
+});
+
 // One tab per status, counted within the media shown. Across media "doing" is Active; within
 // one it names the activity, Reading for books.
 export function statusTabs(

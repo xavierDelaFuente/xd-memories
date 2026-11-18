@@ -36,20 +36,18 @@ const statusTabs = (page: Page) => page.getByRole('navigation', { name: 'Filter 
 
 const mediaChips = (page: Page) => page.getByRole('navigation', { name: 'Filter by media' });
 
-// Editing folds away under each row; open it, unless an earlier change left it open.
-const edit = async (page: Page, work: string) => {
-  const summary = page.getByLabel(`Edit ${work}`);
-  const open = await summary.evaluate((node) => node.parentElement?.hasAttribute('open'));
-  if (!open) await summary.click();
+// A work is changed on its own page (screen 1c), reached from its row in the library.
+const openWork = async (page: Page, title: string) => {
+  await page.goto('/library');
+  await rowOf(page, title).getByRole('link', { name: title, exact: true }).click();
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText(title);
 };
 
 const statusOf = (page: Page, work: string, status: string) =>
   page.getByRole('group', { name: `Status for ${work}` }).getByRole('button', { name: status });
 
-const historyOf = async (page: Page, title: string, work: string) => {
-  await rowOf(page, title).getByText('History', { exact: true }).click();
-  return page.getByRole('list', { name: `History of ${work}` }).getByRole('listitem');
-};
+const historyOf = (page: Page, work: string) =>
+  page.getByRole('list', { name: `History of ${work}` }).getByRole('listitem');
 
 test('adding a search result lists it in your library, at its status', async ({ page }) => {
   await signUp(page);
@@ -94,62 +92,92 @@ test('signed out, search results offer no Add', async ({ page }) => {
   await expect(page.getByRole('group', { name: /^Add / })).toHaveCount(0);
 });
 
-test('changing a status in your library shows the new one and keeps the history', async ({
+// Screen 1c: the work, where it came from, and what you've done with it.
+test('a work in your library opens on its own page from its row', async ({ page }) => {
+  await signUp(page);
+  await addDune(page, 'Want');
+
+  await openWork(page, 'Dune');
+
+  await expect(page).toHaveURL(/\/works\/[^/]+$/);
+  await expect(page.getByRole('main').getByText('Book · 1965', { exact: true })).toBeVisible();
+  await expect(page.getByText('by Frank Herbert', { exact: true })).toBeVisible();
+  await expect(page.getByText(/^Added \d{1,2} [A-Z][a-z]{2} \d{4}$/)).toBeVisible();
+  await expect(page.getByRole('list', { name: 'Sources' }).getByRole('listitem')).toHaveText([
+    'fixture',
+  ]);
+  await expect(statusOf(page, DUNE, 'Want')).toHaveAttribute('aria-pressed', 'true');
+});
+
+test('the library lists works to open, with nothing to change in place', async ({ page }) => {
+  await signUp(page);
+  await addDune(page, 'Want');
+
+  await page.goto('/library');
+
+  await expect(rowOf(page, 'Dune').getByRole('link', { name: 'Dune' })).toBeVisible();
+  await expect(page.getByRole('group', { name: /^Status for / })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: /^(Rate|Highlight) / })).toHaveCount(0);
+});
+
+test('a work that isn’t in your library is not found', async ({ page }) => {
+  await signUp(page);
+
+  await page.goto('/works/not-a-work');
+
+  await expect(page.getByText('This page could not be found.')).toBeVisible();
+});
+
+test('signed out, a work’s page sends you to sign in', async ({ page }) => {
+  await page.goto('/works/any-work');
+
+  await expect(page).toHaveURL(/\/sign-in$/);
+});
+
+test('changing a status on a work’s page shows the new one and keeps the history', async ({
   page,
 }) => {
   await signUp(page);
   await addDune(page, 'Want');
-  await page.goto('/library');
-  await edit(page, DUNE);
+  await openWork(page, 'Dune');
 
   await statusOf(page, DUNE, 'Done').click();
 
+  await expect(statusOf(page, DUNE, 'Done')).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.getByText(/^Finished \d{1,2} [A-Z][a-z]{2} \d{4}$/)).toBeVisible();
+  await expect(historyOf(page, DUNE)).toHaveText([/^Want · /, /^Done · /]);
+  await page.goto('/library');
   await expect(statusTabs(page).getByRole('link', { name: 'Done 1' })).toHaveAttribute(
     'aria-current',
     'page',
   );
-  await expect(statusOf(page, DUNE, 'Done')).toHaveAttribute('aria-pressed', 'true');
-  await expect(await historyOf(page, 'Dune', DUNE)).toHaveText([/^Want · /, /^Done · /]);
 });
 
 // The pressed status doesn't submit: a stray tap would otherwise log it again, like a re-read.
 test('pressing the current status again adds nothing to the history', async ({ page }) => {
   await signUp(page);
   await addDune(page, 'Want');
-  await page.goto('/library');
-  await edit(page, DUNE);
+  await openWork(page, 'Dune');
 
   await statusOf(page, DUNE, 'Want').click();
 
-  await expect(await historyOf(page, 'Dune', DUNE)).toHaveText([/^Want · /]);
+  await expect(historyOf(page, DUNE)).toHaveText([/^Want · /]);
 });
 
 test('a dropped work can be picked up again, and the history keeps both', async ({ page }) => {
   await signUp(page);
   await addDune(page, 'Reading');
-  await page.goto('/library');
-  await edit(page, DUNE);
+  await openWork(page, 'Dune');
   await statusOf(page, DUNE, 'Dropped').click();
-  await expect(statusTabs(page).getByRole('link', { name: 'Dropped 1' })).toHaveAttribute(
-    'aria-current',
-    'page',
-  );
-  await edit(page, DUNE);
+  await expect(statusOf(page, DUNE, 'Dropped')).toHaveAttribute('aria-pressed', 'true');
 
   await statusOf(page, DUNE, 'Reading').click();
 
-  await expect(statusTabs(page).getByRole('link', { name: 'Active 1' })).toHaveAttribute(
-    'aria-current',
-    'page',
-  );
-  await expect(await historyOf(page, 'Dune', DUNE)).toHaveText([
-    /^Reading · /,
-    /^Dropped · /,
-    /^Reading · /,
-  ]);
+  await expect(statusOf(page, DUNE, 'Reading')).toHaveAttribute('aria-pressed', 'true');
+  await expect(historyOf(page, DUNE)).toHaveText([/^Reading · /, /^Dropped · /, /^Reading · /]);
 });
 
-// Nothing starts out given up on: Dropped is set from the library.
+// Nothing starts out given up on: Dropped is set from the work's page.
 test('a search result is added as want, reading or done, never dropped', async ({ page }) => {
   await signUp(page);
 
@@ -162,39 +190,40 @@ test('a search result is added as want, reading or done, never dropped', async (
   ]);
 });
 
-test('rating a work in your library shows the rating, rounded', async ({ page }) => {
+test('rating a work shows the rating, rounded, there and in the library', async ({ page }) => {
   await signUp(page);
   await addDune(page, 'Done');
-  await page.goto('/library');
-  await edit(page, DUNE);
+  await openWork(page, 'Dune');
   await page.getByRole('spinbutton', { name: `Rating for ${DUNE}` }).fill('87.5');
 
   await page.getByRole('button', { name: `Rate ${DUNE}` }).click();
 
+  await expect(page.getByRole('main').getByText('88/100', { exact: true })).toBeVisible();
+  await page.goto('/library');
   await expect(rowOf(page, 'Dune').getByText('88/100', { exact: true })).toBeVisible();
 });
 
-test('a series in your library records the season reached', async ({ page }) => {
+test('a series records the season reached', async ({ page }) => {
   const ANIMATRIX = 'The Animatrix (2003)';
   await signUp(page);
   await page.goto('/catalog/series?q=animatrix');
   await addAs(page, ANIMATRIX, 'Watching').click();
   await expect(page.getByRole('status')).toHaveText('Added to your library as Watching.');
-  await page.goto('/library');
-  await edit(page, ANIMATRIX);
+  await openWork(page, 'The Animatrix');
   await page.getByRole('spinbutton', { name: `Season reached in ${ANIMATRIX}` }).fill('1');
 
   await page.getByRole('button', { name: `Save season for ${ANIMATRIX}` }).click();
 
+  await expect(page.getByRole('main').getByText('Series · 2003 · Season 1')).toBeVisible();
+  await page.goto('/library');
   await expect(metaOf(page, 'The Animatrix')).toHaveText('Series · 2003 · Season 1');
 });
 
-test('a book in your library has no season to record', async ({ page }) => {
+test('a book has no season to record', async ({ page }) => {
   await signUp(page);
   await addDune(page, 'Want');
 
-  await page.goto('/library');
-  await edit(page, DUNE);
+  await openWork(page, 'Dune');
 
   await expect(page.getByRole('spinbutton', { name: /^Season reached in / })).toHaveCount(0);
 });

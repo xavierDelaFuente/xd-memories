@@ -1,4 +1,4 @@
-import type { Entry, MediaType, Rating, Status, WorkId } from '@xd-memories/domain';
+﻿import type { Entry, MediaType, Rating, Status, WorkId } from '@xd-memories/domain';
 import { sql, type Transaction } from 'kysely';
 
 export type LibraryItem = {
@@ -108,8 +108,10 @@ export async function historyOf(db: Transaction<unknown>): Promise<Entry[]> {
   return rows;
 }
 
-// The signed-in user's library: each work once, at its latest status, most recent first.
-export async function libraryOf(db: Transaction<unknown>): Promise<LibraryItem[]> {
+// Each of the signed-in user's works once, at its latest status, most recent first; or only the
+// one asked for. Entries are the user's own (row level security), so a work no entry of theirs
+// names isn't there.
+async function latest(db: Transaction<unknown>, workId?: WorkId): Promise<LibraryItem[]> {
   const { rows } = await sql<LibraryItem>`
     select * from (
       select distinct on (e.work_id)
@@ -121,8 +123,35 @@ export async function libraryOf(db: Transaction<unknown>): Promise<LibraryItem[]
       left join progress p on p.work_id = e.work_id
       -- Highlights are readable by everyone, so this one join names the user.
       left join highlights h on h.work_id = e.work_id and h.user_id = app.user_id()
+      ${workId === undefined ? sql`` : sql`where e.work_id = ${workId}`}
       order by e.work_id, e.at desc
     ) latest
     order by at desc`.execute(db);
   return rows;
+}
+
+// The signed-in user's library: each work once, at its latest status, most recent first.
+export const libraryOf = (db: Transaction<unknown>) => latest(db);
+
+// Where a work came from: one ref per source that has it.
+export type SourceRef = { source: string; externalId: string };
+
+// One work of the signed-in user's library, as screen 1c shows it.
+export type LibraryWork = LibraryItem & { sources: SourceRef[]; history: Entry[] };
+
+// A work in the signed-in user's library, with its sources and every status they gave it, oldest
+// first; undefined when it isn't in their library, whoever else has it.
+export async function workOf(
+  db: Transaction<unknown>,
+  workId: WorkId,
+): Promise<LibraryWork | undefined> {
+  const [item] = await latest(db, workId);
+  if (item === undefined) return undefined;
+  const { rows: sources } = await sql<SourceRef>`
+    select source, external_id as "externalId" from external_refs
+    where work_id = ${workId} order by source, external_id`.execute(db);
+  const { rows: history } = await sql<Entry>`
+    select work_id as "workId", status, at from entries
+    where work_id = ${workId} order by at, id`.execute(db);
+  return { ...item, sources, history };
 }

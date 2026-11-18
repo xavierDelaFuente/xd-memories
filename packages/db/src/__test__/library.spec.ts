@@ -11,6 +11,7 @@ import {
   rate,
   reachSeason,
   unhighlight,
+  workOf,
 } from '../library';
 import { migrateToLatest } from '../migrate';
 import { withUser } from '../rls';
@@ -44,7 +45,7 @@ beforeAll(async () => {
     from unnest(array[
       'ada', 'bea', 'cal', 'dan', 'eve', 'fay', 'gus', 'hal', 'ivy', 'jo', 'kim', 'lou',
       'max', 'ned', 'oli', 'pam', 'quin',
-      'rae', 'sam', 'tom', 'uma', 'vic'
+      'rae', 'sam', 'tom', 'uma', 'vic', 'wes', 'xia', 'yan'
     ]) as id`.execute(db);
 });
 
@@ -153,6 +154,55 @@ describe('historyOf', () => {
       { workId, status: 'want', at: day(1) },
       { workId, status: 'done', at: day(5) },
     ]);
+  });
+});
+
+describe('workOf', () => {
+  const workFor = (userId: string, workId: string) =>
+    withUser(db, userId, (trx) => workOf(trx, workId));
+
+  it('is the work as your library shows it, with its sources and its history', async () => {
+    const workId = await add('xia', book('works/OL42W', 'Dune'), 'doing', day(1));
+    await add('xia', book('works/OL42W', 'Dune'), 'want', day(3));
+    await add('xia', book('works/OL43W', 'Dune Messiah'), 'done', day(4));
+
+    const work = await workFor('xia', workId);
+
+    expect(work).toEqual({
+      workId,
+      mediaType: 'book',
+      title: 'Dune',
+      creators: ['Frank Herbert'],
+      year: 1965,
+      cover: 'https://covers.openlibrary.org/b/id/1-M.jpg',
+      status: 'want',
+      at: day(3),
+      rating: null,
+      highlighted: false,
+      season: null,
+      sources: [{ source: 'openlibrary', externalId: 'works/OL42W' }],
+      history: [
+        { workId, status: 'doing', at: day(1) },
+        { workId, status: 'want', at: day(3) },
+      ],
+    });
+  });
+
+  it('is undefined for a work that is only in someone else’s library', async () => {
+    const workId = await add('ada', book('works/OL44W', 'Dune'), 'want', day(1));
+    await add('yan', book('works/OL45W', 'Dune Messiah'), 'want', day(2));
+
+    const work = await workFor('yan', workId);
+
+    expect(work).toBeUndefined();
+  });
+
+  it('is undefined for a work that doesn’t exist', async () => {
+    await add('wes', book('works/OL46W', 'Dune'), 'want', day(1));
+
+    const work = await workFor('wes', 'no-such-work');
+
+    expect(work).toBeUndefined();
   });
 });
 

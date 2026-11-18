@@ -14,11 +14,12 @@ test('a highlight is visible to another signed-in user, without the rest of the 
     .click();
   await expect(page.getByRole('status')).toHaveText('Added to your library as Done.');
   await page.goto('/library');
-  await page.getByLabel(`Edit ${DUNE}`).click();
+  await page.getByRole('link', { name: 'Dune', exact: true }).click();
   await page.getByRole('spinbutton', { name: `Rating for ${DUNE}` }).fill('90');
   await page.getByRole('button', { name: `Rate ${DUNE}` }).click();
   await page.getByRole('button', { name: `Highlight ${DUNE}` }).click();
   await expect(page.getByRole('button', { name: `Remove highlight from ${DUNE}` })).toBeVisible();
+  await page.goto('/library');
   await page.getByRole('link', { name: 'Your highlights' }).click();
   await expect(page.getByRole('heading', { name: 'Your highlights' })).toBeVisible();
   const profile = page.url();

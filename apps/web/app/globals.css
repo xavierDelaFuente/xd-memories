@@ -347,7 +347,7 @@ main:focus {
 }
 
 /* The library: one row per work over a rule. The title and its media · creator · year on the
-   left, the rating and highlight on the right; editing and history fold away beneath. */
+   left, the rating and highlight on the right. */
 .rows {
   align-self: stretch;
   margin: 0;
@@ -394,27 +394,6 @@ main:focus {
 
 .row-marks .highlighted {
   color: var(--xd-color-text-muted);
-}
-
-.row details {
-  grid-column: 2 / -1;
-  font-size: var(--xd-font-size-sm);
-}
-
-.row summary {
-  cursor: pointer;
-  color: var(--xd-color-text-muted);
-}
-
-.row details[open] > :not(summary) {
-  margin-top: var(--xd-space-md);
-}
-
-.row-edit[open] {
-  display: flex;
-  flex-direction: column;
-  align-items: start;
-  gap: var(--xd-space-md);
 }
 
 /* The catalog's search is one row: the field, then its button. */
@@ -538,4 +517,151 @@ main:focus {
   grid-row: 1 / span 2;
   grid-column: 1;
   align-self: start;
+}
+
+/* Where a work's page sits: Library / its media / the work, in mono, the work itself unlinked. */
+.breadcrumb ol {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--xd-space-sm);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-family: var(--xd-font-family-mono);
+  font-size: var(--xd-font-size-sm);
+  color: var(--xd-color-text-muted);
+}
+
+.breadcrumb li + li::before {
+  content: "/";
+  margin-right: var(--xd-space-sm);
+}
+
+.breadcrumb a {
+  color: inherit;
+}
+
+/* A work's page (screen 1c). On a phone, one column: a small cover and its sources, then the
+   work and your entry. Wider, the cover and sources beside them. */
+.work {
+  display: grid;
+  gap: var(--xd-space-xl);
+  align-self: stretch;
+}
+
+.work-aside {
+  display: flex;
+  flex-direction: column;
+  gap: var(--xd-space-sm);
+  max-width: 9rem;
+}
+
+.work-aside .cover {
+  margin-bottom: var(--xd-space-md);
+}
+
+/* A small heading over a list, as the design's SOURCES: mono, muted, in capitals. */
+.label {
+  margin: 0;
+  font-family: var(--xd-font-family-mono);
+  font-size: var(--xd-font-size-sm);
+  font-weight: 400;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--xd-color-text-muted);
+}
+
+.sources {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-family: var(--xd-font-family-mono);
+  font-size: var(--xd-font-size-sm);
+}
+
+.work-main {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  gap: var(--xd-space-md);
+  min-width: 0;
+}
+
+.work-main h1 {
+  margin: 0;
+  font-size: 2.5rem;
+  line-height: 1.1;
+}
+
+.work-by {
+  margin: 0;
+}
+
+/* Your entry, set apart: the status, the rating and highlight, the dates, then what to change. */
+.work-entry {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  gap: var(--xd-space-md);
+  align-self: stretch;
+  margin-top: var(--xd-space-md);
+  padding: var(--xd-space-lg);
+  border: 1px solid var(--xd-color-border);
+  border-radius: var(--xd-radius-md);
+}
+
+.work-entry > p {
+  margin: 0;
+}
+
+.work-status {
+  font-weight: var(--xd-font-weight-semibold);
+}
+
+.work-marks {
+  display: flex;
+  gap: var(--xd-space-md);
+}
+
+.work-marks:empty {
+  display: none;
+}
+
+.work-marks .highlighted,
+.work-dates {
+  font-size: var(--xd-font-size-sm);
+  color: var(--xd-color-text-muted);
+}
+
+.work-history {
+  margin-top: var(--xd-space-md);
+  font-size: var(--xd-font-size-sm);
+}
+
+.work-history h2 {
+  margin: 0 0 var(--xd-space-sm);
+  font-size: var(--xd-font-size-md);
+}
+
+.work-history ol {
+  margin: 0;
+  padding-left: var(--xd-space-xl);
+  color: var(--xd-color-text-muted);
+}
+
+@media (min-width: 36rem) {
+  .work {
+    grid-template-columns: 9rem minmax(0, 1fr);
+  }
+}
+
+/* In a library row the title opens the work's page (1c): a title, not a blue link, until it's
+   pointed at. */
+.row h2 a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.row h2 a:hover {
+  text-decoration: underline;
 }

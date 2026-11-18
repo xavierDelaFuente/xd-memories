@@ -1,6 +1,12 @@
 import type { MediaType, Status } from '@xd-memories/domain';
 import { describe, expect, it } from 'vitest';
-import { ADD_STATUSES, historyLabel, STATUS_LABELS, statusLabel } from '../library-view';
+import {
+  ADD_STATUSES,
+  datesLabel,
+  historyLabel,
+  STATUS_LABELS,
+  statusLabel,
+} from '../library-view';
 
 // Where works of different media are listed together, "doing" can't name one activity.
 describe('STATUS_LABELS', () => {
@@ -57,5 +63,37 @@ describe('historyLabel', () => {
     const shown = historyLabel({ status, at }, 'album');
 
     expect(shown).toBe(label);
+  });
+});
+
+// "want 3" is a status given on 3 November 2026.
+const historyOf = (entries: readonly string[]) =>
+  entries.map((entry) => {
+    const [status, day] = entry.split(' ');
+    return { status: status as Status, at: new Date(Date.UTC(2026, 10, Number(day), 12)) };
+  });
+
+// A work's dates, from its history: when the latest go at it started, and how it ended.
+describe('datesLabel', () => {
+  it.each`
+    history                               | label
+    ${['want 3']}                         | ${'Added 3 Nov 2026'}
+    ${['want 1', 'doing 3']}              | ${'Started 3 Nov 2026'}
+    ${['doing 3', 'done 9']}              | ${'Started 3 Nov 2026 · finished 9 Nov 2026'}
+    ${['done 9']}                         | ${'Finished 9 Nov 2026'}
+    ${['doing 3', 'dropped 5']}           | ${'Started 3 Nov 2026 · dropped 5 Nov 2026'}
+    ${['doing 1', 'done 2', 'doing 5']}   | ${'Started 5 Nov 2026'}
+    ${['doing 1', 'done 2', 'want 5']}    | ${'Started 1 Nov 2026 · finished 2 Nov 2026'}
+    ${['doing 1', 'dropped 2', 'done 5']} | ${'Started 1 Nov 2026 · finished 5 Nov 2026'}
+  `('$history reads "$label"', ({ history, label }: { history: string[]; label: string }) => {
+    const shown = datesLabel(historyOf(history));
+
+    expect(shown).toBe(label);
+  });
+
+  it('is empty with no history', () => {
+    const shown = datesLabel([]);
+
+    expect(shown).toBe('');
   });
 });
