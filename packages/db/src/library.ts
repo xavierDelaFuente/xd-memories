@@ -155,3 +155,27 @@ export async function workOf(
     where work_id = ${workId} order by at, id`.execute(db);
   return { ...item, sources, history };
 }
+
+// A search result already in the signed-in user's library: the work it is and where they are with it.
+export type InLibrary = SourceRef & { workId: WorkId; status: Status };
+
+// Which of these search results are in the signed-in user's library, each with its latest status.
+// Entries are the user's own (row level security), so a work only others have isn't listed.
+export async function statusesOf(
+  db: Transaction<unknown>,
+  refs: SourceRef[],
+): Promise<InLibrary[]> {
+  const { rows } = await sql<InLibrary>`
+    select r.source, r.external_id as "externalId", e.work_id as "workId", e.status
+    from unnest(
+      ${refs.map(({ source }) => source)}::text[],
+      ${refs.map(({ externalId }) => externalId)}::text[]
+    ) as wanted(source, external_id)
+    join external_refs r using (source, external_id)
+    join lateral (
+      select work_id, status from entries
+      where work_id = r.work_id order by at desc, id desc limit 1
+    ) e on true
+    order by r.source, r.external_id`.execute(db);
+  return rows;
+}

@@ -9,6 +9,7 @@ import {
   rowMeta,
   shownItems,
   statusTabs,
+  workHref,
 } from '../library-filter';
 
 const item = (mediaType: MediaType, status: Status) => ({ mediaType, status });
@@ -237,4 +238,16 @@ describe('mediaShelf', () => {
       expect(shelf).toEqual({ label, href });
     },
   );
+});
+
+describe('workHref', () => {
+  it.each`
+    workId         | href
+    ${'w1'}        | ${'/works/w1'}
+    ${'a/b?c#d e'} | ${'/works/a%2Fb%3Fc%23d%20e'}
+  `('is $href for $workId', ({ workId, href }) => {
+    const link = workHref(workId);
+
+    expect(link).toBe(href);
+  });
 });

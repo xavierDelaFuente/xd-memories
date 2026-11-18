@@ -1,4 +1,5 @@
 import { CatalogSearchQuery } from '@xd-memories/contracts';
+import type { InLibrary, SourceRef } from '@xd-memories/db';
 import type { CatalogItem, CatalogSource, MediaType, SourceError } from '@xd-memories/domain';
 import { SEGMENTS } from './media-links';
 
@@ -59,3 +60,8 @@ export function resultLabel({
   const dated = year === null ? title : `${title} (${year})`;
   return creators.length === 0 ? dated : `${dated} — ${creators.join(', ')}`;
 }
+
+// The user's entry for a search result, when the work is already in their library. A ref is its
+// source and id together: the same id from another source is another work.
+export const inLibrary = (found: readonly InLibrary[], ref: SourceRef): InLibrary | undefined =>
+  found.find(({ source, externalId }) => source === ref.source && externalId === ref.externalId);
