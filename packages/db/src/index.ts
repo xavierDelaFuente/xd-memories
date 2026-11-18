@@ -11,11 +11,14 @@ export {
   historyOf,
   isReadOnly,
   type LibraryItem,
+  type LibraryWork,
   libraryOf,
   logEntry,
   rate,
   reachSeason,
+  type SourceRef,
   unhighlight,
+  workOf,
 } from './library';
 export { migrateToLatest } from './migrate';
 export { withUser } from './rls';

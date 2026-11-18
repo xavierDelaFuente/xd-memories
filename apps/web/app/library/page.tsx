@@ -1,22 +1,11 @@
 import { Alert } from '@asnewyla/alert';
 import { Button } from '@asnewyla/button';
-import { Input } from '@asnewyla/input';
-import { ToggleGroup, ToggleGroupItem } from '@asnewyla/toggle-group';
-import { historyOf, isReadOnly, libraryOf, withUser } from '@xd-memories/db';
-import { STATUSES } from '@xd-memories/domain';
+import { isReadOnly, libraryOf, withUser } from '@xd-memories/db';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { currentSession, getDb } from '../../lib/auth';
 import { signOut } from '../../lib/auth-actions';
-import { resultLabel } from '../../lib/catalog-search';
 import { Cover } from '../../lib/cover';
-import {
-  addHighlight,
-  removeHighlight,
-  updateRating,
-  updateSeason,
-  updateStatus,
-} from '../../lib/library-actions';
 import {
   libraryFilter,
   libraryMediaLinks,
@@ -25,7 +14,6 @@ import {
   shownItems,
   statusTabs,
 } from '../../lib/library-filter';
-import { historyLabel, statusLabel } from '../../lib/library-view';
 import { MediaTag } from '../../lib/media-tag';
 
 type Props = {
@@ -36,9 +24,8 @@ type Props = {
 export default async function LibraryPage({ searchParams }: Props) {
   const session = await currentSession();
   if (!session) redirect('/sign-in');
-  const { library, history, readOnly } = await withUser(getDb(), session.user.id, async (trx) => ({
+  const { library, readOnly } = await withUser(getDb(), session.user.id, async (trx) => ({
     library: await libraryOf(trx),
-    history: await historyOf(trx),
     readOnly: await isReadOnly(trx),
   }));
   const filter = libraryFilter(library, await searchParams);
@@ -92,12 +79,13 @@ export default async function LibraryPage({ searchParams }: Props) {
           ) : (
             <ul aria-label="Your library" className="rows">
               {rows.map((item) => {
-                const work = resultLabel(item);
                 const meta = rowMeta(item);
                 return (
                   <li key={item.workId} className="row">
                     <Cover src={item.cover} mediaType={item.mediaType} />
-                    <h2>{item.title}</h2>
+                    <h2>
+                      <Link href={`/works/${encodeURIComponent(item.workId)}`}>{item.title}</Link>
+                    </h2>
                     <p className="row-meta">
                       <MediaTag mediaType={item.mediaType} />
                       {meta !== '' && ` · ${meta}`}
@@ -108,115 +96,6 @@ export default async function LibraryPage({ searchParams }: Props) {
                       )}
                       {item.highlighted && <span className="highlighted">Highlighted</span>}
                     </p>
-                    {!readOnly && (
-                      <details className="row-edit">
-                        <summary aria-label={`Edit ${work}`}>Edit</summary>
-                        {/* The current status doesn't submit: a stray tap would log it again,
-                            which the history reads as a re-read. */}
-                        <form action={updateStatus}>
-                          <input type="hidden" name="workId" value={item.workId} />
-                          <ToggleGroup
-                            aria-label={`Status for ${work}`}
-                            name="status"
-                            value={item.status}
-                            size="sm"
-                          >
-                            {STATUSES.map((status) => (
-                              <ToggleGroupItem
-                                key={status}
-                                value={status}
-                                type={status === item.status ? 'button' : 'submit'}
-                              >
-                                {statusLabel(status, item.mediaType)}
-                              </ToggleGroupItem>
-                            ))}
-                          </ToggleGroup>
-                        </form>
-                        <div className="entry-fields">
-                          {item.mediaType === 'series' && (
-                            <form action={updateSeason} className="entry-field">
-                              <input type="hidden" name="workId" value={item.workId} />
-                              <Input
-                                label="Season"
-                                className="number-field"
-                                type="number"
-                                name="season"
-                                min={1}
-                                step={1}
-                                required
-                                aria-label={`Season reached in ${work}`}
-                                defaultValue={item.season === null ? '' : String(item.season)}
-                              />
-                              <Button
-                                type="submit"
-                                size="sm"
-                                variant="outline"
-                                aria-label={`Save season for ${work}`}
-                              >
-                                Save season
-                              </Button>
-                            </form>
-                          )}
-                          <form action={updateRating} className="entry-field">
-                            <input type="hidden" name="workId" value={item.workId} />
-                            <Input
-                              label="Rating"
-                              className="number-field"
-                              type="number"
-                              name="rating"
-                              min={0}
-                              max={100}
-                              step="any"
-                              required
-                              aria-label={`Rating for ${work}`}
-                              defaultValue={item.rating === null ? '' : String(item.rating)}
-                            />
-                            <Button
-                              type="submit"
-                              size="sm"
-                              variant="outline"
-                              aria-label={`Rate ${work}`}
-                            >
-                              Rate
-                            </Button>
-                          </form>
-                        </div>
-                        <form action={item.highlighted ? removeHighlight : addHighlight}>
-                          <input type="hidden" name="workId" value={item.workId} />
-                          {item.highlighted ? (
-                            <Button
-                              type="submit"
-                              size="sm"
-                              variant="outline"
-                              aria-label={`Remove highlight from ${work}`}
-                            >
-                              Remove highlight
-                            </Button>
-                          ) : (
-                            <Button
-                              type="submit"
-                              size="sm"
-                              variant="outline"
-                              aria-label={`Highlight ${work}`}
-                            >
-                              Highlight
-                            </Button>
-                          )}
-                        </form>
-                      </details>
-                    )}
-                    <details>
-                      <summary>History</summary>
-                      <ol aria-label={`History of ${work}`}>
-                        {history
-                          .filter((entry) => entry.workId === item.workId)
-                          .map((entry) => (
-                            <li key={`${entry.at.toISOString()}-${entry.status}`}>
-                              {historyLabel(entry, item.mediaType)}
-                            </li>
-                          ))}
-                      </ol>
-                    </details>
                   </li>
                 );
               })}

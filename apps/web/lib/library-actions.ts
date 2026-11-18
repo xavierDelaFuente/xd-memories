@@ -55,8 +55,14 @@ export async function addToLibrary(_: AddState, form: FormData): Promise<AddStat
   };
 }
 
-// From /library. A work not in this user's library is left alone (changeStatus checks), so a
-// crafted form changes nothing; the page simply shows the library as it is.
+// A change shows on the work's page, where it was made, and in the library's rows.
+function revalidateWork(workId: string) {
+  revalidatePath(`/works/${encodeURIComponent(workId)}`);
+  revalidatePath('/library');
+}
+
+// From a work's page (/works/[id]). A work not in this user's library is left alone
+// (changeStatus checks), so a crafted form changes nothing; the page shows the work as it is.
 export async function updateStatus(form: FormData): Promise<void> {
   const session = await currentSession();
   if (!session) redirect('/sign-in');
@@ -67,10 +73,10 @@ export async function updateStatus(form: FormData): Promise<void> {
   await withUser(getDb(), session.user.id, (trx) =>
     changeStatus(trx, { workId, status, at: new Date() }),
   );
-  revalidatePath('/library');
+  revalidateWork(workId);
 }
 
-// From /library, like updateStatus: a rating outside 0–100, or for a work not in this user's
+// From a work's page, like updateStatus: a rating outside 0–100, or for a work not in this user's
 // library (rate checks), changes nothing.
 export async function updateRating(form: FormData): Promise<void> {
   const session = await currentSession();
@@ -82,10 +88,11 @@ export async function updateRating(form: FormData): Promise<void> {
   if (!rating.ok) return;
   const { workId } = parsed.data;
   await withUser(getDb(), session.user.id, (trx) => rate(trx, { workId, rating: rating.value }));
-  revalidatePath('/library');
+  revalidateWork(workId);
 }
 
-// From /library, like updateStatus: reachSeason checks the work is a series in this user's library.
+// From a work's page, like updateStatus: reachSeason checks the work is a series in this user's
+// library.
 export async function updateSeason(form: FormData): Promise<void> {
   const session = await currentSession();
   if (!session) redirect('/sign-in');
@@ -94,10 +101,10 @@ export async function updateSeason(form: FormData): Promise<void> {
   if (!parsed.success) return;
   const { workId, season } = parsed.data;
   await withUser(getDb(), session.user.id, (trx) => reachSeason(trx, { workId, season }));
-  revalidatePath('/library');
+  revalidateWork(workId);
 }
 
-// From /library: show a work on your profile, or stop. highlight checks the work is in this
+// From a work's page: show a work on your profile, or stop. highlight checks the work is in this
 // user's library; unhighlight can only remove their own.
 async function changeHighlight(form: FormData, change: typeof highlight) {
   const session = await currentSession();
@@ -107,7 +114,7 @@ async function changeHighlight(form: FormData, change: typeof highlight) {
   if (!parsed.success) return;
   const { workId } = parsed.data;
   await withUser(getDb(), session.user.id, (trx) => change(trx, workId));
-  revalidatePath('/library');
+  revalidateWork(workId);
   revalidatePath(`/people/${session.user.id}`);
 }
 
