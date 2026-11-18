@@ -133,6 +133,7 @@ rejected — nothing is published). `ExternalRef.sourceVersion` is stored with t
 11. ~~Dropped status?~~ — decided 2026-11-13: yes, `dropped` is a domain status (BACKLOG 3.27). Not offered when adding from the catalog; set from the library, and a later entry can pick the work up again.
 12. Journey before the LLM: swap Phases 9 and 10? Proposed in `docs/PHASES.md` → Screens v1.
 13. ~~"Albums" or "Music"?~~ — decided 2026-11-13: "Music" for the section and nav, "Album" for the item (its media tag, "Add album"); URL `/catalog/albums` unchanged. Renamed with the app shell (3.23).
+14. Rating input: the 0–100 number field, or the five squares of screen 1c (stored 0–100 either way: a square is 20)? The squares are one tap but lose half-steps such as 87.5; the field keeps them but is slower on a phone. Blocks BACKLOG 3.40.
 
 ## Reference docs
 

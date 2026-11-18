@@ -77,6 +77,30 @@ Later screens arrive with their phase (see `docs/PHASES.md` → Screens); nothin
 - 3.28 Title detail (`I` + `E`, split from 3.25): `/works/[id]` as screen 1c, for a work in your library (any other id is not found; signed out, sign in): a breadcrumb back to the library at its media, the cover, its sources each named and linked to the work's page on the source's site (appended to a fixed https origin, so an id can't lead elsewhere; TMDB's credit where TMDB is a source), media · year · season, the title, "by" its creators; then your entry: the status toggle, rating, season for a series, highlight, the dates ("Started … · finished …" of the latest go, from the entries) and the full history; `workOf` reads it all under row level security; library rows link to it by title, and the row's Edit and History (3.24) move there; the demo's page shows the entry without controls; "Part of" (Phase 5) and "Related" (Phase 7) absent until then, not empty; the design's 5-square rating and "1st read" wait on a rating scale and on logging re-reads
 - 3.29 In your library, on results (`E`): a search result already in your library shows its status and links to its title page (1b), in place of Add
 
+### Production
+
+Real accounts, invite-only at first, before Phase 4: the worker runs against the production
+database anyway, and real libraries show which importer matters. These come first because real
+people's data is at stake; 3.36 is the switch. Every step on a website (Neon, Vercel, GitHub
+settings) is a checklist naming variables, never their values.
+
+- 3.30 Delete account (`I` + `E`): from an account page, deleting asks for the password and removes the user, their sessions, entries, ratings, progress and highlights; shared works and their refs stay (the catalog isn't theirs); afterwards signing in with it fails and their profile is not found; the demo account can't be deleted; first failing test: after `deleteAccount`, no row of any user-owned table names the user
+- 3.31 Privacy note (`E`): `/privacy`, linked from sign-up and the shell: what is stored (email, name, library), who sees what (highlights: any signed-in user; the rest: no one), that email is sent through Gmail, that covers load from the sources' hosts (they see the visitor's IP), how to delete your account (3.30); sign-up links to it before the button
+- 3.32 Migrate on deploy (CI): on merge to main a GitHub Action (environment `production`, secret `DATABASE_URL`) runs the migrations, then triggers Vercel's production deploy through a deploy hook; a failed migration stops the deploy; Vercel no longer deploys production on its own (previews still do); migrations stay additive within a release (expand, then contract later), since the old version runs against the new schema while the new one deploys
+- 3.33 Previews off production data (chore): in Vercel, the production `DATABASE_URL` and `BETTER_AUTH_SECRET` are scoped to Production only; previews get a Neon branch per PR (Neon's Vercel integration) or no database, so no preview can read or write real accounts; checked by opening a preview and confirming the demo and sign-up use the branch
+- 3.34 Sign-in rate limit (`I`): repeated failed sign-ins, sign-ups and reset requests are refused (429) after a few in a window, counted in Postgres (Better Auth's database storage), not per server instance in memory, so it holds on Vercel; first failing test: the 6th wrong password for one email within a minute is refused even when the right one is given
+- 3.35 Production config check (`U`): in production the app refuses to start with a required variable missing (`DATABASE_URL`, `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL` on https, `TMDB_API_TOKEN`, `MUSICBRAINZ_USER_AGENT`, the SMTP settings) or with `CATALOG_SOURCE=fixtures`; the error names the variable, never its value
+- 3.36 Go live (chore): Neon production branch; Vercel Production variables; GitHub `production` environment; migrate (3.32); seed the demo once; smoke test by hand: sign up with a real address (the mail arrives, check spam), add, rate, highlight, delete the account; share the URL with a few people, no announcement; the known limits written into PROJECT.md: Gmail sends about 500 a day and may land in spam without a domain, Neon Free keeps only a short restore window (no long-term backups), Vercel Hobby is non-commercial
+- 3.37 Close Phase 3 (docs): PROJECT.md's Current State brought up to date (it still reads "Phase 3 BACKLOG written"), Phase 3 ticked with 3.20 carried over while it waits on `@asnewyla/theme`, Next: Phase 4
+
+### Follow-ups
+
+Found along the way; none blocks going live.
+
+- 3.38 Header at 320px (`E`): on a 320px-wide phone the top bar (wordmark and the three colour-scheme buttons) stays on one line, with no sideways scroll
+- 3.39 Re-reads counted (`U` + `E`): a done after an earlier done is a re-read; the library row shows "read 2×" (1i) and the work page "2nd read" (1c), worded per media (watched, listened)
+- 3.40 Rating input as in 1c (`E`): five squares in place of the 0–100 field, once Open Question 14 is decided; stored 0–100 either way
+
 ## Phase 4 — Imports (job queue + worker, file importers, match review)
 
 One importer end to end first (Goodreads: ISBNs make matching checkable), then the others reuse the
@@ -101,3 +125,4 @@ The upload, import and review pages (4.8, 4.9) follow screen 1g; the sync nudge 
 - 4.14 Deezer (`U`, synthetic fixture): the personal-data export (requested from Deezer, an Excel file) → its listening history → albums by the 4.13 rule; matched by MusicBrainz search on artist + album; the format is undocumented, so sheet and column names are read from a real export before the fixture is written; an .xlsx is a ZIP, so the 4.11 unpacked-size limit applies
 - 4.15 Last.fm (`U`, recorded fixture): a username's scrobbles, paged, → the same album rule as 4.13; the API key stays on the server; added to the source-health check (2.10)
 - 4.16 Trakt (`I`): OAuth connect; the token stored encrypted, never shown; history → movies and series by their TMDB ids (exact matches, no review); disconnecting deletes the token
+- 4.17 Work refresh (`I`): a worker job re-reads cached works from their source, within each source's rate limit, and fills in what the first save lacked (a cover, creators, a year) without overwriting what's there; works saved before covers (3.25) gain theirs; run on demand, like the other jobs
