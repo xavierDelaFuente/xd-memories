@@ -49,6 +49,25 @@ const statusOf = (page: Page, work: string, status: string) =>
 const historyOf = (page: Page, work: string) =>
   page.getByRole('list', { name: `History of ${work}` }).getByRole('listitem');
 
+test('a search result already in your library shows its status and links to its page, in place of Add', async ({
+  page,
+}) => {
+  await signUp(page);
+  await addDune(page, 'Reading');
+
+  await page.goto('/catalog/books?q=dune');
+
+  const dune = page
+    .getByRole('list', { name: 'Results' })
+    .getByRole('listitem')
+    .filter({ has: page.getByRole('heading', { level: 2, name: 'Dune', exact: true }) });
+  await expect(dune.getByText('In your library · Reading')).toBeVisible();
+  await expect(page.getByRole('group', { name: `Add ${DUNE}` })).toHaveCount(0);
+  await expect(page.getByRole('group', { name: /^Add Dune Messiah/ })).toBeVisible();
+  await dune.getByRole('link', { name: 'Dune', exact: true }).click();
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Dune');
+});
+
 test('adding a search result lists it in your library, at its status', async ({ page }) => {
   await signUp(page);
   await page.goto('/catalog/books?q=dune');

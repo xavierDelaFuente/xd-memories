@@ -665,3 +665,19 @@ main:focus {
 .row h2 a:hover {
   text-decoration: underline;
 }
+
+/* A search result already in your library: its title links to its page, as in a library row. */
+.cover-grid h2 a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.cover-grid h2 a:hover {
+  text-decoration: underline;
+}
+
+.in-library {
+  margin: var(--xd-space-sm) 0 0;
+  font-size: var(--xd-font-size-sm);
+  color: var(--xd-color-text-muted);
+}

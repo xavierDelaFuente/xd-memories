@@ -4,6 +4,7 @@ import {
   type Rating,
   STATUSES,
   type Status,
+  type WorkId,
 } from '@xd-memories/domain';
 import { STATUS_LABELS, statusLabel } from './library-view';
 import { SECTION_LABELS, SEGMENTS } from './media-links';
@@ -100,3 +101,6 @@ export const rowMeta = ({
   ].join(' · ');
 
 export const ratingLabel = (rating: Rating) => `${displayRating(rating)}/100`;
+
+// A work's own page (1c), from the library or a search result.
+export const workHref = (workId: WorkId) => `/works/${encodeURIComponent(workId)}`;

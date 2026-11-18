@@ -10,6 +10,7 @@ import {
   logEntry,
   rate,
   reachSeason,
+  statusesOf,
   unhighlight,
   workOf,
 } from '../library';
@@ -45,7 +46,8 @@ beforeAll(async () => {
     from unnest(array[
       'ada', 'bea', 'cal', 'dan', 'eve', 'fay', 'gus', 'hal', 'ivy', 'jo', 'kim', 'lou',
       'max', 'ned', 'oli', 'pam', 'quin',
-      'rae', 'sam', 'tom', 'uma', 'vic', 'wes', 'xia', 'yan'
+      'rae', 'sam', 'tom', 'uma', 'vic', 'wes', 'xia', 'yan',
+      'zoe', 'abe', 'bo'
     ]) as id`.execute(db);
 });
 
@@ -203,6 +205,55 @@ describe('workOf', () => {
     const work = await workFor('wes', 'no-such-work');
 
     expect(work).toBeUndefined();
+  });
+});
+
+describe('statusesOf', () => {
+  const statusesFor = (userId: string, refs: { source: string; externalId: string }[]) =>
+    withUser(db, userId, (trx) => statusesOf(trx, refs));
+
+  it('gives each result in your library its work and latest status, and skips the rest', async () => {
+    const duneId = await add('zoe', book('works/OL50W', 'Dune'), 'want', day(1));
+    await add('zoe', book('works/OL50W', 'Dune'), 'doing', day(2));
+    const messiahId = await add('zoe', book('works/OL51W', 'Dune Messiah'), 'done', day(3));
+
+    const statuses = await statusesFor('zoe', [
+      { source: 'openlibrary', externalId: 'works/OL51W' },
+      { source: 'openlibrary', externalId: 'works/OL52W' },
+      { source: 'openlibrary', externalId: 'works/OL50W' },
+    ]);
+
+    expect(statuses).toEqual([
+      { source: 'openlibrary', externalId: 'works/OL50W', workId: duneId, status: 'doing' },
+      { source: 'openlibrary', externalId: 'works/OL51W', workId: messiahId, status: 'done' },
+    ]);
+  });
+
+  it('skips a result that is only in someone else’s library', async () => {
+    await add('ada', book('works/OL53W', 'Dune'), 'want', day(1));
+    await add('abe', book('works/OL54W', 'Dune Messiah'), 'want', day(2));
+
+    const statuses = await statusesFor('abe', [
+      { source: 'openlibrary', externalId: 'works/OL53W' },
+    ]);
+
+    expect(statuses).toEqual([]);
+  });
+
+  it('matches the source as well as the id', async () => {
+    await add('bo', book('works/OL55W', 'Dune'), 'want', day(1));
+
+    const statuses = await statusesFor('bo', [{ source: 'tmdb', externalId: 'works/OL55W' }]);
+
+    expect(statuses).toEqual([]);
+  });
+
+  it('is empty for no results', async () => {
+    await add('bo', book('works/OL56W', 'Dune'), 'want', day(1));
+
+    const statuses = await statusesFor('bo', []);
+
+    expect(statuses).toEqual([]);
   });
 });
 

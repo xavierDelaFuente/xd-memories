@@ -1,6 +1,6 @@
 import { type CatalogSource, inMemoryCatalog, type SourceError } from '@xd-memories/domain';
 import { describe, expect, it } from 'vitest';
-import { messageFor, resultLabel, searchCatalog } from '../catalog-search';
+import { inLibrary, messageFor, resultLabel, searchCatalog } from '../catalog-search';
 
 const matrix = {
   ref: { source: 'fixture', externalId: 'm1' },
@@ -157,4 +157,27 @@ describe('resultLabel', () => {
       expect(result).toBe(label);
     },
   );
+});
+
+describe('inLibrary', () => {
+  const found = [
+    { source: 'tmdb', externalId: 'movie/603', workId: 'w1', status: 'done' as const },
+    { source: 'openlibrary', externalId: 'works/OL1W', workId: 'w2', status: 'want' as const },
+  ];
+
+  it('is the entry for the result with the same source and id', () => {
+    const entry = inLibrary(found, { source: 'openlibrary', externalId: 'works/OL1W' });
+
+    expect(entry).toEqual(found[1]);
+  });
+
+  it.each`
+    source           | externalId     | case
+    ${'openlibrary'} | ${'movie/603'} | ${'the same source, another id'}
+    ${'musicbrainz'} | ${'movie/603'} | ${'the same id, another source'}
+  `('is undefined for $case', ({ source, externalId }) => {
+    const entry = inLibrary(found, { source, externalId });
+
+    expect(entry).toBeUndefined();
+  });
 });

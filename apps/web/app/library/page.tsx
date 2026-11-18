@@ -13,6 +13,7 @@ import {
   rowMeta,
   shownItems,
   statusTabs,
+  workHref,
 } from '../../lib/library-filter';
 import { MediaTag } from '../../lib/media-tag';
 
@@ -84,7 +85,7 @@ export default async function LibraryPage({ searchParams }: Props) {
                   <li key={item.workId} className="row">
                     <Cover src={item.cover} mediaType={item.mediaType} />
                     <h2>
-                      <Link href={`/works/${encodeURIComponent(item.workId)}`}>{item.title}</Link>
+                      <Link href={workHref(item.workId)}>{item.title}</Link>
                     </h2>
                     <p className="row-meta">
                       <MediaTag mediaType={item.mediaType} />

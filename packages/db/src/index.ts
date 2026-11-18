@@ -9,6 +9,7 @@ export {
   highlight,
   highlightsOf,
   historyOf,
+  type InLibrary,
   isReadOnly,
   type LibraryItem,
   type LibraryWork,
@@ -17,6 +18,7 @@ export {
   rate,
   reachSeason,
   type SourceRef,
+  statusesOf,
   unhighlight,
   workOf,
 } from './library';
