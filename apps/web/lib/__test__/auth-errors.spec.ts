@@ -1,6 +1,6 @@
 import { APIError } from 'better-auth/api';
 import { describe, expect, it } from 'vitest';
-import { messageForAuthError } from '../auth-errors';
+import { messageForAuthError, messageForDeleteError } from '../auth-errors';
 
 describe('messageForAuthError', () => {
   it.each`
@@ -30,5 +30,17 @@ describe('messageForAuthError', () => {
     const shown = messageForAuthError(error);
 
     expect(shown).toBe('Something went wrong. Try again in a moment.');
+  });
+});
+
+describe('messageForDeleteError', () => {
+  it.each`
+    kind               | message
+    ${'WrongPassword'} | ${'That password isn’t right. Your account is unchanged.'}
+    ${'ReadOnly'}      | ${'The demo account can’t be deleted.'}
+  `('is "$message" for $kind', ({ kind, message }) => {
+    const shown = messageForDeleteError({ kind });
+
+    expect(shown).toBe(message);
   });
 });

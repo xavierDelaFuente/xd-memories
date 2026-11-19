@@ -1,10 +1,10 @@
 'use server';
 
-import { DEMO, demoPassword } from '@xd-memories/db';
+import { DEMO, deleteAccount, demoPassword } from '@xd-memories/db';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { appSecret, getAuth } from './auth';
-import { messageForAuthError } from './auth-errors';
+import { messageForAuthError, messageForDeleteError } from './auth-errors';
 
 export type AuthFormState = { error: string | null };
 
@@ -84,4 +84,15 @@ export async function tryDemo(): Promise<void> {
     headers: await headers(),
   });
   redirect('/library');
+}
+
+// Deletes the signed-in account, asking for its password again: a session left open on a shared
+// computer is not enough to delete someone's library.
+export async function deleteMyAccount(_: AuthFormState, form: FormData): Promise<AuthFormState> {
+  const result = await deleteAccount(getAuth(), {
+    headers: await headers(),
+    password: text(form, 'password'),
+  });
+  if (!result.ok) return { error: messageForDeleteError(result.error) };
+  redirect('/account/deleted');
 }

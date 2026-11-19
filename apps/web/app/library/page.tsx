@@ -104,11 +104,14 @@ export default async function LibraryPage({ searchParams }: Props) {
           )}
         </>
       )}
-      <form action={signOut}>
-        <Button type="submit" variant="outline">
-          Sign out
-        </Button>
-      </form>
+      <div className="account-actions">
+        <Link href="/account">Account</Link>
+        <form action={signOut}>
+          <Button type="submit" variant="outline">
+            Sign out
+          </Button>
+        </form>
+      </div>
     </>
   );
 }

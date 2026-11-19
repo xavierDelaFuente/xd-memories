@@ -681,3 +681,24 @@ main:focus {
   font-size: var(--xd-font-size-sm);
   color: var(--xd-color-text-muted);
 }
+
+/* Under the library: the account page and signing out, side by side. */
+.account-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--xd-space-lg);
+}
+
+/* Deleting the account, set apart from the rest of the page. */
+.danger {
+  align-self: stretch;
+  max-width: 32rem;
+  padding-top: var(--xd-space-lg);
+  border-top: 1px solid var(--xd-color-border);
+}
+
+.danger h2 {
+  margin-top: 0;
+  font-size: 0.9375rem;
+  font-weight: 600;
+}

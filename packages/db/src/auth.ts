@@ -1,6 +1,7 @@
 import type { Mailer } from '@xd-memories/mail';
 import { type BetterAuthOptions, type BetterAuthPlugin, betterAuth } from 'better-auth';
-import type { Kysely } from 'kysely';
+import { APIError } from 'better-auth/api';
+import { type Kysely, sql } from 'kysely';
 import { DEMO } from './demo';
 
 export type AuthSettings = {
@@ -12,6 +13,9 @@ export type AuthSettings = {
   // The host framework's integration, such as nextCookies() in apps/web.
   plugins?: BetterAuthPlugin[];
 };
+
+// The code beforeDelete refuses a read-only account with; deleteAccount reports it.
+export const READ_ONLY = 'READ_ONLY_ACCOUNT';
 
 const timestamps = { createdAt: 'created_at', updatedAt: 'updated_at' };
 
@@ -59,7 +63,10 @@ const UNUSED_PATHS = [
   '/update-user',
   '/change-email',
   '/change-password',
+  // Off over HTTP: without a password, Better Auth deletes any session under a day old. The app
+  // deletes only through deleteAccount (account.ts), which always passes the password.
   '/delete-user',
+  '/delete-user/callback',
   '/list-sessions',
   '/revoke-session',
   '/revoke-sessions',
@@ -111,6 +118,23 @@ export function authOptions({ db, secret, baseURL, mailer, plugins = [] }: AuthS
     disabledPaths: UNUSED_PATHS,
     plugins,
     ...SCHEMA,
+    user: {
+      ...SCHEMA.user,
+      deleteUser: {
+        enabled: true,
+        // The shared demo, or any read-only account, stays: its visitors share it.
+        beforeDelete: async (user) => {
+          const { rows } = await sql`
+            select from read_only_users where user_id = ${user.id}`.execute(db);
+          if (rows.length > 0) throw new APIError('FORBIDDEN', { code: READ_ONLY });
+        },
+        // Deleting the user takes everything that names it (on delete cascade) but a reset link
+        // waiting in verifications, which names it only by value.
+        afterDelete: async (user) => {
+          await sql`delete from verifications where value = ${user.id}`.execute(db);
+        },
+      },
+    },
   } satisfies BetterAuthOptions;
 }
 

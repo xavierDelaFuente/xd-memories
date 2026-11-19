@@ -1,3 +1,4 @@
+import type { DeleteAccountError } from '@xd-memories/db';
 import { APIError } from 'better-auth/api';
 
 const GENERIC = 'Something went wrong. Try again in a moment.';
@@ -23,3 +24,9 @@ export function messageForAuthError(error: unknown): string {
 export function messageForAuthCode(code: string | undefined): string {
   return (code !== undefined && Object.hasOwn(MESSAGES, code) && MESSAGES[code]) || GENERIC;
 }
+
+// What the account page shows when deleting is refused.
+export const messageForDeleteError = ({ kind }: DeleteAccountError): string =>
+  kind === 'WrongPassword'
+    ? 'That password isn’t right. Your account is unchanged.'
+    : 'The demo account can’t be deleted.';
