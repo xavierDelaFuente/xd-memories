@@ -764,3 +764,46 @@ main:focus {
 .continue-card h3 a:hover {
   text-decoration: underline;
 }
+
+/* A page of running text, such as the privacy note: headings and lists spaced for reading. */
+.prose h2 {
+  margin: var(--xd-space-2xl) 0 var(--xd-space-sm);
+  font-size: 0.9375rem;
+  font-weight: 600;
+}
+
+.prose ul {
+  display: flex;
+  flex-direction: column;
+  gap: var(--xd-space-sm);
+  padding-left: var(--xd-space-xl);
+}
+
+/* Under every page: the privacy note. Beside the sidebar on a wide screen, above the tab bar on
+   a phone. */
+.site-footer {
+  box-sizing: border-box;
+  max-width: 40rem;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 var(--xd-space-xl) var(--xd-space-xl);
+  font-size: var(--xd-font-size-sm);
+  color: var(--xd-color-text-muted);
+}
+
+@media (min-width: 64rem) {
+  /* The sidebar runs the page's full height, past the footer's row. */
+  body > header {
+    grid-row: 1 / span 2;
+  }
+
+  .site-footer {
+    grid-column: 2;
+  }
+}
+
+.form-note {
+  margin: 0;
+  font-size: var(--xd-font-size-sm);
+  color: var(--xd-color-text-muted);
+}

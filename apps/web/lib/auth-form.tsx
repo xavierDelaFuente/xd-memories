@@ -4,7 +4,7 @@ import { Alert } from '@asnewyla/alert';
 import { Button } from '@asnewyla/button';
 import { Input } from '@asnewyla/input';
 import { Stack } from '@asnewyla/layout';
-import { useActionState } from 'react';
+import { type ReactNode, useActionState } from 'react';
 import type { AuthFormState } from './auth-actions';
 
 type Props = {
@@ -17,9 +17,11 @@ type Props = {
   password?: 'current-password' | 'new-password';
   // The reset token from the mailed link, sent back with the new password.
   token?: string;
+  // Read before submitting, such as sign-up's link to the privacy note.
+  note?: ReactNode;
 };
 
-export function AuthForm({ action, submit, name, email, password, token }: Props) {
+export function AuthForm({ action, submit, name, email, password, token, note }: Props) {
   const [state, formAction, pending] = useActionState(action, { error: null });
 
   return (
@@ -38,6 +40,7 @@ export function AuthForm({ action, submit, name, email, password, token }: Props
           />
         )}
         {state.error !== null && <Alert tone="error">{state.error}</Alert>}
+        {note !== undefined && <p className="form-note">{note}</p>}
         <Button type="submit" className="form-submit" disabled={pending}>
           {submit}
         </Button>

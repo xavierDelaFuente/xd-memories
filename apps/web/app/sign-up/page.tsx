@@ -10,7 +10,18 @@ export default async function SignUpPage() {
   return (
     <>
       <h1>Create your account</h1>
-      <AuthForm action={signUp} submit="Create account" name email password="new-password" />
+      <AuthForm
+        action={signUp}
+        submit="Create account"
+        name
+        email
+        password="new-password"
+        note={
+          <>
+            What we keep and who sees it is in the <Link href="/privacy">privacy note</Link>.
+          </>
+        }
+      />
       <p>
         Already have an account? <Link href="/sign-in">Sign in</Link>
       </p>
