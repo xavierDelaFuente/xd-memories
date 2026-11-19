@@ -24,6 +24,7 @@ export const statusLabel = (status: Status, mediaType: MediaType) =>
 
 // UTC, so the server renders the same date wherever it runs.
 const DAY = new Intl.DateTimeFormat('en-GB', { dateStyle: 'medium', timeZone: 'UTC' });
+export const dayLabel = (at: Date) => DAY.format(at);
 
 export const historyLabel = ({ status, at }: Pick<Entry, 'status' | 'at'>, mediaType: MediaType) =>
   `${statusLabel(status, mediaType)} · ${DAY.format(at)}`;
