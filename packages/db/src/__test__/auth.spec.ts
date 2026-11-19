@@ -1,10 +1,14 @@
+import type { CatalogItem, Rating } from '@xd-memories/domain';
 import type { Mail } from '@xd-memories/mail';
 import { getMigrations } from 'better-auth/db/migration';
 import { type Kysely, sql } from 'kysely';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { deleteAccount } from '../account';
 import { authOptions, createAuth } from '../auth';
+import { highlight, logEntry, rate, reachSeason } from '../library';
 import { migrateToLatest } from '../migrate';
 import { withUser } from '../rls';
+import { saveWork } from '../work-cache';
 import { startPostgres, type TestDatabase } from './postgres';
 
 let database: TestDatabase;
@@ -294,6 +298,7 @@ describe('auth endpoints the app does not use are off', () => {
     '/change-email',
     '/change-password',
     '/delete-user',
+    '/delete-user/callback',
     '/list-sessions',
     '/revoke-session',
     '/revoke-sessions',
@@ -324,5 +329,159 @@ describe('auth endpoints the app does not use are off', () => {
     );
 
     expect(response.status).toBe(200);
+  });
+});
+
+describe('deleting an account', () => {
+  // What the browser sends once signed in: the session cookie.
+  const signedIn = async (email: string) => {
+    const { headers } = await createAuth(settings()).api.signInEmail({
+      body: { email, password: PASSWORD },
+      returnHeaders: true,
+    });
+    const cookie = headers
+      .getSetCookie()
+      .map((setCookie) => setCookie.split(';')[0])
+      .join('; ');
+    return new Headers({ cookie });
+  };
+
+  const idOf = async (email: string) => {
+    const { rows } = await sql<{ id: string }>`
+      select id from users where email = ${email}`.execute(db);
+    const [row] = rows;
+    if (row === undefined) throw new Error(`no user ${email}`);
+    return row.id;
+  };
+
+  const dune = (externalId: string): CatalogItem => ({
+    ref: { source: 'openlibrary', externalId },
+    mediaType: 'book',
+    title: 'Dune',
+    creators: ['Frank Herbert'],
+    year: 1965,
+    cover: null,
+    sourceVersion: 'search.json',
+    raw: {},
+  });
+
+  const severance = (externalId: string): CatalogItem => ({
+    ref: { source: 'tmdb', externalId },
+    mediaType: 'series',
+    title: 'Severance',
+    creators: [],
+    year: 2022,
+    cover: null,
+    sourceVersion: '3/search/tv',
+    raw: {},
+  });
+
+  // A library with something in every user-owned table, and a reset link waiting.
+  const withLibrary = async (email: string, externalId: string) => {
+    await signUpConfirmed(email);
+    const userId = await idOf(email);
+    const workId = await withUser(db, userId, async (trx) => {
+      const id = await saveWork(trx, dune(externalId));
+      await logEntry(trx, { workId: id, status: 'doing', at: new Date() });
+      await rate(trx, { workId: id, rating: 90 as Rating });
+      const series = await saveWork(trx, severance(`${externalId}-tv`));
+      await logEntry(trx, { workId: series, status: 'doing', at: new Date() });
+      await reachSeason(trx, { workId: series, season: 2 });
+      await highlight(trx, id);
+      return id;
+    });
+    await createAuth(settings()).api.requestPasswordReset({
+      body: { email, redirectTo: '/reset-password' },
+    });
+    return { userId, workId };
+  };
+
+  const deleting = async (email: string, password: string) =>
+    deleteAccount(createAuth(settings()), { headers: await signedIn(email), password });
+
+  const USER_TABLES = [
+    ['users', 'id'],
+    ['sessions', 'user_id'],
+    ['accounts', 'user_id'],
+    ['verifications', 'value'],
+    ['entries', 'user_id'],
+    ['ratings', 'user_id'],
+    ['progress', 'user_id'],
+    ['highlights', 'user_id'],
+    ['read_only_users', 'user_id'],
+  ] as const;
+
+  const rowsNaming = async (userId: string) =>
+    Object.fromEntries(
+      await Promise.all(
+        USER_TABLES.map(async ([table, column]) => {
+          const { rows } = await sql`
+            select from ${sql.table(table)} where ${sql.ref(column)} = ${userId}`.execute(db);
+          return [table, rows.length] as const;
+        }),
+      ),
+    );
+
+  it('after deleteAccount, no row of any user-owned table names the user', async () => {
+    const { userId } = await withLibrary('gone@example.com', 'works/OL900W');
+    await deleting('gone@example.com', PASSWORD);
+
+    const rows = await rowsNaming(userId);
+
+    expect(rows).toEqual(Object.fromEntries(USER_TABLES.map(([table]) => [table, 0])));
+  });
+
+  it('reports the account deleted', async () => {
+    await withLibrary('done@example.com', 'works/OL901W');
+
+    const result = await deleting('done@example.com', PASSWORD);
+
+    expect(result).toEqual({ ok: true, value: undefined });
+  });
+
+  it('keeps the shared work, its source and others’ entries for it', async () => {
+    const { workId } = await withLibrary('leaver@example.com', 'works/OL902W');
+    await withLibrary('stayer@example.com', 'works/OL902W');
+    await deleting('leaver@example.com', PASSWORD);
+
+    const { rows } = await sql`
+      select
+        (select count(*)::int from works where id = ${workId}) as works,
+        (select count(*)::int from external_refs where work_id = ${workId}) as refs,
+        (select count(*)::int from entries where work_id = ${workId}) as entries`.execute(db);
+
+    expect(rows).toEqual([{ works: 1, refs: 1, entries: 1 }]);
+  });
+
+  it('signing in afterwards fails', async () => {
+    await withLibrary('after@example.com', 'works/OL903W');
+    await deleting('after@example.com', PASSWORD);
+
+    const act = () => signIn('after@example.com');
+
+    await expect(act()).rejects.toThrow(/invalid email or password/i);
+  });
+
+  it.each`
+    password             | case
+    ${'not my password'} | ${'a wrong password'}
+    ${''}                | ${'no password, even from a session just started'}
+  `('with $case, nothing is deleted', async ({ password }) => {
+    const { userId } = await withLibrary(`kept-${password.length}@example.com`, 'works/OL904W');
+
+    const result = await deleting(`kept-${password.length}@example.com`, password);
+
+    expect(result).toEqual({ ok: false, error: { kind: 'WrongPassword' } });
+    expect((await rowsNaming(userId)).users).toBe(1);
+  });
+
+  it('a read-only account, such as the demo, is not deleted', async () => {
+    const { userId } = await withLibrary('readonly@example.com', 'works/OL905W');
+    await sql`insert into read_only_users (user_id) values (${userId})`.execute(db);
+
+    const result = await deleting('readonly@example.com', PASSWORD);
+
+    expect(result).toEqual({ ok: false, error: { kind: 'ReadOnly' } });
+    expect((await rowsNaming(userId)).users).toBe(1);
   });
 });
