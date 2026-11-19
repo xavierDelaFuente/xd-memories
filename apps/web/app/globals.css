@@ -681,3 +681,66 @@ main:focus {
   font-size: var(--xd-font-size-sm);
   color: var(--xd-color-text-muted);
 }
+
+/* For you (1a, 1h): sections under the page title, each a small sans heading with its count. */
+.for-you {
+  align-self: stretch;
+}
+
+.section-heading {
+  margin: 0 0 var(--xd-space-md);
+  font-size: 0.9375rem;
+  font-weight: 600;
+}
+
+.section-heading .count {
+  margin-left: var(--xd-space-xs);
+  font-size: var(--xd-font-size-sm);
+  font-weight: 400;
+  color: var(--xd-color-text-muted);
+}
+
+/* Continue: a card per work in progress, the cover beside what it is and where you are with it;
+   side by side where they fit, stacked on a phone. */
+.continue {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+  gap: var(--xd-space-md);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.continue-card {
+  display: grid;
+  grid-template-columns: 3.5rem minmax(0, 1fr);
+  gap: var(--xd-space-md);
+  align-items: start;
+  padding: var(--xd-space-md);
+  border: 1px solid var(--xd-color-border);
+  border-radius: var(--xd-radius-md);
+  background-color: var(--xd-color-surface);
+}
+
+.continue-card h3 {
+  margin: var(--xd-space-xs) 0;
+  font-family: var(--font-serif);
+  font-size: 1.125rem;
+  font-weight: 400;
+  line-height: 1.25;
+}
+
+.continue-media {
+  margin: 0;
+  font-size: var(--xd-font-size-sm);
+  color: var(--xd-color-text-muted);
+}
+
+.continue-card h3 a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.continue-card h3 a:hover {
+  text-decoration: underline;
+}
