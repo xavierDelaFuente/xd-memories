@@ -39,6 +39,19 @@ test('a wrong password shows an error and keeps you signed out', async ({ page }
   await expect(page).toHaveURL(/\/sign-in$/);
 });
 
+test('after five wrong passwords, even the right one waits', async ({ page }) => {
+  const email = await signUp(page);
+  await signOut(page);
+  for (let i = 0; i < 5; i++) {
+    await signIn(page, email, 'not the password');
+    await expect(alertIn(page)).toHaveText('Wrong email or password.');
+  }
+
+  await signIn(page, email, PASSWORD);
+
+  await expect(alertIn(page)).toHaveText('Too many attempts. Wait a few minutes and try again.');
+});
+
 test('signing in before confirming asks you to, and mails a new link', async ({ page }) => {
   const email = await signUpUnconfirmed(page);
 

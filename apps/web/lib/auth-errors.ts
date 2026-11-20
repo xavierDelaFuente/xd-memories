@@ -11,6 +11,8 @@ const MESSAGES: Record<string, string> = {
   INVALID_EMAIL: 'Enter a valid email address.',
   PASSWORD_TOO_SHORT: 'Use at least 8 characters for the password.',
   PASSWORD_TOO_LONG: 'Use at most 128 characters for the password.',
+  // Too many sign-ins, sign-ups or reset requests for one email (packages/db auth.ts).
+  TOO_MANY_ATTEMPTS: 'Too many attempts. Wait a few minutes and try again.',
 };
 
 // What the auth forms show. A taken address is not among them: sign-up answers it like a new one,
