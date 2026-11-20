@@ -24,6 +24,13 @@ export async function signUp(page: Page): Promise<string> {
   return email;
 }
 
+// Waits for the sign-in page: until then the session is still live, and visiting /sign-in
+// would bounce back to the library.
+export async function signOut(page: Page): Promise<void> {
+  await page.getByRole('button', { name: 'Sign out' }).click();
+  await expect(page).toHaveURL(/\/sign-in$/);
+}
+
 export async function signIn(page: Page, email: string, password: string): Promise<void> {
   await page.goto('/sign-in');
   await page.getByLabel('Email').fill(email);

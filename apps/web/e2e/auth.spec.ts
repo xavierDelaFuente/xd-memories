@@ -1,5 +1,5 @@
 import { expect, type Page, test } from '@playwright/test';
-import { PASSWORD, signIn, signUp, signUpUnconfirmed } from './helpers';
+import { PASSWORD, signIn, signOut, signUp, signUpUnconfirmed } from './helpers';
 import { linkMailedTo, mailCountTo } from './mail';
 
 // Scoped to main: Next.js adds its own (empty) route-announcer alert outside it.
@@ -20,8 +20,7 @@ test('signed out, the library sends you to sign in', async ({ page }) => {
 
 test('signing out and back in returns to your library', async ({ page }) => {
   const email = await signUp(page);
-  await page.getByRole('button', { name: 'Sign out' }).click();
-  await expect(page).toHaveURL(/\/sign-in$/);
+  await signOut(page);
 
   await signIn(page, email, PASSWORD);
 
@@ -31,7 +30,7 @@ test('signing out and back in returns to your library', async ({ page }) => {
 
 test('a wrong password shows an error and keeps you signed out', async ({ page }) => {
   const email = await signUp(page);
-  await page.getByRole('button', { name: 'Sign out' }).click();
+  await signOut(page);
 
   await signIn(page, email, 'not the password');
 
@@ -51,7 +50,7 @@ test('signing in before confirming asks you to, and mails a new link', async ({ 
 
 test('a forgotten password is reset from the mailed link', async ({ page }) => {
   const email = await signUp(page);
-  await page.getByRole('button', { name: 'Sign out' }).click();
+  await signOut(page);
   await page.getByRole('link', { name: 'Forgot your password?' }).click();
   // Sign-in has an Email field too: wait for the new page before filling one in.
   await expect(page.getByRole('heading', { level: 1, name: 'Reset your password' })).toBeVisible();

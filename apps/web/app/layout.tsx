@@ -55,6 +55,9 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
         <main id="main" tabIndex={-1}>
           {children}
         </main>
+        <footer className="site-footer">
+          <Link href="/privacy">Privacy</Link>
+        </footer>
       </body>
     </html>
   );
