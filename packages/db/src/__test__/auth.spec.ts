@@ -5,6 +5,7 @@ import { type Kysely, sql } from 'kysely';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { deleteAccount } from '../account';
 import { authOptions, createAuth } from '../auth';
+import { DEMO } from '../demo';
 import { highlight, logEntry, rate, reachSeason } from '../library';
 import { migrateToLatest } from '../migrate';
 import { withUser } from '../rls';
@@ -277,8 +278,118 @@ describe('password reset', () => {
   });
 });
 
+// Counted in Postgres (attempts.ts), so the limit holds across server instances. Refused with 429
+// and the code TOO_MANY_ATTEMPTS, whether the call comes from the app's server or over HTTP.
+// Each test checks a password up to ten times, on purpose slow to compute: hence the timeout.
+describe('repeated attempts for one email are refused', { timeout: 30_000 }, () => {
+  const tooMany = { statusCode: 429, body: { code: 'TOO_MANY_ATTEMPTS' } };
+
+  const wrongPasswords = async (email: string, times: number) => {
+    for (let i = 0; i < times; i++) await signIn(email, 'not the password').catch(() => undefined);
+  };
+
+  it('the 6th sign-in within a minute is refused, even with the right password', async () => {
+    await signUpConfirmed('guessed@example.com');
+    await wrongPasswords('guessed@example.com', 5);
+
+    const act = () => signIn('guessed@example.com');
+
+    await expect(act()).rejects.toMatchObject(tooMany);
+  });
+
+  it('a wrong password before the limit is only that', async () => {
+    await signUpConfirmed('typo@example.com');
+    await wrongPasswords('typo@example.com', 4);
+
+    const act = () => signIn('typo@example.com', 'not the password');
+
+    await expect(act()).rejects.toThrow(/invalid email or password/i);
+  });
+
+  it('a sign-in that succeeds starts the count over', async () => {
+    await signUpConfirmed('recovered@example.com');
+    await wrongPasswords('recovered@example.com', 4);
+    await signIn('recovered@example.com');
+    await wrongPasswords('recovered@example.com', 4);
+
+    const session = await signIn('recovered@example.com');
+
+    expect(session.token).toEqual(expect.any(String));
+  });
+
+  // A reset request always answers the same, so it must not start the sign-in count over.
+  it('asking for a reset does not start the sign-in count over', async () => {
+    await signUpConfirmed('resetter@example.com');
+    await wrongPasswords('resetter@example.com', 5);
+    await createAuth(settings()).api.requestPasswordReset({
+      body: { email: 'resetter@example.com', redirectTo: '/reset-password' },
+    });
+
+    const act = () => signIn('resetter@example.com');
+
+    await expect(act()).rejects.toMatchObject(tooMany);
+  });
+
+  it('another email is not held back', async () => {
+    await wrongPasswords('attacked@example.com', 6);
+    await signUpConfirmed('bystander@example.com');
+
+    const session = await signIn('bystander@example.com');
+
+    expect(session.token).toEqual(expect.any(String));
+  });
+
+  it('the email is counted whatever its case', async () => {
+    await signUpConfirmed('cased@example.com');
+    await wrongPasswords('Cased@Example.com', 5);
+
+    const act = () => signIn('cased@example.com');
+
+    await expect(act()).rejects.toMatchObject(tooMany);
+  });
+
+  // The shared demo signs in many visitors at once, with a password only the server knows.
+  it('the demo account is never held back', async () => {
+    await wrongPasswords(DEMO.email, 6);
+
+    const act = () => signIn(DEMO.email, 'not the password');
+
+    await expect(act()).rejects.toThrow(/invalid email or password/i);
+  });
+
+  it('over HTTP too', async () => {
+    const auth = createAuth(settings());
+    const post = () =>
+      auth.handler(
+        new Request('http://localhost:3000/api/auth/sign-in/email', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json', origin: 'http://localhost:3000' },
+          body: JSON.stringify({ email: 'http@example.com', password: 'not the password' }),
+        }),
+      );
+    for (let i = 0; i < 5; i++) await post();
+
+    const response = await post();
+
+    expect(response.status).toBe(429);
+  });
+
+  it.each`
+    attempt            | call
+    ${'sign-up'}       | ${(email: string) => signUp(email)}
+    ${'reset request'} | ${(email: string) => createAuth(settings()).api.requestPasswordReset({ body: { email, redirectTo: '/reset-password' } })}
+  `('the 4th $attempt within 10 minutes is refused', async ({ attempt, call }) => {
+    const email = `${attempt.replace(' ', '-')}-again@example.com`;
+    for (let i = 0; i < 3; i++) await call(email);
+
+    const act = () => call(email);
+
+    await expect(act()).rejects.toMatchObject(tooMany);
+  });
+});
+
 describe('request code can never read auth data', () => {
-  it.each(['users', 'sessions', 'accounts', 'verifications'])(
+  it.each(['users', 'sessions', 'accounts', 'verifications', 'auth_attempts'])(
     'app_user cannot read %s',
     async (table) => {
       const act = () =>

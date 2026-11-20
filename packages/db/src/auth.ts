@@ -1,7 +1,8 @@
 import type { Mailer } from '@xd-memories/mail';
 import { type BetterAuthOptions, type BetterAuthPlugin, betterAuth } from 'better-auth';
-import { APIError } from 'better-auth/api';
+import { APIError, createAuthMiddleware } from 'better-auth/api';
 import { type Kysely, sql } from 'kysely';
+import { clearAttempts, countAttempt, type Limit } from './attempts';
 import { DEMO } from './demo';
 
 export type AuthSettings = {
@@ -16,6 +17,31 @@ export type AuthSettings = {
 
 // The code beforeDelete refuses a read-only account with; deleteAccount reports it.
 export const READ_ONLY = 'READ_ONLY_ACCOUNT';
+
+// The code an attempt over its limit is refused with, as a 429.
+export const TOO_MANY = 'TOO_MANY_ATTEMPTS';
+
+// Per email, the attempts someone could repeat to guess a password or fill an inbox with mail.
+// Counted in Postgres (attempts.ts), in a hook rather than Better Auth's own rate limit: that one
+// only sees HTTP requests, and the app's forms call auth.api from the server. A sign-in that
+// succeeds starts its count over, so only failed ones add up.
+const LIMITS: Record<string, Limit> = {
+  '/sign-in/email': { max: 5, windowSeconds: 60 },
+  '/sign-up/email': { max: 3, windowSeconds: 10 * 60 },
+  '/request-password-reset': { max: 3, windowSeconds: 10 * 60 },
+};
+
+const SIGN_IN = '/sign-in/email';
+
+const limitFor = (path: string | undefined) =>
+  path !== undefined && Object.hasOwn(LIMITS, path) ? LIMITS[path] : undefined;
+
+const emailIn = (body: unknown) =>
+  typeof body === 'object' && body !== null && 'email' in body && typeof body.email === 'string'
+    ? body.email.trim().toLowerCase()
+    : undefined;
+
+const attemptKey = (path: string, email: string) => `${path} ${email}`;
 
 const timestamps = { createdAt: 'created_at', updatedAt: 'updated_at' };
 
@@ -116,6 +142,26 @@ export function authOptions({ db, secret, baseURL, mailer, plugins = [] }: AuthS
       autoSignInAfterVerification: true,
     },
     disabledPaths: UNUSED_PATHS,
+    hooks: {
+      before: createAuthMiddleware(async (ctx) => {
+        const limit = limitFor(ctx.path);
+        const email = emailIn(ctx.body);
+        // The shared demo signs in many visitors at once, with a password only the server knows.
+        if (limit === undefined || email === undefined || email === DEMO.email) return;
+        if (!(await countAttempt(db, attemptKey(ctx.path, email), limit))) {
+          throw new APIError('TOO_MANY_REQUESTS', {
+            code: TOO_MANY,
+            message: 'Too many attempts. Try again later.',
+          });
+        }
+      }),
+      after: createAuthMiddleware(async (ctx) => {
+        const email = emailIn(ctx.body);
+        if (ctx.path !== SIGN_IN || email === undefined) return;
+        if (ctx.context.returned instanceof APIError) return;
+        await clearAttempts(db, attemptKey(SIGN_IN, email));
+      }),
+    },
     plugins,
     ...SCHEMA,
     user: {

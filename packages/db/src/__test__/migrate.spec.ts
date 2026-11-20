@@ -55,6 +55,7 @@ describe('migrateToLatest', () => {
       '0009-read-only-users',
       '0010-dropped-status',
       '0011-covers',
+      '0012-auth-attempts',
     ]);
   });
 
