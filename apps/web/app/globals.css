@@ -356,6 +356,7 @@ main:focus {
 }
 
 .count,
+.times,
 .rating {
   font-family: var(--xd-font-family-mono);
   font-variant-numeric: tabular-nums;
@@ -407,7 +408,8 @@ main:focus {
   font-size: var(--xd-font-size-sm);
 }
 
-.row-marks .highlighted {
+.row-marks .highlighted,
+.row-marks .times {
   color: var(--xd-color-text-muted);
 }
 
@@ -645,6 +647,7 @@ main:focus {
 }
 
 .work-marks .highlighted,
+.work-marks .go,
 .work-dates {
   font-size: var(--xd-font-size-sm);
   color: var(--xd-color-text-muted);

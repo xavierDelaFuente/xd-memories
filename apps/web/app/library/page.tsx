@@ -15,6 +15,7 @@ import {
   statusTabs,
   workHref,
 } from '../../lib/library-filter';
+import { timesLabel } from '../../lib/library-view';
 import { MediaTag } from '../../lib/media-tag';
 
 type Props = {
@@ -81,6 +82,7 @@ export default async function LibraryPage({ searchParams }: Props) {
             <ul aria-label="Your library" className="rows">
               {rows.map((item) => {
                 const meta = rowMeta(item);
+                const times = timesLabel(item.timesFinished, item.mediaType);
                 return (
                   <li key={item.workId} className="row">
                     <Cover src={item.cover} mediaType={item.mediaType} />
@@ -95,6 +97,7 @@ export default async function LibraryPage({ searchParams }: Props) {
                       {item.rating !== null && (
                         <span className="rating">{ratingLabel(item.rating)}</span>
                       )}
+                      {times !== '' && <span className="times">{times}</span>}
                       {item.highlighted && <span className="highlighted">Highlighted</span>}
                     </p>
                   </li>

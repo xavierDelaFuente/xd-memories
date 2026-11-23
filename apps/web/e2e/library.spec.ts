@@ -196,6 +196,51 @@ test('a dropped work can be picked up again, and the history keeps both', async 
   await expect(historyOf(page, DUNE)).toHaveText([/^Reading · /, /^Dropped · /, /^Reading · /]);
 });
 
+// A done after an earlier done is a re-read: its page counts the goes, its row the finishes.
+test('reading a finished book again is its 2nd read, and finishing it reads "read 2×"', async ({
+  page,
+}) => {
+  await signUp(page);
+  await addDune(page, 'Done');
+  await openWork(page, 'Dune');
+
+  await statusOf(page, DUNE, 'Reading').click();
+
+  await expect(statusOf(page, DUNE, 'Reading')).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.getByRole('main').getByText('2nd read', { exact: true })).toBeVisible();
+  await statusOf(page, DUNE, 'Done').click();
+  await expect(statusOf(page, DUNE, 'Done')).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.getByRole('main').getByText('2nd read', { exact: true })).toBeVisible();
+  await page.goto('/library');
+  await expect(rowOf(page, 'Dune').getByText('read 2×', { exact: true })).toBeVisible();
+});
+
+test('a first read says neither', async ({ page }) => {
+  await signUp(page);
+  await addDune(page, 'Done');
+
+  await openWork(page, 'Dune');
+
+  await expect(page.getByRole('main').getByText(/\d(st|nd|rd|th) read/)).toHaveCount(0);
+  await page.goto('/library');
+  await expect(rowOf(page, 'Dune').getByText(/read \d+×/)).toHaveCount(0);
+});
+
+test('a movie seen twice is its 2nd watch, and reads "watched 2×"', async ({ page }) => {
+  await signUp(page);
+  await addMatrixAsDone(page);
+  await openWork(page, 'The Matrix');
+
+  await statusOf(page, MATRIX, 'Watching').click();
+  await expect(statusOf(page, MATRIX, 'Watching')).toHaveAttribute('aria-pressed', 'true');
+  await statusOf(page, MATRIX, 'Done').click();
+
+  await expect(statusOf(page, MATRIX, 'Done')).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.getByRole('main').getByText('2nd watch', { exact: true })).toBeVisible();
+  await page.goto('/library');
+  await expect(rowOf(page, 'The Matrix').getByText('watched 2×', { exact: true })).toBeVisible();
+});
+
 // Nothing starts out given up on: Dropped is set from the work's page.
 test('a search result is added as want, reading or done, never dropped', async ({ page }) => {
   await signUp(page);

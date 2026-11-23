@@ -2,7 +2,7 @@ import { Button } from '@asnewyla/button';
 import { Input } from '@asnewyla/input';
 import { ToggleGroup, ToggleGroupItem } from '@asnewyla/toggle-group';
 import { isReadOnly, withUser, workOf } from '@xd-memories/db';
-import { STATUSES } from '@xd-memories/domain';
+import { goNumber, STATUSES } from '@xd-memories/domain';
 import Link from 'next/link';
 import { notFound, redirect } from 'next/navigation';
 import { currentSession, getDb } from '../../../lib/auth';
@@ -16,7 +16,7 @@ import {
   updateStatus,
 } from '../../../lib/library-actions';
 import { mediaShelf, ratingLabel, rowMeta } from '../../../lib/library-filter';
-import { datesLabel, historyLabel, statusLabel } from '../../../lib/library-view';
+import { datesLabel, goLabel, historyLabel, statusLabel } from '../../../lib/library-view';
 import { MediaTag } from '../../../lib/media-tag';
 import { sourceLink } from '../../../lib/work-sources';
 
@@ -39,6 +39,7 @@ export default async function WorkPage({ params }: Props) {
   const shelf = mediaShelf(work.mediaType);
   const meta = rowMeta({ creators: [], year: work.year, season: work.season });
   const usesTmdb = work.sources.some(({ source }) => source === 'tmdb');
+  const go = goLabel(goNumber(work.history), work.mediaType);
 
   return (
     <>
@@ -100,6 +101,7 @@ export default async function WorkPage({ params }: Props) {
               </form>
             )}
             <p className="work-marks">
+              {go !== '' && <span className="go">{go}</span>}
               {work.rating !== null && <span className="rating">{ratingLabel(work.rating)}</span>}
               {readOnly && work.highlighted && <span className="highlighted">Highlighted</span>}
             </p>

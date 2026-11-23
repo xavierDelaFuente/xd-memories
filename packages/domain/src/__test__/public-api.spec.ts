@@ -17,6 +17,7 @@ it('exposes exactly the intended runtime API, so adding or dropping an export is
     'displayRating',
     'emptyWorkIndex',
     'err',
+    'goNumber',
     'inMemoryCatalog',
     'logStatus',
     'normalizeRating',

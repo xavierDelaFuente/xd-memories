@@ -3,9 +3,11 @@ import { describe, expect, it } from 'vitest';
 import {
   ADD_STATUSES,
   datesLabel,
+  goLabel,
   historyLabel,
   STATUS_LABELS,
   statusLabel,
+  timesLabel,
 } from '../library-view';
 
 // Where works of different media are listed together, "doing" can't name one activity.
@@ -93,6 +95,70 @@ describe('datesLabel', () => {
 
   it('is empty with no history', () => {
     const shown = datesLabel([]);
+
+    expect(shown).toBe('');
+  });
+});
+
+// A work finished more than once, on the library row (1i): the verb is the media's.
+describe('timesLabel', () => {
+  it.each`
+    times | mediaType   | label
+    ${2}  | ${'book'}   | ${'read 2×'}
+    ${3}  | ${'movie'}  | ${'watched 3×'}
+    ${2}  | ${'series'} | ${'watched 2×'}
+    ${4}  | ${'album'}  | ${'listened 4×'}
+  `(
+    '$times on a $mediaType reads "$label"',
+    ({ times, mediaType, label }: { times: number; mediaType: MediaType; label: string }) => {
+      const shown = timesLabel(times, mediaType);
+
+      expect(shown).toBe(label);
+    },
+  );
+
+  // Once, or not yet, goes without saying.
+  it.each`
+    times
+    ${0}
+    ${1}
+  `('is empty for $times', ({ times }: { times: number }) => {
+    const shown = timesLabel(times, 'book');
+
+    expect(shown).toBe('');
+  });
+});
+
+// Which go at a work this is, on its page (1c): the noun is the media's.
+describe('goLabel', () => {
+  it.each`
+    go    | mediaType   | label
+    ${2}  | ${'book'}   | ${'2nd read'}
+    ${3}  | ${'movie'}  | ${'3rd watch'}
+    ${4}  | ${'series'} | ${'4th watch'}
+    ${2}  | ${'album'}  | ${'2nd listen'}
+    ${11} | ${'book'}   | ${'11th read'}
+    ${12} | ${'book'}   | ${'12th read'}
+    ${13} | ${'book'}   | ${'13th read'}
+    ${21} | ${'book'}   | ${'21st read'}
+    ${22} | ${'book'}   | ${'22nd read'}
+    ${23} | ${'book'}   | ${'23rd read'}
+  `(
+    'go $go at a $mediaType reads "$label"',
+    ({ go, mediaType, label }: { go: number; mediaType: MediaType; label: string }) => {
+      const shown = goLabel(go, mediaType);
+
+      expect(shown).toBe(label);
+    },
+  );
+
+  // The first go goes without saying.
+  it.each`
+    go
+    ${0}
+    ${1}
+  `('is empty for go $go', ({ go }: { go: number }) => {
+    const shown = goLabel(go, 'book');
 
     expect(shown).toBe('');
   });
