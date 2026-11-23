@@ -17,7 +17,14 @@ export {
   createCreator,
   type Role,
 } from './creator';
-export { type Entry, type LogStatusInput, logStatus, STATUSES, type Status } from './entry';
+export {
+  type Entry,
+  goNumber,
+  type LogStatusInput,
+  logStatus,
+  STATUSES,
+  type Status,
+} from './entry';
 export {
   type ExternalRef,
   emptyWorkIndex,

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { type Entry, logStatus, STATUSES } from '../entry';
+import { type Entry, goNumber, logStatus, STATUSES, type Status } from '../entry';
 
 const jan = new Date('2026-01-01T10:00:00Z');
 const oct = new Date('2026-10-26T10:00:00Z');
@@ -71,5 +71,33 @@ describe('logStatus', () => {
     const history = logStatus([], { workId: 'w1', status: 'done', now: past });
 
     expect(history).toEqual([{ workId: 'w1', status: 'done', at: past }]);
+  });
+});
+
+// "doing done doing" is a history of one work, oldest first.
+const statuses = (history: string) =>
+  history === '' ? [] : history.split(' ').map((status) => ({ status: status as Status }));
+
+// Which go at a work its history is on: each done ends one, and a doing after it starts the next.
+describe('goNumber', () => {
+  it.each`
+    history                       | go
+    ${''}                         | ${0}
+    ${'want'}                     | ${0}
+    ${'doing'}                    | ${1}
+    ${'doing dropped'}            | ${1}
+    ${'done'}                     | ${1}
+    ${'want doing done'}          | ${1}
+    ${'done want'}                | ${1}
+    ${'doing dropped done'}       | ${1}
+    ${'doing done doing'}         | ${2}
+    ${'doing done doing dropped'} | ${2}
+    ${'done done'}                | ${2}
+    ${'doing done doing done'}    | ${2}
+    ${'done doing done doing'}    | ${3}
+  `('"$history" is go $go', ({ history, go }: { history: string; go: number }) => {
+    const number = goNumber(statuses(history));
+
+    expect(number).toBe(go);
   });
 });

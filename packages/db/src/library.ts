@@ -13,6 +13,8 @@ export type LibraryItem = {
   rating: Rating | null;
   highlighted: boolean;
   season: number | null;
+  // How many times it was done: a done after an earlier done is a re-read.
+  timesFinished: number;
 };
 
 // What others see of a highlighted work: the work alone, never its status, rating or history.
@@ -117,7 +119,9 @@ async function latest(db: Transaction<unknown>, workId?: WorkId): Promise<Librar
       select distinct on (e.work_id)
         e.work_id as "workId", w.media_type as "mediaType", w.title, w.creators, w.year, w.cover,
         e.status, e.at, r.rating, h.user_id is not null as highlighted,
-        p.season
+        p.season,
+        (select count(*)::int from entries d where d.work_id = e.work_id and d.status = 'done')
+          as "timesFinished"
       from entries e join works w on w.id = e.work_id
       left join ratings r on r.work_id = e.work_id
       left join progress p on p.work_id = e.work_id

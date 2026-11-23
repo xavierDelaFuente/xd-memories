@@ -22,6 +22,31 @@ const DOING: Record<MediaType, string> = {
 export const statusLabel = (status: Status, mediaType: MediaType) =>
   status === 'doing' ? DOING[mediaType] : STATUS_LABELS[status];
 
+// What finishing a work of each media is called, and one go at it.
+const DID: Record<MediaType, string> = {
+  movie: 'watched',
+  series: 'watched',
+  book: 'read',
+  album: 'listened',
+};
+const GO: Record<MediaType, string> = {
+  movie: 'watch',
+  series: 'watch',
+  book: 'read',
+  album: 'listen',
+};
+
+// A work finished more than once, on its library row: "read 2×". Once goes without saying.
+export const timesLabel = (times: number, mediaType: MediaType) =>
+  times < 2 ? '' : `${DID[mediaType]} ${times}×`;
+
+const ORDINAL = new Intl.PluralRules('en', { type: 'ordinal' });
+const SUFFIX: Partial<Record<Intl.LDMLPluralRule, string>> = { one: 'st', two: 'nd', few: 'rd' };
+
+// Which go at a work this is, on its page: "2nd read". The first goes without saying.
+export const goLabel = (go: number, mediaType: MediaType) =>
+  go < 2 ? '' : `${go}${SUFFIX[ORDINAL.select(go)] ?? 'th'} ${GO[mediaType]}`;
+
 // UTC, so the server renders the same date wherever it runs.
 const DAY = new Intl.DateTimeFormat('en-GB', { dateStyle: 'medium', timeZone: 'UTC' });
 export const dayLabel = (at: Date) => DAY.format(at);

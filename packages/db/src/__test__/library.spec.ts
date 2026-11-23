@@ -47,7 +47,7 @@ beforeAll(async () => {
       'ada', 'bea', 'cal', 'dan', 'eve', 'fay', 'gus', 'hal', 'ivy', 'jo', 'kim', 'lou',
       'max', 'ned', 'oli', 'pam', 'quin',
       'rae', 'sam', 'tom', 'uma', 'vic', 'wes', 'xia', 'yan',
-      'zoe', 'abe', 'bo'
+      'zoe', 'abe', 'bo', 'cy', 'di'
     ]) as id`.execute(db);
 });
 
@@ -83,6 +83,7 @@ describe('libraryOf', () => {
         rating: null,
         highlighted: false,
         season: null,
+        timesFinished: 0,
       },
     ]);
   });
@@ -112,6 +113,33 @@ describe('libraryOf', () => {
     const library = await libraryFor('dan');
 
     expect(library).toEqual([]);
+  });
+
+  // A done after an earlier done is a re-read.
+  it('counts the times each work was finished', async () => {
+    await add('cy', book('works/OL60W', 'Dune'), 'done', day(1));
+    await add('cy', book('works/OL60W', 'Dune'), 'doing', day(2));
+    await add('cy', book('works/OL60W', 'Dune'), 'done', day(3));
+    await add('cy', book('works/OL61W', 'Dune Messiah'), 'done', day(4));
+    await add('cy', book('works/OL62W', 'Children of Dune'), 'doing', day(5));
+
+    const library = await libraryFor('cy');
+
+    expect(library.map(({ title, timesFinished }) => ({ title, timesFinished }))).toEqual([
+      { title: 'Children of Dune', timesFinished: 0 },
+      { title: 'Dune Messiah', timesFinished: 1 },
+      { title: 'Dune', timesFinished: 2 },
+    ]);
+  });
+
+  it('counts only your own finishes of a work others finished too', async () => {
+    await add('ada', book('works/OL63W', 'Dune'), 'done', day(1));
+    await add('ada', book('works/OL63W', 'Dune'), 'done', day(2));
+    await add('di', book('works/OL63W', 'Dune'), 'done', day(3));
+
+    const library = await libraryFor('di');
+
+    expect(library.map(({ timesFinished }) => timesFinished)).toEqual([1]);
   });
 });
 
@@ -182,6 +210,7 @@ describe('workOf', () => {
       rating: null,
       highlighted: false,
       season: null,
+      timesFinished: 0,
       sources: [{ source: 'openlibrary', externalId: 'works/OL42W' }],
       history: [
         { workId, status: 'doing', at: day(1) },
