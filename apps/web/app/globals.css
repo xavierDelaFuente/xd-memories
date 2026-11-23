@@ -28,9 +28,11 @@ a {
 /* The app shell (screens v1). On a phone: a top bar with the app name and the colour scheme, the
    sections as a tab bar along the bottom. From 64rem: a sidebar with the app name, the sections,
    the media straight into the catalog, and the colour scheme at its foot. Nothing hides behind a
-   menu at either size. */
+   menu at either size. The top bar wraps only when it must, such as with enlarged text: the
+   colour scheme below the wordmark beats off the screen. */
 header {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: var(--xd-space-md) var(--xd-space-xl);
   padding: var(--xd-space-md) var(--xd-space-xl);
@@ -46,6 +48,18 @@ header form {
   font-style: italic;
   color: inherit;
   text-decoration: none;
+}
+
+/* The narrowest phones (320px): the top bar is tighter, so it stays one line. */
+@media (max-width: 22.49rem) {
+  header {
+    gap: var(--xd-space-md);
+    padding-inline: var(--xd-space-md);
+  }
+
+  header .xd-toggle-group .xd-button {
+    padding-inline: var(--xd-space-md);
+  }
 }
 
 header nav ul {
@@ -120,6 +134,7 @@ body {
     height: 100dvh;
     overflow-y: auto;
     flex-direction: column;
+    flex-wrap: nowrap;
     align-items: stretch;
     gap: var(--xd-space-xl);
     padding: var(--xd-space-xl) var(--xd-space-md);
@@ -408,8 +423,10 @@ main:focus {
   gap: var(--xd-space-sm);
 }
 
+/* min-width 0: otherwise the field keeps its natural width and pushes the button off a 320px phone. */
 .catalog-search .xd-input {
   flex: 1;
+  min-width: 0;
 }
 
 .empty,
